@@ -1,0 +1,17 @@
+{
+  "name": "my-webpack-project",
+  "version": "1.0.0",
+  "description": "My webpack project",
+  "main": "src/app.js",
+  "scripts": {
+    "start:prod": "node src/app.js",
+    "start:dev": "nodemon src/app.js"
+  },
+  "author": "Khondax",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "lowdb": "^1.0.0"
+  },
+  "devDependencies": {}
+}

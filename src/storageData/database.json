@@ -1,0 +1,302 @@
+{
+  "boulders": [
+    {
+      "dificultyName": "Green",
+      "number": 1,
+      "dateValue": 637545600000000000,
+      "holdColor": "Amarillo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 4
+    },
+    {
+      "dificultyName": "Green",
+      "number": 2,
+      "dateValue": 637509312000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Green",
+      "number": 5,
+      "dateValue": 637495488000000000,
+      "holdColor": "Zafiro",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 1
+    },
+    {
+      "dificultyName": "Green",
+      "number": 8,
+      "dateValue": 637538688000000000,
+      "holdColor": "Rosa",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 8,
+      "dateValue": 637550784000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 1
+    },
+    {
+      "dificultyName": "Green",
+      "number": 7,
+      "dateValue": 637495488000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 9,
+      "dateValue": 637528320000000000,
+      "holdColor": "VerdeFluor",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 4,
+      "dateValue": 637522272000000000,
+      "holdColor": "RosaFluor",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 1,
+      "dateValue": 637522272000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 8,
+      "dateValue": 637538688000000000,
+      "holdColor": "Rosa",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 4
+    },
+    {
+      "dificultyName": "Red",
+      "number": 3,
+      "dateValue": 637516224000000000,
+      "holdColor": "Rojo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 5
+    },
+    {
+      "dificultyName": "Green",
+      "number": 9,
+      "dateValue": 637562880000000000,
+      "holdColor": "Zafiro",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Red",
+      "number": 5,
+      "dateValue": 637495488000000000,
+      "holdColor": "Rojo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Green",
+      "number": 3,
+      "dateValue": 637513632000000000,
+      "holdColor": "Zafiro",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Red",
+      "number": 1,
+      "dateValue": 637508448000000000,
+      "holdColor": "Amarillo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 1,
+      "dateValue": 637522272000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 5,
+      "dateValue": 637495488000000000,
+      "holdColor": "Naranja",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 6,
+      "dateValue": 637546464000000000,
+      "holdColor": "Voileta",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 7,
+      "dateValue": 637495488000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 5
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 9,
+      "dateValue": 637562880000000000,
+      "holdColor": "Zafiro",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 1
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 2,
+      "dateValue": 637495488000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 1
+    },
+    {
+      "dificultyName": "Red",
+      "number": 7,
+      "dateValue": 637562880000000000,
+      "holdColor": "Zafiro",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 6
+    },
+    {
+      "dificultyName": "Green",
+      "number": 6,
+      "dateValue": 637550784000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Red",
+      "number": 8,
+      "dateValue": 637534368000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 2
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 10,
+      "dateValue": 637510176000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Red",
+      "number": 2,
+      "dateValue": 637543872000000000,
+      "holdColor": "Amarillo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 3
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 2,
+      "dateValue": 637514496000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 4,
+      "dateValue": 637533504000000000,
+      "holdColor": "AmarilloFluor",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Yellow",
+      "number": 1,
+      "dateValue": 637515360000000000,
+      "holdColor": "Rojo",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 0
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 3,
+      "dateValue": 637522272000000000,
+      "holdColor": "RosaFluor",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 2
+    },
+    {
+      "dificultyName": "Red",
+      "number": 10,
+      "dateValue": 637516224000000000,
+      "holdColor": "Granate",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 4
+    },
+    {
+      "dificultyName": "Pink",
+      "number": 7,
+      "dateValue": 637550784000000000,
+      "holdColor": "Verde",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 6
+    },
+    {
+      "dificultyName": "Orange",
+      "number": 5,
+      "dateValue": 637533504000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 2
+    }
+  ],
+  "traverses": []
+}

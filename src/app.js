@@ -12,7 +12,7 @@ const database = lowDB(adapter)
 const app = express()
 
 const hostname = 'localhost'; //npm run start:dev
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.send('<a href="/showproblems">All Problems</a>')

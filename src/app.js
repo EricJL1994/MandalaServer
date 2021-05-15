@@ -14,11 +14,18 @@ const app = express()
 const hostname = 'localhost'; //npm run start:dev
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('<a href="/showproblems">All Problems</a>')
-})
-
 const server = app.listen(port, () => console.log(`Server ready on http://${hostname}:${port}/`))
+
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views')
+app.use(express.static(__dirname + "/public"));
+
+// <>------------------------------------------<>------------------------------------------<>
+
+app.get('/', (req, res) => {
+  //res.send('<a href="/showproblems">All Problems</a>')
+  res.render("index")
+})
 
 process.on('SIGTERM', () => {
 server.close(() => {
@@ -56,8 +63,10 @@ app.get('/showproblems', (req, res) => {
 
   console.log('Request petition:')
   console.log(req.query)
-  
-  const result = database.get(
+  const result = database.get(problemTypesToJSONDatabase['Boulder'], problemTypesToJSONDatabase['Traverse']).value().sort((a,b)=> a.dificultyName == b.dificultyName ? (a.number > b.number ? 1:-1) : a.dificultyName > b.dificultyName ? 1 : -1);
+  result.forEach(element => element.date = formatDate(convertTicksToDate(element.dateValue)));
+  res.render("show", {arrayBloques: result });
+  /*const result = database.get(
     problemTypesToJSONDatabase['Boulder'], problemTypesToJSONDatabase['Traverse']).value().map(
       element => `${element.dificultyName}_${element.number} - ${formatDate(convertTicksToDate(element.dateValue))}`);
 
@@ -67,7 +76,8 @@ app.get('/showproblems', (req, res) => {
   });
 
   html = htmlEnclose(html, 'ul');
-  res.send(html)
+  //html = htmlEnclose(html, 'table');
+  res.send(html)*/
 })
 
 // <>------------------------------------------<>------------------------------------------<>

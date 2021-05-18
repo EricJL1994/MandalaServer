@@ -1,4 +1,5 @@
 const express = require('express')
+require('dotenv').config()
 const fs = require('fs') // fs.readFileSync lee de forma síncrona, fs.readFile lee de forma asíncrona
 const lowDB = require('lowdb')
 
@@ -16,7 +17,7 @@ const port = process.env.PORT || 3000;
 
 const server = app.listen(port, () => console.log(`Server ready on http://${hostname}:${port}/`))
 
-app.set('view engine', 'ejs');
+app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + '/views')
 app.use(express.static(__dirname + "/public"));
 

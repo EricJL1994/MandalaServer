@@ -1,4 +1,5 @@
 const express = require('express')
+require('dotenv').config()
 const fs = require('fs') // fs.readFileSync lee de forma síncrona, fs.readFile lee de forma asíncrona
 const lowDB = require('lowdb')
 
@@ -16,14 +17,13 @@ const port = process.env.PORT || 3000;
 
 const server = app.listen(port, () => console.log(`Server ready on http://${hostname}:${port}/`))
 
-app.set('view engine', 'ejs');
+app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + '/views')
 app.use(express.static(__dirname + "/public"));
 
 // <>------------------------------------------<>------------------------------------------<>
 
 app.get('/', (req, res) => {
-  //res.send('<a href="/showproblems">All Problems</a>')
   res.render("index")
 })
 
@@ -108,7 +108,7 @@ app.post('/addproblems', (req, res) => {
   const newProblemsData = JSON.parse(req.query.problems)
   const problemsType = req.query.type
   const databaseSize = database.get(problemsType).size().value()
-  const failed = false;
+  var edited = false;
   newProblemsData.map(problemString => {
     const problem = JSON.parse(problemString)
     const problemExists = database.get(problemsType).find({ dificultyName: problem.dificultyName, number: problem.number }).value()
@@ -119,15 +119,23 @@ app.post('/addproblems', (req, res) => {
   
       logger('SUCCESS', 'Problema creado')
     } else {
-      failed = true
+      edited = true
+      database.get(problemsType).find(problemExists).assign({
+        "dateValue": problem.dateValue,
+        holdColor: problem.holdColor,
+        "pending": problem.pending,
+        "intersectionsName": problem.intersectionsName,
+        "wall": problem.wall
+      }).write();
+      //database.get(problemType).update(problem).write();
       logger('ERROR', 'El problema ya existe en la aplicación')
     }
   })
 
-  if (!failed) {
+  if (!edited) {
     res.status(200).send('Se han insertado los problemas')
   } else {
-    res.status(400).send(`${database.get(problemsType).size().value() - newProblemsData.length - databaseSize} problemas han fallado`)
+    res.status(200).send(`${database.get(problemsType).size().value() - newProblemsData.length - databaseSize} problemas editados`)
   }
 })
 

@@ -4,10 +4,10 @@
       "dificultyName": "Green",
       "number": 1,
       "dateValue": 637545600000000000,
-      "holdColor": "Amarillo",
+      "holdColor": "Verde",
       "pending": false,
       "intersectionsName": [],
-      "wall": 4
+      "wall": 0
     },
     {
       "dificultyName": "Green",

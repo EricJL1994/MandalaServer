@@ -1,0 +1,7 @@
+exports.spanish = {
+  
+}
+
+exports.english = {
+
+}

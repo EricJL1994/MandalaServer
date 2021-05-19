@@ -17,9 +17,17 @@ exports.problem_show = function(req, res) {
 
   console.log('Request petition:')
   console.log(req.query)
-  const result = database.get(problemTypesToJSONDatabase['Boulder'], problemTypesToJSONDatabase['Traverse']).value().sort((a,b)=> a.dificultyName == b.dificultyName ? (a.number > b.number ? 1:-1) : a.dificultyName > b.dificultyName ? 1 : -1)
-  result.forEach(element => element.date = formatDate(convertTicksToDate(element.dateValue)))
-  res.render("show_problems", {arrayBloques: result })
+
+  const resultBoulders = database.get(problemTypesToJSONDatabase['Boulder']).sortBy(['dificultyName', 'number']).value().map(boulder => {
+    return {...boulder, date: formatDate(convertTicksToDate(boulder.dateValue))}
+  })
+  
+  const resultTraverses = database.get(problemTypesToJSONDatabase['Traverse']).sortBy(['dificultyName', 'number']).value().map(traverse => {
+    return {...traverse, date: formatDate(convertTicksToDate(traverse.dateValue))}
+  })
+
+  res.render("show_problems", {arrayBoulders: resultBoulders,  arrayTraverses: resultTraverses})
+
   /*const result = database.get(
     problemTypesToJSONDatabase['Boulder'], problemTypesToJSONDatabase['Traverse']).value().map(
       element => `${element.dificultyName}_${element.number} - ${formatDate(convertTicksToDate(element.dateValue))}`)
@@ -35,7 +43,7 @@ exports.problem_show = function(req, res) {
 }
 
 exports.problem_detail = function(req, res) {
-  res.render('problemDetail', {message: 'Prueba'});
+  res.render('problem_detail', {message: 'Prueba'});
 }
 
 exports.problem_get = function(req, res) {

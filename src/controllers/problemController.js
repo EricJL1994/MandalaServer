@@ -90,7 +90,7 @@ exports.problem_add_multiple = function(req, res) {
   const newProblemsData = JSON.parse(req.query.problems)
   const problemsType = req.query.type
   const databaseSize = database.get(problemsType).size().value()
-  const failed = false
+  var edited = false
   newProblemsData.map(problemString => {
     const problem = JSON.parse(problemString)
     const problemExists = database.get(problemsType).find({ dificultyName: problem.dificultyName, number: problem.number }).value()
@@ -101,15 +101,22 @@ exports.problem_add_multiple = function(req, res) {
   
       logger('SUCCESS', 'Problema creado')
     } else {
-      failed = true
-      logger('ERROR', 'El problema ya existe en la aplicación')
+      edited = true
+      database.get(problemsType).find(problemExists).assign({
+        "dateValue": problem.dateValue,
+        "holdColor": problem.holdColor,
+        "pending": problem.pending,
+        "intersectionsName": problem.intersectionsName,
+        "wall": problem.wall
+      }).write();
+      logger('SUCCESS', 'Problema editado')
     }
   })
 
-  if (!failed) {
+  if (!edited) {
     res.status(200).send('Se han insertado los problemas')
   } else {
-    res.status(400).send(`${database.get(problemsType).size().value() - newProblemsData.length - databaseSize} problemas han fallado`)
+    res.status(200).send(`${newProblemsData.length - (database.get(problemsType).size().value() - databaseSize)} problemas editados`)
   }
 }
 

@@ -9,6 +9,12 @@ const { problemTypesToJSONDatabase } = require('./constants')
 
 const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
+const mongoose = require('mongoose');
+
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@mandalaclimb.g7s5c.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(()=> console.log('Conectado a mongodb')) 
+  .catch(e => console.log('Error de conexión', e))
 
 const app = express()
 

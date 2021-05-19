@@ -1,4 +1,5 @@
 const express = require('express')
+<<<<<<< HEAD
 require('dotenv').config()
 const fs = require('fs') // fs.readFileSync lee de forma síncrona, fs.readFile lee de forma asíncrona
 const lowDB = require('lowdb')
@@ -15,17 +16,31 @@ const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@mandalacl
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(()=> console.log('Conectado a mongodb')) 
   .catch(e => console.log('Error de conexión', e))
+=======
+const { problem_show } = require('./controllers/problemController')
+
+var boulders = require('./routes/boulders')
+var traverses = require('./routes/traverses')
+>>>>>>> e18330fd44626cf7081db06bc19bed2bbb0f86ff
 
 const app = express()
 
-const hostname = 'localhost'; //npm run start:dev
-const port = process.env.PORT || 3000;
+const hostname = 'localhost' //npm run start:dev
+const port = process.env.PORT || 3000
 
 const server = app.listen(port, () => console.log(`Server ready on http://${hostname}:${port}/`))
 
+<<<<<<< HEAD
 app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + '/views')
 app.use(express.static(__dirname + "/public"));
+=======
+// app.set('view engine', 'ejs')
+app.set('view engine', 'pug')
+// app.set('views', __dirname + '/views')
+app.set('views', __dirname + '/views_pug')
+app.use(express.static(__dirname + "/public"))
+>>>>>>> e18330fd44626cf7081db06bc19bed2bbb0f86ff
 
 // <>------------------------------------------<>------------------------------------------<>
 
@@ -39,6 +54,7 @@ server.close(() => {
   })
 })
 
+<<<<<<< HEAD
 // <>------------------------------------------<>------------------------------------------<>
 
 app.get('/getproblems', (req, res) => {
@@ -144,28 +160,11 @@ app.post('/addproblems', (req, res) => {
     res.status(200).send(`${database.get(problemsType).size().value() - newProblemsData.length - databaseSize} problemas editados`)
   }
 })
+=======
+app.use('/showproblems', problem_show)
+
+app.use('/boulders', boulders)
+app.use('/traverses', traverses)
+>>>>>>> e18330fd44626cf7081db06bc19bed2bbb0f86ff
 
 // <>------------------------------------------<>------------------------------------------<>
-
-app.post('/updateproblem', (req, res) => {
-  const updateProblemData = JSON.parse(req.query.problem)
-  const problemType = req.query.type
-
-  const problemExists = database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).value()
-  console.log(problemExists)
-
-  if (problemExists) {
-    console.log(updateProblemData)
-
-    database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).assign(updateProblemData)
-
-    logger('SUCCESS', 'Problema actualizado')
-    res.status(200).send('Se ha actualizado el problema')
-  } else {
-    // Revisar código error
-    logger('ERROR', 'El problema no se ha actualizado')
-    res.status(400).send('El problema no ha podido actualizarse porque no existe')
-    // Inserto el problema si no se encuentra?
-  }
-
-})

@@ -298,5 +298,15 @@
       "wall": 2
     }
   ],
-  "traverses": []
+  "traverses": [
+    {
+      "dificultyName": "Orange",
+      "number": 5,
+      "dateValue": 637533504000000000,
+      "holdColor": "Blanco",
+      "pending": false,
+      "intersectionsName": [],
+      "wall": 2
+    }
+  ]
 }

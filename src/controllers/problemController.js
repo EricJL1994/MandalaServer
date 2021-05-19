@@ -1,6 +1,7 @@
 const lowDB = require('lowdb')
-
 const FileSync = require('lowdb/adapters/FileSync')
+
+const Boulder = require('../../models/boulder')
 const { logger, convertTicksToDate, formatDate, htmlEnclose } = require('../commonFunctions')
 const { problemTypesToJSONDatabase } = require('../constants')
 
@@ -11,22 +12,30 @@ const database = lowDB(adapter)
 // var index = require('../views_pug/index.pug')
 // var problemDetail = require('../views_pug/boulder/boulder.pug')
 
-exports.problem_show = function(req, res) {
+exports.problem_show = async function(req, res) {
   // req.query --------------- www.url.com/?color=verde&var2=loquesea2
   // req.params -------------- www.url.com/verde/loquesea2
 
   console.log('Request petition:')
   console.log(req.query)
 
-  const resultBoulders = database.get(problemTypesToJSONDatabase['Boulder']).sortBy(['dificultyName', 'number']).value().map(boulder => {
-    return {...boulder, date: formatDate(convertTicksToDate(boulder.dateValue))}
-  })
+  const resultTest = await Boulder.find().sort({dificultyName: 'asc', number: 'asc'})
+                      .then(result => result.map(boulder => {
+                          return {...boulder.toObject(), date: formatDate(convertTicksToDate(boulder.dateValue))}
+                        })
+                      ).catch(err => console.log(err))
+
+  console.log(resultTest)
+
+  // const resultBoulders = database.get(problemTypesToJSONDatabase['Boulder']).sortBy(['dificultyName', 'number']).value().map(boulder => {
+  //   return {...boulder, date: formatDate(convertTicksToDate(boulder.dateValue))}
+  // })
   
   const resultTraverses = database.get(problemTypesToJSONDatabase['Traverse']).sortBy(['dificultyName', 'number']).value().map(traverse => {
     return {...traverse, date: formatDate(convertTicksToDate(traverse.dateValue))}
   })
 
-  res.render("show_problems", {arrayBoulders: resultBoulders,  arrayTraverses: resultTraverses})
+  res.render("show_problems", {arrayBoulders: resultTest,  arrayTraverses: resultTraverses})
 
   /*const result = database.get(
     problemTypesToJSONDatabase['Boulder'], problemTypesToJSONDatabase['Traverse']).value().map(

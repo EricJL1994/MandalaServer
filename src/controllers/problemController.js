@@ -2,7 +2,7 @@ const lowDB = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 
 const Boulder = require('../../models/boulder')
-const { logger, convertTicksToDate, formatDate, htmlEnclose } = require('../commonFunctions')
+const { logger, convertTicksToDate, formatDate, convertDateToTicks} = require('../commonFunctions')
 const { problemTypesToJSONDatabase } = require('../constants')
 
 // ESTA COSA VA CON RUTA RELATIVA DESDE EL PATH QUE LANZA EL PROYECTO (la ruta del package.json)
@@ -80,12 +80,16 @@ exports.problem_add = function(req, res) {
   }
 }
 
-exports.test = async function(req, res){
-  console.log("TEST")
-  const mongoExists = await Boulder.findOne({dificultyName: "Green", number: 1}).exec()
+exports.last_problems = async function(req, res){
+  var d = new Date()
+  d.setDate(d.getDate() - 15)
 
-  console.log(mongoExists);
-  res.send();
+  const mongoBoulders = await Boulder.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc', dificultyName: 'asc', number: 'asc'})
+  .then(result => result.map(boulder => {
+      return {...boulder.toObject(), date: formatDate(convertTicksToDate(boulder.dateValue))}
+    })
+  ).catch(err => console.log(err))
+  res.render("last_problems", {arrayProblems: mongoBoulders})
 }
 
 exports.problem_add_multiple = async function(req, res) {

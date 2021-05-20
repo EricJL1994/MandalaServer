@@ -66,12 +66,16 @@ function convertTicksToDate(ticks) {
   return new Date(ticksToMicrotime - epochMicrotimeDiff);
 }
 
+function convertDateToTicks(date){
+  var ticksPerMilisecond = 10000
+
+  var epochMicrotimeDiff = Math.abs(new Date(0, 0, 1).setFullYear(1));
+
+  return (epochMicrotimeDiff + date.getTime()) * ticksPerMilisecond
+}
+
 function formatDate(date) {
   return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`
 }
 
-function htmlEnclose(html, enclosure){
-  return `<${enclosure}>${html}</${enclosure}>`;
-}
-
-module.exports = { isEmpty, isBlank, logger, convertTicksToDate, formatDate, objectKeyValueFlip, htmlEnclose }
+module.exports = { isEmpty, isBlank, logger, convertTicksToDate, convertDateToTicks, formatDate, objectKeyValueFlip }

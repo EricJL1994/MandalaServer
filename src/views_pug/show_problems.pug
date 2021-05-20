@@ -1,34 +1,8 @@
-doctype html
-html(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(http-equiv='X-UA-Compatible' content='IE=edge')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title Bloques
-    style
-      include style/style.css
-      include style/bootstrap.min.css
-  body
-    table.table(style='max-width: 600px;')
-      tbody
-        tr
-          th(scope='col') Dificultad
-          th(scope='col') Número
-          th(scope='col') Fecha
-        each problem in arrayBoulders
-          tr(onclick="window.location='/boulders/details'")
-            td= problem.dificultyName
-            td= problem.number
-            td= problem.date
-    br
-    table.table(style='max-width: 600px;')
-      tbody
-        tr
-          th(scope='col') Dificultad
-          th(scope='col') Número
-          th(scope='col') Fecha
-        each problem in arrayTraverses
-          tr(onclick="window.location='/traverses/details'")
-            td= problem.dificultyName
-            td= problem.number
-            td= problem.date
+- var tittleText = 'Problemas'
+include templates/header.pug
+body
+  - var arrayProblems = arrayBoulders
+  include templates/problems_table
+  br
+  - var arrayProblems = arrayTraverses 
+  include templates/problems_table

@@ -1,0 +1,23 @@
+nav.navbar.navbar-expand-lg.navbar-light.bg-light
+  a.navbar-brand(href='/') Mandala Climb
+  button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
+    span.navbar-toggler-icon
+  #navbarSupportedContent.collapse.navbar-collapse
+    ul.navbar-nav.mr-auto
+      li.nav-item.dropdown
+        a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+          | Bloques
+        .dropdown-menu(aria-labelledby='navbarDropdown')
+          a.dropdown-item(href='/showproblems') Todos
+          .dropdown-divider
+          a.dropdown-item(href='/lastproblems') Últimos
+      li.nav-item-disabled.dropdown
+        a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+          | Travesías
+        .dropdown-menu(aria-labelledby='navbarDropdown')
+          a.dropdown-item(href='#') Todos
+          .dropdown-divider
+          a.dropdown-item(href='#') Últimos
+    form.form-inline.my-2.my-lg-0
+      input.form-control.mr-sm-2(type='search' placeholder='Search' aria-label='Search')
+      button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search

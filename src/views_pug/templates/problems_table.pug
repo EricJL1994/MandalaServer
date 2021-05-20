@@ -1,0 +1,11 @@
+table.table(style='max-width: 600px;')
+  tbody
+    tr
+      th(scope='col') Dificultad
+      th(scope='col') Número
+      th(scope='col') Fecha
+    each problem in arrayProblems
+      tr(onclick="window.location='/boulders/details'")
+        td= problem.dificultyName
+        td= problem.number
+        td= problem.date

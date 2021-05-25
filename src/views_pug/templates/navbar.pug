@@ -8,16 +8,16 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
         a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
           | Bloques
         .dropdown-menu(aria-labelledby='navbarDropdown')
-          a.dropdown-item(href='/showproblems') Todos
+          a.dropdown-item(href='/boulders/') Todos
           .dropdown-divider
-          a.dropdown-item(href='/lastproblems/boulders') Últimos
-      li.nav-item-disabled.dropdown
+          a.dropdown-item(href='/boulders/lastproblems') Últimos
+      li.nav-item.dropdown
         a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
           | Travesías
         .dropdown-menu(aria-labelledby='navbarDropdown')
-          a.dropdown-item(href='#') Todos
+          a.dropdown-item(href='/traverses/') Todos
           .dropdown-divider
-          a.dropdown-item(href='#') Últimos
+          a.dropdown-item(href='/traverses/lastproblems') Últimos
     form.form-inline.my-2.my-lg-0
       input.form-control.mr-sm-2(type='search' placeholder='Search' aria-label='Search')
       button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search

@@ -1,4 +1,16 @@
 - var tittleText = 'Detalles'
 include templates/header.pug
-body 
-  h1= message
+body
+  table.table(style='max-width: 600px;').table-striped
+    tbody
+      tr
+        th(scope='col') Número
+        th(scope='col') Fecha
+        th(scope='col') Pared
+        th(scope='col') Presas
+      tr
+        td
+          div(style={'background-color': problemDetail.color, 'text-align': 'center', 'width': '60%'})= problemDetail.number
+        td= problemDetail.date
+        td= problemDetail.wallName
+        td= problemDetail.holdColor

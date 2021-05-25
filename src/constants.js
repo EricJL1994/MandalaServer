@@ -37,12 +37,12 @@ const problemTypesToJSONDatabase = {
 }
 
 const difficultyColor = {
+  Pink: '#FF96FF',
   Green_ORIGINAL: '#87FF4E',
   Green: '#86d562',
   Orange: '#FFA84E',
-  Pink: '#FF96FF',
-  Red: '#FF524E',
-  Yellow: '#FFE14E'
+  Yellow: '#FFE14E',
+  Red: '#FF524E'
 }
 
 const walls = {

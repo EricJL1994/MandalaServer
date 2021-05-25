@@ -1,3 +1,8 @@
 tr:hover {
   background-color: rgb(226, 226, 226) !important
 }
+
+.theadStyle {
+  background-color: rgb(78, 78, 78) !important;
+  color: rgb(231, 230, 230)
+}

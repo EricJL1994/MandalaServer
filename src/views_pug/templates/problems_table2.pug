@@ -1,13 +1,19 @@
-table.table(style='max-width: 600px;')
-  tbody
-    tr
-      th(scope='col') Número
-      th(scope='col') Fecha
-      th(scope='col') Pared
-      th(scope='col') Presas
-    each problem in arrayProblems
-      tr(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
-        td(style={'background-color': problem.color, 'text-align': 'center','width': '1em'})= problem.number
-        td= problem.date
-        td= problem.wallName
-        td= problem.holdColor
+div.input.w-75.my-2.my-lg-0
+  input.form-control.mr-sm-2(type="text",id="problemSearch" name="title", placeholder="Buscar...", onkeyup="search(this.value)")
+
+  table.table.table-striped.my-3.my-lg-0(id="problemTable")
+    thead.theadStyle
+      tr
+        th(scope='col') Número
+        th(scope='col') Fecha
+        th(scope='col') Pared
+        th(scope='col') Presas
+    tbody
+      each problem in arrayProblems
+        tr(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
+          td(style={'display': 'none'})= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
+          td
+            div(style={'background-color': problem.color, 'text-align': 'center', 'width': '60%'})= problem.number
+          td= problem.date
+          td= problem.wallName
+          td= problem.holdColor

@@ -15,22 +15,15 @@ const database = lowDB(adapter)
 // var problemDetail = require('../views_pug/boulder/boulder.pug')
 
 exports.problem_show = async function(req, res) {
-  // req.query --------------- www.url.com/?color=verde&var2=loquesea2
-  // req.params -------------- www.url.com/verde/loquesea2
-
   console.log('Request petition:')
   console.log(req.query)
   
-  const resultTraverses = database.get(problemTypesToJSONDatabase['Traverse']).sortBy(['dificultyName', 'number']).value().map(traverse => {
-    return {...traverse, date: formatDate(convertTicksToDate(traverse.dateValue))}
-  })
-
-  // res.render("show_problems", {arrayBoulders: await fetch_problems(req, res),  arrayTraverses: resultTraverses})
-  res.render("show_problems", {tables: [await fetch_problems(req, res), resultTraverses]})
+  res.render('show_problems', {tables: [await fetch_problems(req, res)]})
 }
 
-exports.problem_detail = function(req, res) {
-  res.render('problem_detail', {message: 'Prueba'});
+exports.problem_detail = async function(req, res) {
+  const problemDetailData = await fetch_problems(req, res)
+  res.render('problem_detail', {problemDetail: problemDetailData[0]});
 }
 
 exports.problem_get = function(req, res) {
@@ -73,38 +66,9 @@ exports.problem_add = function(req, res) {
   }
 }
 
-exports.last_problems = async function(req, res){
-  req.query.lastDays = req.query.lastDays || 15
-  // res.render("last_problems", {tables: await fetch_problems(req, res)})
-  res.render("show_problems", {tables: [await fetch_problems(req, res)]})
-}
-
-/***************************************************** */
-async function fetch_problems(req, res){
-  
-  var mongoProblems
-  switch (req.params.type){
-    case 'traverses':
-      mongoProblems = Traverse.find()
-      break
-      case 'boulders':
-        mongoProblems = Boulder.find()
-        break
-    default:
-      mongoProblems = Boulder.find()
-  }
-  
-  if(req.query.lastDays) {
-    var d = new Date();
-    d.setDate(d.getDate() - req.query.lastDays)
-    mongoProblems.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc'})
-  }
-  mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
-
-  return mongoProblems.then(result => result.map(problem => {
-    return Object.assign({}, {...problem.toObject(), date: formatDate(convertTicksToDate(problem.dateValue)), color: difficultyColor[problem.dificultyName], wallName: walls[problem.wall]})
-  })
-  ).catch(err => console.log(err))
+exports.last_problems = async function(req, res) {
+  // res.render('last_problems', {tables: await fetch_problems(req, res)})
+  res.render('show_problems', {tables: [await fetch_problems(req, res, req.query.lastDays || 15)]})
 }
 
 exports.problem_add_multiple = async function(req, res) {
@@ -163,4 +127,36 @@ exports.problem_update = function(req, res) {
 
 exports.problem_delete = function(req, res) {
   res.send();
+}
+
+/*******************************************************/
+
+async function fetch_problems(req, res, lastDays, name) {
+  
+  var mongoProblems
+  switch (req.baseUrl) {
+    case '/traverses':
+      mongoProblems = Traverse.find()
+      break
+    case '/boulders':
+      mongoProblems = Boulder.find()
+      break
+    default:
+      mongoProblems = Boulder.find()
+  }
+
+  if(req.query.difficultyName) mongoProblems.find({dificultyName: req.query.difficultyName})
+  
+  if(req.query.number) mongoProblems.find({number: req.query.number})
+
+  if(lastDays) {
+    var d = new Date();
+    d.setDate(d.getDate() - lastDays)
+    mongoProblems.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc'})
+  }
+  mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
+
+  return mongoProblems.then(result => result.map(problem => {
+    return Object.assign({}, {...problem.toObject(), date: formatDate(convertTicksToDate(problem.dateValue)), color: difficultyColor[problem.dificultyName], wallName: walls[problem.wall]})
+  })).catch(err => console.log(err))
 }

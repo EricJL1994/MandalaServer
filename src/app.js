@@ -21,12 +21,12 @@ const server = app.listen(port, () => console.log(`Server ready on http://${host
 
 app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + `/views_${process.env.FRONTEND}`)
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + '/public'));
 
 // <>------------------------------------------<>------------------------------------------<>
 
 app.get('/', (req, res) => {
-  res.render("index")
+  res.render('index')
 })
 
 process.on('SIGTERM', () => {
@@ -35,11 +35,9 @@ server.close(() => {
   })
 })
 
-app.use('/showproblems', problem_show)
-app.use('/addproblems', problem_add_multiple)
-app.use('/lastproblems/:type', last_problems)
-app.use('/lastproblems/', last_problems)
 app.use('/boulders', boulders)
 app.use('/traverses', traverses)
+
+app.use('/addproblems', problem_add_multiple)
 
 // <>------------------------------------------<>------------------------------------------<>

@@ -11,9 +11,12 @@ app.set('view engine', 'pug')
 app.set('views', __dirname + '/views_pug')
 */
 
+router.get('/', problemController.problem_show);
+router.get('/lastproblems', problemController.last_problems);
+
 router.get('/details', problemController.problem_detail);
 
-router.post('/xxx', problemController.problem_get);
+router.get('/xxx', problemController.problem_get);
 
 router.post('/xxx', problemController.problem_add);
 

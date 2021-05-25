@@ -37,7 +37,8 @@ server.close(() => {
 
 app.use('/showproblems', problem_show)
 app.use('/addproblems', problem_add_multiple)
-app.use('/lastproblems', last_problems)
+app.use('/lastproblems/:type', last_problems)
+app.use('/lastproblems/', last_problems)
 app.use('/boulders', boulders)
 app.use('/traverses', traverses)
 

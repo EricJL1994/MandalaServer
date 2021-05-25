@@ -1,9 +1,11 @@
 const lowDB = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
+const { rawListeners } = require('../../models/boulder')
 
 const Boulder = require('../../models/boulder')
+const Traverse = require('../../models/traverse')
 const { logger, convertTicksToDate, formatDate, convertDateToTicks} = require('../commonFunctions')
-const { problemTypesToJSONDatabase } = require('../constants')
+const { problemTypesToJSONDatabase, difficultyColor, walls } = require('../constants')
 
 // ESTA COSA VA CON RUTA RELATIVA DESDE EL PATH QUE LANZA EL PROYECTO (la ruta del package.json)
 const adapter = new FileSync('./src/storageData/database.json')
@@ -18,22 +20,13 @@ exports.problem_show = async function(req, res) {
 
   console.log('Request petition:')
   console.log(req.query)
-
-  const mongoBoulders = await Boulder.find().sort({dificultyName: 'asc', number: 'asc'})
-                      .then(result => result.map(boulder => {
-                          return {...boulder.toObject(), date: formatDate(convertTicksToDate(boulder.dateValue))}
-                        })
-                      ).catch(err => console.log(err))
-
-  // const resultBoulders = database.get(problemTypesToJSONDatabase['Boulder']).sortBy(['dificultyName', 'number']).value().map(boulder => {
-  //   return {...boulder, date: formatDate(convertTicksToDate(boulder.dateValue))}
-  // })
   
   const resultTraverses = database.get(problemTypesToJSONDatabase['Traverse']).sortBy(['dificultyName', 'number']).value().map(traverse => {
     return {...traverse, date: formatDate(convertTicksToDate(traverse.dateValue))}
   })
 
-  res.render("show_problems", {arrayBoulders: mongoBoulders,  arrayTraverses: resultTraverses})
+  // res.render("show_problems", {arrayBoulders: await fetch_problems(req, res),  arrayTraverses: resultTraverses})
+  res.render("show_problems", {tables: [await fetch_problems(req, res), resultTraverses]})
 }
 
 exports.problem_detail = function(req, res) {
@@ -66,35 +59,57 @@ exports.problem_add = function(req, res) {
   const problemType = req.query.type
 
   const problemExists = database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).value()
-  console.log(problemExists)
+  //console.log(problemExists)
 
   if (!problemExists) {
-    console.log(newProblemData)
+    //console.log(newProblemData)
     database.get(problemType).push(newProblemData).write()
 
-    logger('SUCCESS', 'Problema creado')
+    //logger('SUCCESS', 'Problema creado')
     res.status(200).send('Se ha insertado el problema')
   } else {
-    logger('ERROR', 'El problema ya existe en la aplicación')
+    //logger('ERROR', 'El problema ya existe en la aplicación')
     res.status(400).send('El problema ya existe en la aplicación')
   }
 }
 
 exports.last_problems = async function(req, res){
-  var d = new Date()
-  d.setDate(d.getDate() - 15)
+  req.query.lastDays = req.query.lastDays || 15
+  // res.render("last_problems", {tables: await fetch_problems(req, res)})
+  res.render("show_problems", {tables: [await fetch_problems(req, res)]})
+}
 
-  const mongoBoulders = await Boulder.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc', dificultyName: 'asc', number: 'asc'})
-  .then(result => result.map(boulder => {
-      return {...boulder.toObject(), date: formatDate(convertTicksToDate(boulder.dateValue))}
-    })
+/***************************************************** */
+async function fetch_problems(req, res){
+  
+  var mongoProblems
+  switch (req.params.type){
+    case 'traverses':
+      mongoProblems = Traverse.find()
+      break
+      case 'boulders':
+        mongoProblems = Boulder.find()
+        break
+    default:
+      mongoProblems = Boulder.find()
+  }
+  
+  if(req.query.lastDays) {
+    var d = new Date();
+    d.setDate(d.getDate() - req.query.lastDays)
+    mongoProblems.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc'})
+  }
+  mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
+
+  return mongoProblems.then(result => result.map(problem => {
+    return Object.assign({}, {...problem.toObject(), date: formatDate(convertTicksToDate(problem.dateValue)), color: difficultyColor[problem.dificultyName], wallName: walls[problem.wall]})
+  })
   ).catch(err => console.log(err))
-  res.render("last_problems", {arrayProblems: mongoBoulders})
 }
 
 exports.problem_add_multiple = async function(req, res) {
   const newProblemsData = JSON.parse(req.query.problems)
-  const problemsType = req.query.type
+  const problemsType = problemTypesToJSONDatabase[req.query.type]
   const databaseSize = database.get(problemsType).size().value()
   var edited = false
 
@@ -106,20 +121,12 @@ exports.problem_add_multiple = async function(req, res) {
     const mongoExists = await Boulder.findOne({dificultyName: problem.dificultyName, number: problem.number}).exec()
 
     if (!mongoExists) {
-      console.log(problem)
+      //console.log(problem)
       Boulder.create(problem)
-      //database.get(problemsType).push(problem).write()
   
       logger('SUCCESS', 'Problema creado')
     } else {
       edited = true
-      /*database.get(problemsType).find(problemExists).assign({
-        "dateValue": problem.dateValue,
-        "holdColor": problem.holdColor,
-        "pending": problem.pending,
-        "intersectionsName": problem.intersectionsName,
-        "wall": problem.wall
-      }).write();*/
       Boulder.findOneAndReplace({dificultyName: problem.dificultyName, number: problem.number}, problem).exec()
       logger('SUCCESS', 'Problema editado')
     }

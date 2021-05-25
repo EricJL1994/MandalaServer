@@ -1,8 +1,6 @@
 - var tittleText = 'Problemas'
 include templates/header.pug
 body
-  - var arrayProblems = arrayBoulders
-  include templates/problems_table
-  br
-  - var arrayProblems = arrayTraverses 
-  include templates/problems_table
+  each arrayProblems in tables
+    include templates/problems_table2
+    br

@@ -1,0 +1,13 @@
+table.table(style='max-width: 600px;')
+  tbody
+    tr
+      th(scope='col') Número
+      th(scope='col') Fecha
+      th(scope='col') Pared
+      th(scope='col') Presas
+    each problem in arrayProblems
+      tr(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
+        td(style={'background-color': problem.color, 'text-align': 'center','width': '1em'})= problem.number
+        td= problem.date
+        td= problem.wallName
+        td= problem.holdColor

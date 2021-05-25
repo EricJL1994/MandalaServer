@@ -36,4 +36,23 @@ const problemTypesToJSONDatabase = {
   Traverse: 'traverses'
 }
 
-module.exports = { colours, problemTypesToJSONDatabase }
+const difficultyColor = {
+  Green_ORIGINAL: '#87FF4E',
+  Green: '#86d562',
+  Orange: '#FFA84E',
+  Pink: '#FF96FF',
+  Red: '#FF524E',
+  Yellow: '#FFE14E'
+}
+
+const walls = {
+  0: 'Placa',
+  1: 'Slab',
+  2: 'Esquina',
+  3: 'Tablón',
+  4: 'Puerta',
+  5: 'Desplome',
+  6: 'Escondido',
+}
+
+module.exports = { colours, problemTypesToJSONDatabase, difficultyColor, walls }

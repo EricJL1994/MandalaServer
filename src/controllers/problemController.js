@@ -11,9 +11,6 @@ const { problemTypesToJSONDatabase, difficultyColor, walls } = require('../const
 const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
-// var index = require('../views_pug/index.pug')
-// var problemDetail = require('../views_pug/boulder/boulder.pug')
-
 exports.problem_show = async function(req, res) {
   console.log('Request petition:')
   console.log(req.query)
@@ -26,7 +23,7 @@ exports.problem_detail = async function(req, res) {
   res.render('problem_detail', {problemDetail: problemDetailData[0]});
 }
 
-exports.problem_get = function(req, res) {
+exports.problem_get = function(req, res) { //SIN USAR
   // req.query --------------- www.url.com/?color=verde&var2=loquesea2
   // req.params -------------- www.url.com/verde/loquesea2
 
@@ -47,7 +44,7 @@ exports.problem_get = function(req, res) {
   else res.status(400).send('No se ha indicado tipo de problema')
 }
 
-exports.problem_add = function(req, res) {
+exports.problem_add = function(req, res) { //SIN USAR
   const newProblemData = JSON.parse(req.query.problem)
   const problemType = req.query.type
 
@@ -67,7 +64,6 @@ exports.problem_add = function(req, res) {
 }
 
 exports.last_problems = async function(req, res) {
-  // res.render('last_problems', {tables: await fetch_problems(req, res)})
   res.render('show_problems', {tables: [await fetch_problems(req, res, req.query.lastDays || 15)]})
 }
 
@@ -77,24 +73,20 @@ exports.problem_add_multiple = async function(req, res) {
   const databaseSize = database.get(problemsType).size().value()
   var edited = false
 
-  newProblemsData.map(async problemString=> {
+  //Devuelve un array de promesas en .map, con Promise.all podemos hacer el await, ahora responde correctamente con el status debido
+  await Promise.all(newProblemsData.map(async problemString=> {
     const problem = JSON.parse(problemString)
-    //const problemExists = database.get(problemsType).find({ dificultyName: problem.dificultyName, number: problem.number }).value()
-    //const mongoExists = Boulder.findOne({dificultyName: problem.dificultyName, number: problem.number}).exec()
-
     const mongoExists = await Boulder.findOne({dificultyName: problem.dificultyName, number: problem.number}).exec()
 
     if (!mongoExists) {
-      //console.log(problem)
       Boulder.create(problem)
-  
       logger('SUCCESS', 'Problema creado')
     } else {
       edited = true
       Boulder.findOneAndReplace({dificultyName: problem.dificultyName, number: problem.number}, problem).exec()
       logger('SUCCESS', 'Problema editado')
     }
-  })
+  }))
 
   if (!edited) {
     res.status(200).send('Se han insertado los problemas')
@@ -103,7 +95,7 @@ exports.problem_add_multiple = async function(req, res) {
   }
 }
 
-exports.problem_update = function(req, res) {
+exports.problem_update = function(req, res) { //SIN USAR
   const updateProblemData = JSON.parse(req.query.problem)
   const problemType = req.query.type
 
@@ -125,13 +117,13 @@ exports.problem_update = function(req, res) {
   }
 }
 
-exports.problem_delete = function(req, res) {
+exports.problem_delete = function(req, res) { //SIN USAR
   res.send();
 }
 
 /*******************************************************/
 
-async function fetch_problems(req, res, lastDays, name) {
+async function fetch_problems(req, res, lastDays) {
   
   var mongoProblems
   switch (req.baseUrl) {

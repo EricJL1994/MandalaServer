@@ -1,0 +1,15 @@
+div.input.container.my-2
+  div.row
+    div.col
+        button#dropdownMenuButton.btn.btn-secondary.dropdown-toggle(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+          | Dificultad
+        div.dropdown-menu(id='difficultyDropdown' aria-labelledby='dropdownMenuButton')
+          a.dropdown-item(id='NoFilter' href='#' onclick='filter()') No filtar
+          .dropdown-divider
+          a.dropdown-item(id='Pink' href='#' onclick='filter(this.id)') Rosa
+          a.dropdown-item(id='Green' href='#' onclick='filter(this.id)') Verde
+          a.dropdown-item(id='Orange' href='#' onclick='filter(this.id)') Naranja
+          a.dropdown-item(id='Yellow' href='#' onclick='filter(this.id)') Amarillo
+          a.dropdown-item(id='Red' href='#' onclick='filter(this.id)') Rojo
+    div.col.dropdown
+      input.form-control.mr-sm-2(type="text",id="problemSearch" name="title", placeholder="Buscar...", onkeyup="search(this.value)")

@@ -9,15 +9,16 @@ html(lang='es-ES')
       include ../style/style.css
       include ../style/bootstrap.min.css
     //- script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
-    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
+    //- script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
     //- script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
+    //IMPORTANTE Meter todo antes de bootstrap
     script
       include ../scripts/scripts.js
     script
-      include ../scripts/bootstrap.min.js
-    //- script
-    //-   include ../scripts/jquery-3.2.1.slim.min.js
-    script
       include ../scripts/popper.min.js
+    script
+      include ../scripts/jquery-3.2.1.slim.min.js
+    script
+      include ../scripts/bootstrap.min.js
   body
     include navbar.pug

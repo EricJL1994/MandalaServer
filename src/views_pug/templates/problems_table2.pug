@@ -1,6 +1,6 @@
-div.input.w-75.my-2.my-lg-0
-  input.form-control.mr-sm-2(type="text",id="problemSearch" name="title", placeholder="Buscar...", onkeyup="search(this.value)")
+include searchBar.pug
 
+div.container
   table.table.table-striped.my-3.my-lg-0(id="problemTable")
     thead.theadStyle
       tr
@@ -10,7 +10,7 @@ div.input.w-75.my-2.my-lg-0
         th(scope='col') Presas
     tbody
       each problem in arrayProblems
-        tr(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
+        tr.trProblem(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
           td(style={'display': 'none'})= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
           td
             div(style={'background-color': problem.color, 'text-align': 'center', 'width': '60%'})= problem.number

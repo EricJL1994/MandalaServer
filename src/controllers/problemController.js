@@ -64,13 +64,14 @@ exports.problem_add = function(req, res) { //SIN USAR
 }
 
 exports.last_problems = async function(req, res) {
-  res.render('show_problems', {tables: [await fetch_problems(req, res, req.query.lastDays || 15)]})
+  res.render('show_problems', {tables: [await fetch_problems(req, res)], searchTime: (req.query.lastDays || 15)})
+  // res.render('show_problems', {tables: [await fetch_problems(req, res, req.query.lastDays || 15)]})
 }
 
 exports.problem_add_multiple = async function(req, res) {
   const newProblemsData = JSON.parse(req.query.problems)
   const problemsType = problemTypesToJSONDatabase[req.query.type]
-  const databaseSize = database.get(problemsType).size().value()
+  const databaseSize = await Boulder.count().exec()
   var edited = false
 
   //Devuelve un array de promesas en .map, con Promise.all podemos hacer el await, ahora responde correctamente con el status debido
@@ -91,7 +92,7 @@ exports.problem_add_multiple = async function(req, res) {
   if (!edited) {
     res.status(200).send('Se han insertado los problemas')
   } else {
-    res.status(200).send(`${newProblemsData.length - (database.get(problemsType).size().value() - databaseSize)} problemas editados`)
+    res.status(200).send(`${newProblemsData.length - (await Boulder.count().exec() - databaseSize)} problemas editados`)
   }
 }
 

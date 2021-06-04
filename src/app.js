@@ -19,6 +19,22 @@ const port = process.env.PORT || 3000
 
 const server = app.listen(port, () => console.log(`Server ready on http://${hostname}:${port}/`))
 
+/****************************** */
+const session = require('express-session');
+const passport = require("passport");
+
+require('../config/passport')(passport)
+app.use(express.urlencoded({extended : false}));
+//express session
+app.use(session({
+    secret : 'secret',
+    resave : true,
+    saveUninitialized : true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+/****************************** */
+
 app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + `/views_${process.env.FRONTEND}`)
 app.use(express.static(__dirname + '/public'));
@@ -34,6 +50,8 @@ server.close(() => {
     console.log('Process terminated')
   })
 })
+var users = require('./routes/users')
+app.use('/users', users);
 
 app.use('/boulders', boulders)
 app.use('/traverses', traverses)

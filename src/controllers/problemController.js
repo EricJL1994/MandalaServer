@@ -12,8 +12,7 @@ const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
 exports.problem_show = async function(req, res) {
-  console.log('Request petition:')
-  console.log(req.query)
+  console.log(req.user)
   
   res.render('show_problems', {tables: [await fetch_problems(req, res)]})
 }

@@ -1,0 +1,12 @@
+- var tittleText = 'Login'
+include templates/header.pug
+
+h1  Login 
+form(action='/users/login' method='POST')
+  div
+    label(for='email') Email
+    input(type='email' name='email' placeholder='Enter Email')
+  div
+    label(for='password') Password
+    input(type='password' name='password' placeholder='Enter Password')
+  button.btn.btn-primary.btn-block(type='submit') Login

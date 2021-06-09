@@ -11,8 +11,23 @@ div.input.container.my-2
           a.dropdown-item(id='Orange' href='#' onclick='filter(this.id)') Naranja
           a.dropdown-item(id='Yellow' href='#' onclick='filter(this.id)') Amarillo
           a.dropdown-item(id='Red' href='#' onclick='filter(this.id)') Rojo
+    div.col.form-check(style = `display: ${user ? '': 'none'}` )
+      input.form-check-input(type = 'checkbox', id= 'showDone' onclick='search()')
+      label.form-check-label(for= 'showDone') Encadenados
     div.col.dropdown
       input.form-control.mr-sm-2(type='image', src='', id='problemSearch' name='title', placeholder='Buscar...', onkeyup='search(this.value)', onerror='start(this)')
-    div.col.dropdown
+    //div.col.dropdown
       input.form-control.mr-sm-2(type='number',id='timeSearch' name='title', placeholder='Buscar...', min=0 max=60 onmouseup='timer(this.value)' onkeyup='timer(this.value)')
       button.d-none#timeValue(value= searchTime || 0)
+    div.col
+      if(searchTime)
+        - var d = new Date()
+        - d.setDate(d.getDate()-searchTime)
+        - date = d.getFullYear().toString() + '-' + (d.getMonth() + 1).toString().padStart(2, 0) + '-' + d.getDate().toString().padStart(2, 0);
+      input#timeValue(type='date', min='2021-02-22', value=(date || '2021-02-22') onchange='timer(this.valueAsDate)')
+    div.col
+      form(method='POST')
+        input.d-none(id='problemsToSubmit' name='problemsToSubmit', value='')
+        //input(type='submit', name='upvote', value='Submit')
+        //input(type='submit', value='aaaa',onclick='submitBoulders()')
+        button(type='submit') Submit

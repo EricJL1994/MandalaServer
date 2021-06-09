@@ -1,5 +1,8 @@
 - var tittleText = 'Register'
+include templates/header.pug
+
 h1 Register
+include templates/messages.pug
 form(action='/users/register' method='POST')
   div
     label(for='name') Name
@@ -13,8 +16,9 @@ form(action='/users/register' method='POST')
   div
     label(for='password2') Confirm Password
     input(type='password' name='password2' placeholder='Confirm Password' value= typeof password2 != 'undefined' ? password2 : '')
-  button.btn.btn-primary.btn-block(type='submit')
-    | Register
+  div
+    button.btn.btn-primary.btn-block(type='submit')
+      | Register
 p
   | Have An Account? 
   a(href='/users/login') Login

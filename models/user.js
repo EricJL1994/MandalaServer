@@ -15,9 +15,6 @@ password :{
 date :{
     type : Date,
     default : Date.now
-} ,
-problems :{
-    type : [mongoose.Schema.Types.ObjectID]
 }
 });
 const User= mongoose.model('User',UserSchema);

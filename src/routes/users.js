@@ -48,9 +48,8 @@ router.post("/register", (req, res) => {
   } else {
     //validation passed
     User.findOne({ email: email }).exec((err, user) => {
-      console.log(user);
       if (user) {
-        errors.push({ msg: "email already registered" });
+        errors.push({ msg: "Email already registered" });
         res.render("register", { errors, name, email, password, password2 });
       } else {
         const newUser = new User({
@@ -69,8 +68,7 @@ router.post("/register", (req, res) => {
             newUser
               .save()
               .then((value) => {
-                console.log(value);
-                //req.flash('success_msg','You have now registered!');
+                req.flash("success_msg", "You have now registered!");
                 res.redirect("/users/login");
               })
               .catch((value) => console.log(value));
@@ -82,8 +80,8 @@ router.post("/register", (req, res) => {
 });
 //logout
 router.get("/logout", (req, res) => {
-    req.logout();
-  //req.flash('success_msg','Now logged out');
+  req.logout();
+  req.flash("success_msg", "Now logged out");
   res.redirect("/users/login");
 });
 module.exports = router;

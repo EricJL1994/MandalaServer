@@ -6,3 +6,15 @@ tr.trProblem:hover {
   background-color: rgb(78, 78, 78) !important;
   color: rgb(231, 230, 230)
 }
+
+tr.trProblemDone {
+  background-color: rgba(200, 255, 150, 0.5);
+}
+
+tr.trProblemMarked{
+  background-color: rgba(255, 255, 150, 0.5);
+}
+
+tr.trProblemUnmarked{
+  background-color: rgba(255, 150, 150, 0.5);
+}

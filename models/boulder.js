@@ -7,8 +7,10 @@ const boulderSchema = new Schema({
     dateValue: Number,
     holdColor: String,
     pending: Boolean,
-    intersectionsName: Array,
-    wall: Number
+    wall: Number,
+    redpoints :{
+        type : [mongoose.Types.ObjectID]
+    }
 })
 
 const Boulder = mongoose.model("Boulder", boulderSchema);

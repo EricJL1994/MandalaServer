@@ -1,2 +1,17 @@
 - var tittleText = 'Inicio'
 include templates/header.pug
+
+div.row.m-3
+    -var img_src = '/images/TRAVESIAS-2.fw.png'
+    -var img_alt = 'Travesías'
+    -var card_tittle = 'Travesías'
+    -var card_description = 'Las travesías comienzan con una mano en cada disco marcado con una x. Utilizando pies libres llegamos hasta la presa marcada con 2 discos.'
+    -var card_link = '/traverses'
+    include templates/card.pug
+
+    -var img_src = '/images/boulders4.fw.png'
+    -var img_alt = 'Bloques'
+    -var card_tittle = 'Bloques'
+    -var card_description = 'Los bloques comienzan con una mano en cada etiqueta. Utilizando sólo las presas del mismo color llegamos hasta la presa marcada con otra etiqueta.'
+    -var card_link = '/boulders'
+    include templates/card.pug

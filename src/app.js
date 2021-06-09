@@ -22,6 +22,7 @@ const server = app.listen(port, () => console.log(`Server ready on http://${host
 /****************************** */
 const session = require('express-session');
 const passport = require("passport");
+const flash = require('connect-flash');
 
 require('../config/passport')(passport)
 app.use(express.urlencoded({extended : false}));
@@ -33,11 +34,22 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
+app.use((req,res,next)=> {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error  = req.flash('error');
+    res.locals.user = req.user;
+    next();
+    })
+    
 /****************************** */
 
 app.set('view engine', process.env.FRONTEND);
 app.set('views', __dirname + `/views_${process.env.FRONTEND}`)
 app.use(express.static(__dirname + '/public'));
+
+app.use('/images', express.static('images'));
 
 // <>------------------------------------------<>------------------------------------------<>
 
@@ -50,8 +62,8 @@ server.close(() => {
     console.log('Process terminated')
   })
 })
-var users = require('./routes/users')
-app.use('/users', users);
+
+app.use('/users', require('./routes/users'));
 
 app.use('/boulders', boulders)
 app.use('/traverses', traverses)
@@ -59,3 +71,7 @@ app.use('/traverses', traverses)
 app.use('/addproblems', problem_add_multiple)
 
 // <>------------------------------------------<>------------------------------------------<>
+
+app.use((req, res, next) => {
+  res.redirect('/')
+})

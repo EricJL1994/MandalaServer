@@ -7,35 +7,35 @@ function convertDateToTicks(date){
 }
 
 function start(input){
+  sessionStorage.clear()
   input.type = "text";
   input.removeAttribute("src");
-  document.getElementById('timeSearch').value = document.getElementById('timeValue').value
   search(input.value)
 }
 
 function search (searchText, dropdownFilterText, timeFilterText) {
+  var searchFilter = (searchText ? searchText : document.getElementById('problemSearch').value + '')
   var dropdownFilter = (dropdownFilterText ? dropdownFilterText : document.getElementById('dropdownMenuButton').value).toUpperCase()
-  var timeFilter = parseInt(timeFilterText ? timeFilterText : document.getElementById('timeValue').value)
+  var d = timeFilterText ? timeFilterText : document.getElementById('timeValue').valueAsDate
 
-  var d
-  if (timeFilter > 0) {
-    d = new Date()
-    d.setDate(d.getDate()-timeFilter - 1)
-  }
-
-  var td, timetd, txtValue;
-
-  var filter = searchText.toUpperCase().trim()
+  
+  var filter = searchFilter.toUpperCase().trim()
   var table = document.getElementById('problemTable')
   var tr = table.getElementsByTagName('tr')
+  var td, timetd, txtValue;
 
   for (let index = 1; index < tr.length; index++) {
     td = tr[index].getElementsByTagName('td')[0]
+    const done = tr[index].getElementsByTagName('td')[6].getElementsByTagName('input')[1].checked
     timetd = tr[index].getElementsByTagName('td')[2]
 
     if (td) {
       txtValue = (td.textContent || td.innerText).toUpperCase()
-      if (txtValue.includes(filter) && txtValue.includes(dropdownFilter) && (d ? parseInt(timetd.textContent) >= convertDateToTicks(d) : true)) {
+      if (txtValue.includes(filter) &&
+        txtValue.includes(dropdownFilter) &&
+        (d ? parseInt(timetd.textContent) >= convertDateToTicks(d) : true) &&
+        !(document.getElementById('showDone').checked && done)) {
+
         tr[index].style.display = ''
       } else {
         tr[index].style.display = 'none'
@@ -54,10 +54,56 @@ function filter (dropdownFilter) {
     dropdown.value = dropdownFilter
   }
 
-  search(document.getElementById('problemSearch').value + '', dropdown.value)
+  search(undefined, dropdown.value)
 }
 
 function timer(timeFilter){
-  document.getElementById('timeValue').value = timeFilter
-  search(document.getElementById('problemSearch').value + '', undefined, timeFilter)
+  console.log(timeFilter)
+  // document.getElementById('timeValue').value = timeFilter
+  search(undefined, undefined, timeFilter)
+}
+
+function boulderDone(button, id){
+  const tr = button.parentElement.parentElement
+  const trClassList = tr.classList
+  const checkboxMarked = tr.getElementsByTagName('input')[0]
+  const checkboxDone = tr.getElementsByTagName('input')[1]
+  checkboxMarked.checked = !checkboxMarked.checked
+  if(checkboxDone.checked){
+    if (checkboxMarked.checked) {
+      trClassList.remove('trProblemDone')
+      trClassList.add('trProblemUnmarked')
+    }else{
+      trClassList.add('trProblemDone')
+      trClassList.remove('trProblemUnmarked')
+    }
+  }else{
+    if (checkboxMarked.checked) {
+      trClassList.remove('bg-light')
+      trClassList.add('trProblemMarked')
+    }else{
+      trClassList.add('bg-light')
+      trClassList.remove('trProblemMarked')
+    }
+  }
+
+  var problems = []
+  if(sessionStorage.problemsDone){
+    problems = JSON.parse(sessionStorage.problemsDone)
+  }
+  
+  var found = false
+  for (let index = 0; index < problems.length; index++) {
+    const problem = problems[index];
+    if(problem.id == id){
+      found = true
+      problems.splice(index, 1)
+      index -= 1
+    }
+    
+  }
+  if (!found) problems.push(id)
+  sessionStorage.problemsDone = JSON.stringify(problems)
+  const inputP = document.getElementById('problemsToSubmit')
+  inputP.value = JSON.stringify(sessionStorage.problemsDone)
 }

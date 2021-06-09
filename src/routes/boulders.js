@@ -24,4 +24,6 @@ router.post('/xxx', problemController.problem_update);
 
 router.post('/xxx', problemController.problem_delete);
 
+router.post('/', problemController.problems_done);
+
 module.exports = router;

@@ -18,3 +18,11 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
           a.dropdown-item(href='/traverses/') Todos
           .dropdown-divider
           a.dropdown-item(href='/traverses/lastproblems') Últimos
+    ul.navbar-nav.navbar-right
+      if (user)
+        .navbar-text= user.name
+        li.nav-item.nav-link
+          a(href='/users/logout') Logout
+      else
+        include nav_login.pug
+      

@@ -1,20 +1,26 @@
 include searchBar.pug
 
 div.container
-  table.table.table-striped.my-3.my-lg-0(id="problemTable")
+  table.table.my-3.my-lg-0(id="problemTable") 
+    //.table-striped
     thead.theadStyle
       tr
         th(scope='col') Número
         th(scope='col') Fecha
         th(scope='col') Pared
         th(scope='col') Presas
+        th Hecho
     tbody
       each problem in arrayProblems
-        tr.trProblem(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
+        tr.trProblem(class = problem.done ? 'trProblemDone' : 'bg-light')
           td.d-none= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
-          td
+          td(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
             div(style={'background-color': problem.color, 'text-align': 'center', 'width': '60%'})= problem.number
           td.d-none(id='dateValue')= `${problem.dateValue}`
           td= problem.date
           td= problem.wallName
           td= problem.holdColor
+          td
+            input.d-none(type="checkbox", checked = false, disabled = true)
+            input.d-none(type="checkbox", checked = problem.done, disabled = true)
+            button(onclick = `boulderDone(this, "${problem._id}")`) Done

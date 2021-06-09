@@ -1,0 +1,12 @@
+if typeof errors != 'undefined'
+    each errorData in errors
+        p#errors= errorData.msg
+
+if success_msg != ''
+    p#success= success_msg
+
+if error_msg != ''
+    p#errormsg= error_msg
+
+if error != ''
+    p#error= error

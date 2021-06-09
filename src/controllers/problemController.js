@@ -1,9 +1,11 @@
 const lowDB = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
+const Mongoose = require('mongoose')
 const { rawListeners } = require('../../models/boulder')
 
 const Boulder = require('../../models/boulder')
 const Traverse = require('../../models/traverse')
+const User = require('../../models/user')
 const { logger, convertTicksToDate, formatDate, convertDateToTicks} = require('../commonFunctions')
 const { problemTypesToJSONDatabase, difficultyColor, walls } = require('../constants')
 
@@ -12,9 +14,6 @@ const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
 exports.problem_show = async function(req, res) {
-  console.log('Request petition:')
-  console.log(req.query)
-  
   res.render('show_problems', {tables: [await fetch_problems(req, res)]})
 }
 
@@ -71,7 +70,7 @@ exports.last_problems = async function(req, res) {
 exports.problem_add_multiple = async function(req, res) {
   const newProblemsData = JSON.parse(req.query.problems)
   const problemsType = problemTypesToJSONDatabase[req.query.type]
-  const databaseSize = await Boulder.count().exec()
+  const databaseSize = await Boulder.countDocuments().exec()
   var edited = false
 
   //Devuelve un array de promesas en .map, con Promise.all podemos hacer el await, ahora responde correctamente con el status debido
@@ -122,6 +121,26 @@ exports.problem_delete = function(req, res) { //SIN USAR
   res.send();
 }
 
+exports.problems_done = async function(req, res) {
+  
+  if (req.user) {
+    problemsParsed = JSON.parse(JSON.parse(req.body.problemsToSubmit))
+    const allProblems = await Boulder.find().exec()
+
+    allProblems.forEach(problem => {
+      
+      if(problemsParsed.includes(problem._id+'')){
+        if(problem.redpoints.includes(req.user._id)){
+          problem.redpoints.splice(problem.redpoints.indexOf(req.user._id), 1)
+        }else{
+          problem.redpoints.push(req.user._id)
+        }
+        Boulder.updateOne({_id: problem._id}, problem).exec()
+      }
+    });
+  }
+  res.redirect(req.baseUrl)
+}
 /*******************************************************/
 
 async function fetch_problems(req, res, lastDays) {
@@ -150,6 +169,11 @@ async function fetch_problems(req, res, lastDays) {
   mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
 
   return mongoProblems.then(result => result.map(problem => {
-    return Object.assign({}, {...problem.toObject(), date: formatDate(convertTicksToDate(problem.dateValue)), color: difficultyColor[problem.dificultyName], wallName: walls[problem.wall]})
+    return Object.assign({}, {...problem.toObject(),
+      date: formatDate(convertTicksToDate(problem.dateValue)),
+      color: difficultyColor[problem.dificultyName],
+      wallName: walls[problem.wall],
+      done: req.user ? problem.redpoints.includes(req.user._id)/*req.user.problems.includes(problem._id)*/ : false
+    })
   })).catch(err => console.log(err))
 }

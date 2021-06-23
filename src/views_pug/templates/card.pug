@@ -1,6 +1,7 @@
 .card(style='width: 18rem;').mr-3
-  img.card-img-top(src=img_src alt=img_alt)
+  img.card-img-top(src=card.src alt=card.alt)
   .card-body
-    h5.card-title= card_tittle
-    p.card-text= card_description
-    a.btn.btn-primary(href=card_link)= card_tittle
+    h5.card-title= card.tittle
+    p.card-text= card.description
+    if(card.tittle && card.link)
+      a.btn.btn-primary(href=card.link)= card.tittle

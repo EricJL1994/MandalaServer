@@ -26,7 +26,8 @@ function search (searchText, dropdownFilterText, timeFilterText) {
 
   for (let index = 1; index < tr.length; index++) {
     td = tr[index].getElementsByTagName('td')[0]
-    const done = tr[index].getElementsByTagName('td')[6].getElementsByTagName('input')[1].checked
+    const td6 = tr[index].getElementsByTagName('td')[6]
+    const done = td6 ? td6.getElementsByTagName('input')[1].checked : true
     timetd = tr[index].getElementsByTagName('td')[2]
 
     if (td) {
@@ -73,17 +74,21 @@ function boulderDone(button, id){
     if (checkboxMarked.checked) {
       trClassList.remove('trProblemDone')
       trClassList.add('trProblemUnmarked')
+      button.innerText = 'Cancelar'
     }else{
       trClassList.add('trProblemDone')
       trClassList.remove('trProblemUnmarked')
+      button.innerText = 'Quitar'
     }
   }else{
     if (checkboxMarked.checked) {
       trClassList.remove('bg-light')
       trClassList.add('trProblemMarked')
+      button.innerText = 'Desmarcar'
     }else{
       trClassList.add('bg-light')
       trClassList.remove('trProblemMarked')
+      button.innerText = 'Marcar'
     }
   }
 

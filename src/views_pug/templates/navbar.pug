@@ -1,4 +1,4 @@
-nav.navbar.navbar-expand-lg.navbar-light.bg-light
+nav.navbar.navbar-expand-md.navbar-light.bg-light.fixed-top
   a.navbar-brand(href='/') Mandala Climb
   button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
     span.navbar-toggler-icon
@@ -8,21 +8,22 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
         a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
           | Bloques
         .dropdown-menu(aria-labelledby='navbarDropdown')
-          a.dropdown-item(href='/boulders/') Todos
+          a.dropdown-item(href='/boulders/show') Todos
           .dropdown-divider
-          a.dropdown-item(href='/boulders/lastproblems') Últimos
+          a.dropdown-item(href='/boulders/show?lastDays=15') Últimos
       li.nav-item.dropdown
         a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
           | Travesías
         .dropdown-menu(aria-labelledby='navbarDropdown')
           a.dropdown-item(href='/traverses/') Todos
           .dropdown-divider
-          a.dropdown-item(href='/traverses/lastproblems') Últimos
+          a.dropdown-item(href='/traverses/show?lastDays=15') Últimos
     ul.navbar-nav.navbar-right
       if (user)
-        .navbar-text= user.name
         li.nav-item.nav-link
-          a(href='/users/logout') Logout
+          a(href='/users/dashboard')= user.name
+        li.nav-item.nav-link
+          a(href='/users/logout') Cerrar sesión
       else
         include nav_login.pug
       

@@ -1,6 +1,6 @@
-tr.trProblem:hover {
+/*tr.trProblem:hover {
   background-color: rgb(226, 226, 226) !important
-}
+}*/
 
 .theadStyle {
   background-color: rgb(78, 78, 78) !important;
@@ -17,4 +17,16 @@ tr.trProblemMarked{
 
 tr.trProblemUnmarked{
   background-color: rgba(255, 150, 150, 0.5);
+}
+
+.error-msg{
+  color: red
+}
+
+.success-msg{
+  color: green
+}
+
+.solid-separator{
+  border-top: 3px solid #bbb;
 }

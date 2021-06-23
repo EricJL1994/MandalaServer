@@ -1,7 +1,13 @@
 - var tittleText = 'Detalles'
 include templates/header.pug
 body
-  table.table(style='max-width: 600px;').table-striped
+  -var img_src = '/images/TRAVESIAS-2.fw.png'
+  -var img_alt = `${problemDetail.dificultyName} ${problemDetail.number}`
+  -var card_tittle = `${problemDetail.dificultyName} ${problemDetail.number}`
+  -var card_description = `Color de presas: ${problemDetail.holdColor} \n Pared: ${problemDetail.wallName}\nFecha: ${problemDetail.date}`
+  -var card_link = undefined
+  include templates/card.pug
+  //table.table(style='max-width: 600px;').table-striped
     tbody
       tr
         th(scope='col') Número

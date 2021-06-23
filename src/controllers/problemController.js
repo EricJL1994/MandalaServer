@@ -14,7 +14,7 @@ const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
 exports.problem_show = async function(req, res) {
-  res.render('show_problems', {tables: [await fetch_problems(req, res)]})
+  res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
 }
 
 exports.problem_detail = async function(req, res) {
@@ -143,7 +143,7 @@ exports.problems_done = async function(req, res) {
 }
 /*******************************************************/
 
-async function fetch_problems(req, res, lastDays) {
+async function fetch_problems(req, res) {
   
   var mongoProblems
   switch (req.baseUrl) {
@@ -156,24 +156,46 @@ async function fetch_problems(req, res, lastDays) {
     default:
       mongoProblems = Boulder.find()
   }
+  var options = {}
 
-  if(req.query.difficultyName) mongoProblems.find({dificultyName: req.query.difficultyName})
+  if(!req.query.pending) options.pending= false
+  // if(req.query.difficultyName) mongoProblems.find({dificultyName: req.query.difficultyName})
+  if(req.query.difficultyName) options.dificultyName= req.query.difficultyName
   
-  if(req.query.number) mongoProblems.find({number: req.query.number})
+  // if(req.query.number) mongoProblems.find({number: req.query.number})
+  if(req.query.number) options.number = req.query.number
 
-  if(lastDays) {
+  
+  if(req.query.filterDays) {
     var d = new Date();
-    d.setDate(d.getDate() - lastDays)
-    mongoProblems.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc'})
+    d.setDate(d.getDate() - req.query.filterDays)
+    options.dateValue = {$gte: convertDateToTicks(d)}
+    // mongoProblems.find({dateValue: {$gte: convertDateToTicks(d)}}).sort({dateValue: 'asc'})
+    mongoProblems.sort({dateValue: 'asc'})
   }
-  mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
+  mongoProblems.find(options)
+  
+  return mongoProblems.sort({dificultyName: 'asc', number: 'asc'})
+  // mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
 
-  return mongoProblems.then(result => result.map(problem => {
+  /*return mongoProblems.then(result => result.map(problem => {
     return Object.assign({}, {...problem.toObject(),
       date: formatDate(convertTicksToDate(problem.dateValue)),
       color: difficultyColor[problem.dificultyName],
       wallName: walls[problem.wall],
-      done: req.user ? problem.redpoints.includes(req.user._id)/*req.user.problems.includes(problem._id)*/ : false
+      done: req.user ? problem.redpoints.includes(req.user._id) : false
+    })
+  })).catch(err => console.log(err))*/
+}
+
+function parse_problems(problems, user){
+
+  return problems.then(result => result.map(problem => {
+    return Object.assign({}, {...problem.toObject(),
+      date: formatDate(convertTicksToDate(problem.dateValue)),
+      color: difficultyColor[problem.dificultyName],
+      wallName: walls[problem.wall],
+      done: user ? problem.redpoints.includes(user._id) : false
     })
   })).catch(err => console.log(err))
 }

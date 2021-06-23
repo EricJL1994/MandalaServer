@@ -1,0 +1,171 @@
+form(action="/users/dashboard", method="post") 
+  .container.light-style.flex-grow-1.container-p-y
+    h4.font-weight-bold.py-3.mb-4
+      | Preferencias
+    .card.overflow-hidden
+      .row.no-gutters.row-bordered.row-border-light
+        .col-md-3.pt-0
+          .list-group.list-group-flush.account-settings-links
+            a.list-group-item.list-group-item-action.active(data-toggle='list' href='#account-general') General
+            //a.list-group-item.list-group-item-action(data-toggle='list' href='#account-change-password') Cambiar contraseña
+            //a.list-group-item.list-group-item-action(data-toggle='list' href='#account-info') Info
+            //a.list-group-item.list-group-item-action(data-toggle='list' href='#account-social-links') Social links
+            //a.list-group-item.list-group-item-action(data-toggle='list' href='#account-connections') Connections
+            //a.list-group-item.list-group-item-action(data-toggle='list' href='#account-notifications') Notifications
+        .col-md-9
+          .tab-content
+            #account-general.tab-pane.fade.active.show
+              //.card-body.media.align-items-center
+                img.d-block.ui-w-80(src='https://bootdey.com/img/Content/avatar/avatar1.png' alt='')
+                .media-body.ml-4
+                  label.btn.btn-outline-primary
+                    | Upload new photo
+                    input.account-settings-fileinput(type='file')
+                  button.btn.btn-default.md-btn-flat(type='button') Reset
+                  .text-light.small.mt-1 Allowed JPG, GIF or PNG. Max size of 800K
+              hr.border-light.m-0
+              .card-body
+                //.form-group
+                  label.form-label Username
+                  input.form-control.mb-1(type='text' value='nmaxwell')
+                -var formLabel = 'Nombre', formValue = user.name, formName = 'name'
+                include dashboard/form-group.pug
+                -var formLabel = 'E-mail', formValue = user.email, formName = 'email'
+                include dashboard/form-group.pug
+                if(!user.isVerified)
+                    include messages.pug
+                    .alert.alert-warning.mt-3 Tu email no está confirmado.
+                      br
+                      button.btn.btn-primary(type='submit', formaction= '/users/verification') Enviar confirmación
+                //.form-group
+                  label.form-label Company
+                  input.form-control(type='text' value='Company Ltd.')
+            #account-change-password.tab-pane.fade
+              .card-body.pb-2
+                .form-group
+                  label.form-label Contraseña actual
+                  input.form-control(type='password')
+                .form-group
+                  label.form-label Contraseña nueva
+                  input.form-control(type='password')
+                .form-group
+                  label.form-label Confirma tu nueva contraseña
+                  input.form-control(type='password')
+            //#account-info.tab-pane.fade
+              .card-body.pb-2
+                .form-group
+                  label.form-label Bio
+                  textarea.form-control(rows='5')
+                    | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nunc arcu, dignissim sit amet sollicitudin iaculis, vehicula id urna. Sed luctus urna nunc. Donec fermentum, magna sit amet rutrum pretium, turpis dolor molestie diam, ut lacinia diam risus eleifend sapien. Curabitur ac nibh nulla. Maecenas nec augue placerat, viverra tellus non, pulvinar risus.
+                .form-group
+                  label.form-label Birthday
+                  input.form-control(type='text' value='May 3, 1995')
+                .form-group
+                  label.form-label Country
+                  select.custom-select
+                    option USA
+                    option(selected='') Canada
+                    option UK
+                    option Germany
+                    option France
+              hr.border-light.m-0
+              .card-body.pb-2
+                h6.mb-4 Contacts
+                .form-group
+                  label.form-label Phone
+                  input.form-control(type='text' value='+0 (123) 456 7891')
+                .form-group
+                  label.form-label Website
+                  input.form-control(type='text' value='')
+            //#account-social-links.tab-pane.fade
+              .card-body.pb-2
+                .form-group
+                  label.form-label Twitter
+                  input.form-control(type='text' value='https://twitter.com/user')
+                .form-group
+                  label.form-label Facebook
+                  input.form-control(type='text' value='https://www.facebook.com/user')
+                .form-group
+                  label.form-label Google+
+                  input.form-control(type='text' value='')
+                .form-group
+                  label.form-label LinkedIn
+                  input.form-control(type='text' value='')
+                .form-group
+                  label.form-label Instagram
+                  input.form-control(type='text' value='https://www.instagram.com/user')
+            //#account-connections.tab-pane.fade
+              .card-body
+                button.btn.btn-twitter(type='button')
+                  | Connect to 
+                  strong Twitter
+              hr.border-light.m-0
+              .card-body
+                h5.mb-2
+                  a.float-right.text-muted.text-tiny(href='javascript:void(0)')
+                    i.ion.ion-md-close
+                    |  Remove
+                  i.ion.ion-logo-google.text-google
+                  |                   You are connected to Google:
+                |                 nmaxwell@mail.com
+              hr.border-light.m-0
+              .card-body
+                button.btn.btn-facebook(type='button')
+                  | Connect to 
+                  strong Facebook
+              hr.border-light.m-0
+              .card-body
+                button.btn.btn-instagram(type='button')
+                  | Connect to 
+                  strong Instagram
+            //#account-notifications.tab-pane.fade
+              .card-body.pb-2
+                h6.mb-4 Activity
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox' checked='')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label Email me when someone comments on my article
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox' checked='')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label Email me when someone answers on my forum thread
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label Email me when someone follows me
+              hr.border-light.m-0
+              .card-body.pb-2
+                h6.mb-4 Application
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox' checked='')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label News and announcements
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label Weekly product updates
+                .form-group
+                  label.switcher
+                    input.switcher-input(type='checkbox' checked='')
+                    span.switcher-indicator
+                      span.switcher-yes
+                      span.switcher-no
+                    span.switcher-label Weekly blog digest
+    //.text-right.mt-3
+      button.btn.btn-primary(type='submit') Save changes
+      button.btn.btn-default(type='submit', formaction='/users/config') Cancel

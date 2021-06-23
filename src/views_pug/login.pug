@@ -1,14 +1,15 @@
 - var tittleText = 'Login'
 include templates/header.pug
 
-h1  Login 
-include templates/messages.pug
-form(action='/users/login' method='POST')
-  div
-    label(for='email') Email
-    input(type='email' name='email' placeholder='Enter Email')
-  div
-    label(for='password') Password
-    input(type='password' name='password' placeholder='Enter Password')
-  div
-    button.btn.btn-primary.btn-block(type='submit') Login
+div.container
+  h1  Iniciar sesión 
+  include templates/messages.pug
+  form(action='/users/login' method='POST')
+    div
+      label(for='email') Email
+      input(type='email' name='email' placeholder='Email')
+    div
+      label(for='password') Contraseña
+      input(type='password' name='password' placeholder='Constraseña')
+    div
+      button.btn.btn-primary.btn-block(type='submit') Entrar

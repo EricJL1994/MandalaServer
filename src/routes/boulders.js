@@ -3,15 +3,7 @@ var express = require('express');
 var router = express.Router();
 var problemController = require('../controllers/problemController')
 
-// TODO: ESTO ES POSIBLE? meter el app para hacer cosas con él.....
-// o hago un render a pelo sin el view engine y listo en verdad, porque el app ya lo está pillando arriba en la ruta buena
-/*
-const app = express()
-app.set('view engine', 'pug')
-app.set('views', __dirname + '/views_pug')
-*/
-
-router.get('/', problemController.problem_show);
+router.get('/show', problemController.problem_show);
 router.get('/lastproblems', problemController.last_problems);
 
 router.get('/details', problemController.problem_detail);

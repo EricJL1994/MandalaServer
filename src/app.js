@@ -3,7 +3,7 @@ require('dotenv').config()
 
 const mongoose = require('mongoose');
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@mandalaclimb.g7s5c.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`;
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
   .then(()=> console.log('Conectado a mongodb'))
   .catch(e => console.log('Error de conexión', e))
   
@@ -12,6 +12,7 @@ const { problem_show, problem_add_multiple, last_problems } = require('./control
 var boulders = require('./routes/boulders')
 var traverses = require('./routes/traverses')
 
+const Info = require("../models/info");
 const app = express()
 
 const hostname = 'localhost' //npm run start:dev
@@ -40,6 +41,7 @@ app.use((req,res,next)=> {
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error  = req.flash('error');
     res.locals.user = req.user;
+    res.locals.allowRegister = process.env.REGISTER == 'true' ? true : undefined
     next();
     })
     
@@ -50,10 +52,18 @@ app.set('views', __dirname + `/views_${process.env.FRONTEND}`)
 app.use(express.static(__dirname + '/public'));
 
 app.use('/images', express.static('images'));
-
 // <>------------------------------------------<>------------------------------------------<>
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  var infos =  await Info.find().exec()
+  //console.log(infos)
+  res.render('index', {infos: infos})
+})
+
+app.get('/test', (req, res) => {
+  Info.findOne().then(result => {
+    console.log(result)
+  })
   res.render('index')
 })
 
@@ -72,6 +82,6 @@ app.use('/addproblems', problem_add_multiple)
 
 // <>------------------------------------------<>------------------------------------------<>
 
-app.use((req, res, next) => {
-  res.redirect('/')
-})
+/*app.use((req, res, next) => {
+  //res.redirect('/')
+})*/

@@ -7,7 +7,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
   .then(()=> console.log('Conectado a mongodb'))
   .catch(e => console.log('Error de conexión', e))
   
-const { problem_show, problem_add_multiple, last_problems } = require('./controllers/problemController')
+const { problem_add_multiple } = require('./controllers/problemController')
 
 var boulders = require('./routes/boulders')
 var traverses = require('./routes/traverses')
@@ -26,7 +26,7 @@ const passport = require("passport");
 const flash = require('connect-flash');
 
 require('../config/passport')(passport)
-app.use(express.urlencoded({extended : false}));
+app.use(express.urlencoded({extended : true}));
 //express session
 app.use(session({
     secret : 'secret',
@@ -42,6 +42,8 @@ app.use((req,res,next)=> {
     res.locals.error  = req.flash('error');
     res.locals.user = req.user;
     res.locals.allowRegister = process.env.REGISTER == 'true' ? true : undefined
+    // console.log(req.method + req.url + ' -> Redirect: ' + req.query.redirect)
+    res.locals.path = req.path;
     next();
     })
     
@@ -60,12 +62,12 @@ app.get('/', async (req, res) => {
   res.render('index', {infos: infos})
 })
 
-app.get('/test', (req, res) => {
-  Info.findOne().then(result => {
-    console.log(result)
-  })
-  res.render('index')
-})
+// app.get('/test', (req, res) => {
+//   Info.findOne().then(result => {
+//     console.log(result)
+//   })
+//   res.render('index')
+// })
 
 process.on('SIGTERM', () => {
 server.close(() => {

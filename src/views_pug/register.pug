@@ -1,25 +1,26 @@
 - var tittleText = 'Register'
 include templates/header.pug
 
-div.container
-  h1 Crear cuenta
-  include templates/messages.pug
-  form(action='/users/register' method='POST')
-    div
-      label(for='name') Nombre
-      input(type='name' name='name' placeholder='Nombre' value= typeof name != 'undefined' ? name : '' )
-    div
-      label(for='email') Email
-      input(type='email' name='email' placeholder='Email' value= typeof email != 'undefined' ? email : '')
-    div
-      label(for='password') Contraseña
-      input(type='password' name='password' placeholder='Contraseña' value= typeof password != 'undefined' ? password : '')
-    div
-      label(for='password2') Confirmar contraseña
-      input(type='password' name='password2' placeholder='Contraseña' value= typeof password2 != 'undefined' ? password2 : '')
-    div
-      button.btn.btn-primary.btn-block(type='submit')
-        | Registrarse
-  p
-    | ¿Tienes una cuenta? 
-    a(href='/users/login') Entrar
+main
+  div.card
+    h1 Crear cuenta
+    include templates/messages.pug
+    form(action='/users/register' method='POST')
+      div
+        label(for='name') Nombre
+        input(type='name' name='name' placeholder='Nombre' value= typeof name != 'undefined' ? name : '' )
+      div
+        label(for='email') Email
+        input(type='email' name='email' placeholder='Email' value= typeof email != 'undefined' ? email : '')
+      div
+        label(for='password') Contraseña
+        input(type='password' name='password' placeholder='Contraseña' value= typeof password != 'undefined' ? password : '')
+      div
+        label(for='password2') Confirmar contraseña
+        input(type='password' name='password2' placeholder='Contraseña' value= typeof password2 != 'undefined' ? password2 : '')
+      div
+        button.btn.btn-primary.btn-block(type='submit')
+          | Registrarse
+    p
+      | ¿Tienes una cuenta? 
+      a(href='/users/login' + (path ? `?redirect=${path}` : '')) Entrar

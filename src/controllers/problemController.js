@@ -7,7 +7,7 @@ const Boulder = require('../../models/boulder')
 const Traverse = require('../../models/traverse')
 const User = require('../../models/user')
 const { logger, convertTicksToDate, formatDate, convertDateToTicks} = require('../commonFunctions')
-const { problemTypesToJSONDatabase, difficultyColor, walls } = require('../constants')
+const { problemTypesToJSONDatabase, difficultyColor, walls, holdColorsFormatter } = require('../constants')
 
 // ESTA COSA VA CON RUTA RELATIVA DESDE EL PATH QUE LANZA EL PROYECTO (la ruta del package.json)
 const adapter = new FileSync('./src/storageData/database.json')
@@ -139,7 +139,7 @@ exports.problems_done = async function(req, res) {
       }
     });
   }
-  res.redirect(req.baseUrl)
+  res.redirect(req.originalUrl)
 }
 /*******************************************************/
 
@@ -195,7 +195,8 @@ function parse_problems(problems, user){
       date: formatDate(convertTicksToDate(problem.dateValue)),
       color: difficultyColor[problem.dificultyName],
       wallName: walls[problem.wall],
-      done: user ? problem.redpoints.includes(user._id) : false
+      done: user ? problem.redpoints.includes(user._id) : false,
+      holdColorShort: holdColorsFormatter[problem.holdColor]
     })
   })).catch(err => console.log(err))
 }

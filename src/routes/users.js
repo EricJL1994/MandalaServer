@@ -18,16 +18,18 @@ let transporter = nodemailer.createTransport(smtpTransport({
 
 //LOGIN
 router.get("/login", (req, res) => {
+  // console.log('GET LOGIN')
   if(req.user) {
-    res.redirect('/users/dashboard')
+    res.redirect(req.query.redirect || '/users/dashboard')
   }else{
     res.render("login");
   }
 });
 
 router.post("/login", (req, res, next) => {
+  // console.log(req.query.redirect)
   passport.authenticate("local", {
-    successRedirect: "/users/dashboard",
+    successRedirect: 'back',
     failureRedirect: "/users/login",
     failureFlash: true,
   })(req, res, next);
@@ -35,7 +37,11 @@ router.post("/login", (req, res, next) => {
 
 //REGISTER
 router.get("/register", (req, res) => {
-  res.render("register");
+  if(req.user) {
+    res.redirect('/users/dashboard')
+  }else{
+    res.render("register");
+  }
 });
 
 router.post("/register", (req, res) => {

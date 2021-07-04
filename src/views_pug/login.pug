@@ -1,15 +1,19 @@
 - var tittleText = 'Login'
 include templates/header.pug
 
-div.container
-  h1  Iniciar sesión 
-  include templates/messages.pug
-  form(action='/users/login' method='POST')
-    div
-      label(for='email') Email
-      input(type='email' name='email' placeholder='Email')
-    div
-      label(for='password') Contraseña
-      input(type='password' name='password' placeholder='Constraseña')
-    div
-      button.btn.btn-primary.btn-block(type='submit') Entrar
+main
+  div.card
+    h1  Iniciar sesión 
+    include templates/messages.pug
+    form(action='/users/login' method='POST')
+      div
+        label(for='email') Email
+        input(type='email' name='email' placeholder='Email')
+      div
+        label(for='password') Contraseña
+        input(type='password' name='password' placeholder='Constraseña')
+      div
+        button.btn.btn-primary.btn-block(type='submit') Entrar
+    p
+      | ¿No tienes cuenta? 
+      a(href='/users/register') Crear

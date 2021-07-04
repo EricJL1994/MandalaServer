@@ -1,0 +1,29 @@
+div
+  div
+    div.dropdown
+        button#dropdownMenuButton.dropbtn(onclick='showDropdown(this)')
+          | Dificultad
+        div#myDropdown.dropdown-content
+          a(id='NoFilter' href='#' onclick='filter()') No filtrar
+          a(id='Pink' href='#' onclick='filter(this.id)') Rosa
+          a(id='Green' href='#' onclick='filter(this.id)') Verde
+          a(id='Orange' href='#' onclick='filter(this.id)') Naranja
+          a(id='Yellow' href='#' onclick='filter(this.id)') Amarillo
+          a(id='Red' href='#' onclick='filter(this.id)') Rojo
+    div(style = `display: ${user ? '': 'none'}` )
+      input(type = 'checkbox', id= 'showDone' onclick='search()')
+      label(for= 'showDone') Encadenados
+    div
+      input(type='image', src='', id='problemSearch' name='title', placeholder='Buscar...', onkeyup='search(this.value)', onerror='start(this)')
+    //div.col.dropdown
+    div
+      if(searchTime)
+        - var d = new Date()
+        - d.setDate(d.getDate()-searchTime)
+        - date = d.getFullYear().toString() + '-' + (d.getMonth() + 1).toString().padStart(2, 0) + '-' + d.getDate().toString().padStart(2, 0);
+      input#timeValue(type='date', min='2021-02-22', value=(date || '2021-02-22') onchange='timer(this.valueAsDate)')
+      button(onclick='resetDate()') X
+    div
+      form(method='POST')
+        input.d-none(id='problemsToSubmit' name='problemsToSubmit', value='')
+        button(type='submit') Guardar

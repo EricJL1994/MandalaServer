@@ -6,37 +6,60 @@ function convertDateToTicks(date){
   return (epochMicrotimeDiff + date.getTime()) * ticksPerMilisecond
 }
 
+function resetDate(){
+  document.getElementById('timeValue').value = '2021-02-22'
+  search()
+}
+
+function showDropdown(dropdown){
+  document.getElementById("myDropdown").classList.toggle("show")
+}
+
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
 function start(input){
   sessionStorage.clear()
   input.type = "text";
   input.removeAttribute("src");
+  input.style.display = 'none';
   search(input.value)
 }
 
 function search (searchText, dropdownFilterText, timeFilterText) {
-  var searchFilter = (searchText ? searchText : document.getElementById('problemSearch').value + '')
+  //var searchFilter = (searchText ? searchText : document.getElementById('problemSearch').value + '')
   var dropdownFilter = (dropdownFilterText ? dropdownFilterText : document.getElementById('dropdownMenuButton').value).toUpperCase()
   var d = timeFilterText ? timeFilterText : document.getElementById('timeValue').valueAsDate
-
   
-  var filter = searchFilter.toUpperCase().trim()
+  
+  //var filter = searchFilter.toUpperCase().trim()
   var table = document.getElementById('problemTable')
   var tr = table.getElementsByTagName('tr')
   var td, timetd, txtValue;
-
+  
   for (let index = 1; index < tr.length; index++) {
     td = tr[index].getElementsByTagName('td')[0]
-    const td6 = tr[index].getElementsByTagName('td')[6]
-    const done = td6 ? td6.getElementsByTagName('input')[1].checked : true
+    const td8 = tr[index].getElementsByTagName('td')[8]
+    const done = td8 ? td8.getElementsByTagName('input')[1].checked : true
     timetd = tr[index].getElementsByTagName('td')[2]
-
+    
     if (td) {
       txtValue = (td.textContent || td.innerText).toUpperCase()
-      if (txtValue.includes(filter) &&
-        txtValue.includes(dropdownFilter) &&
-        (d ? parseInt(timetd.textContent) >= convertDateToTicks(d) : true) &&
-        !(document.getElementById('showDone').checked && done)) {
-
+      if (/*txtValue.includes(filter) &&*/
+      txtValue.includes(dropdownFilter) &&
+      (d ? parseInt(timetd.textContent) >= convertDateToTicks(d) : true) &&
+      !(document.getElementById('showDone').checked && done)) {
+        
         tr[index].style.display = ''
       } else {
         tr[index].style.display = 'none'
@@ -47,19 +70,21 @@ function search (searchText, dropdownFilterText, timeFilterText) {
 
 function filter (dropdownFilter) {
   var dropdown = document.getElementById('dropdownMenuButton')
+  dropdown.parentElement.style.display= 'none'
+  setTimeout(function() { dropdown.parentElement.style.display= '' }, 1);
+  //dropdown.parentElement.style.display= ''
   if (!dropdownFilter) {
-    dropdown.innerText = 'Dificultad'
+    dropdown.innerText = /*'Dificultad'*/screen.width
     dropdown.value = ''
   } else {
     dropdown.innerText = document.getElementById(dropdownFilter).textContent
     dropdown.value = dropdownFilter
   }
-
+  
   search(undefined, dropdown.value)
 }
 
 function timer(timeFilter){
-  console.log(timeFilter)
   // document.getElementById('timeValue').value = timeFilter
   search(undefined, undefined, timeFilter)
 }
@@ -111,4 +136,31 @@ function boulderDone(button, id){
   sessionStorage.problemsDone = JSON.stringify(problems)
   const inputP = document.getElementById('problemsToSubmit')
   inputP.value = JSON.stringify(sessionStorage.problemsDone)
+}
+
+const themeMap = {
+  dark: "light",
+  solar: "dark",
+  light: "solar",
+};
+
+const theme = (localStorage.getItem('theme') == 'undefined' ? themeMap[0] : localStorage.getItem('theme'))
+  || (tmp = Object.keys(themeMap)[0],
+      localStorage.setItem('theme', tmp),
+      tmp);
+
+var bodyClass = undefined;
+
+window.onload = function(){
+  bodyClass = document.body.classList;
+  bodyClass.add(theme);
+  document.getElementById('themeButton').onclick = toggleTheme;
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem('theme');
+  const next = themeMap[current];
+
+  bodyClass.replace(current, next);
+  localStorage.setItem('theme', next);
 }

@@ -55,4 +55,23 @@ const walls = {
   6: 'Escondido',
 }
 
-module.exports = { colours, problemTypesToJSONDatabase, difficultyColor, walls }
+const holdColorsFormatter = {
+  Amarillo: 'Ama',
+  AmarilloFluor: 'Ama Fl',
+  Azul: 'Az',
+  Blanco: 'Bl',
+  Granate: 'Gran',
+  Gris: 'Gris',
+  Naranja: 'Nar',
+  NaranjaFluor: 'Nar Fl',
+  Negro: 'Neg',
+  Rojo: 'Rojo',
+  Rosa: 'Rosa',
+  RosaFluor: 'Rosa Fl',
+  Verde: 'Ver',
+  VerdeFluor: 'Ver Fl',
+  Voileta: 'Vio',
+  Zafiro: 'Zaf',
+}
+
+module.exports = { colours, problemTypesToJSONDatabase, difficultyColor, walls, holdColorsFormatter }

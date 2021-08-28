@@ -1,37 +1,133 @@
+/*                                                 
+88b           d88              88               
+888b         d888              ""               
+88`8b       d8'88                               
+88 `8b     d8' 88  ,adPPYYba,  88  8b,dPPYba,   
+88  `8b   d8'  88  ""     `Y8  88  88P'   `"8a  
+88   `8b d8'   88  ,adPPPPP88  88  88       88  
+88    `888'    88  88,    ,88  88  88       88  
+88     `8'     88  `"8bbdP"Y8  88  88       88   */
+
 :root {
   font-size: 16px;
   /* font-family: 'Open Sans'; */
+
+  /* Theme colors */
   --text-primary: #000000;
   --text-highlight: #ececec;
   --text-main: #e9d8fc;
+  --text-button: #ececec;
   --bg-primary: #23232e;
   --bg-highlight: #141418;
   --bg-main: #2a3a30;
-
+  --bg-button: #141418;
   --bg-table: white;
 
+  /* Table colors */
   --tr-done: rgba(200, 255, 150, 0.5);
   --tr-marked: rgba(255, 255, 150, 0.5);
   --tr-unmarked: rgba(255, 150, 150, 0.5);
-  --transition-speed: 600ms;
+  --transition-speed: 400ms;
 }
-.container{
-  margin: auto;
-  display: inline-block;
-}
-.dropbtn {
-  background-color: var(--bg-highlight);
-  color: var(--text-highlight);
-  padding: 1rem;
+
+.btn-primary {
+  background-color: var(--bg-button);
+  color: var(--text-button);
+  padding: 0.5rem;
   font-size: 1rem;
   border: none;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   cursor: pointer;
 }
 
+/*                                           
+88        88           88  88             
+88        88    ,d     ""  88             
+88        88    88         88             
+88        88  MM88MMM  88  88  ,adPPYba,  
+88        88    88     88  88  I8[    ""  
+88        88    88     88  88   `"Y8ba,   
+Y8a.    .a8P    88,    88  88  aa    ]8I
+ `"Y8888Y"'     "Y888  88  88  `"YbbdP"'  */
+
+.align-left {
+  text-align: left;
+}
+.align-center {
+  text-align: center;
+}
+.no-decor{
+  text-decoration: none;
+}
+.container {
+  /* margin: auto; */
+  display: inline-grid;
+  /* width: 100%; */
+}
+
+/*                                             
+ ad88888ba   8b           d8   ,ad8888ba,   
+d8"     "8b  `8b         d8'  d8"'    `"8b  
+Y8,           `8b       d8'  d8'            
+`Y8aaaaa,      `8b     d8'   88             
+  `"""""8b,     `8b   d8'    88      88888  
+        `8b      `8b d8'     Y8,        88  
+Y8a     a8P       `888'       Y8a.    .a88  
+ "Y88888P"         `8'         `"Y88888P"    */
+
+.eye-label {
+  display: inline-block;
+  margin-left: 0.25rem;
+  color: var(--text-button);
+}
+
+.eye-icon {
+  cursor: pointer;
+  display: flex;
+  /* text-align: center; */
+  /* vertical-align: middle; */
+  border-radius: 0.25rem;
+}
+
+.eye-icon svg {
+  /* background-color: var(--bg-button); */
+  /* border: solid .25rem var(--bg-button); */
+  padding: 1px;
+  border: 1px solid black;
+  border-radius: 0.25rem;
+}
+
+.eye-check[type="checkbox"] {
+  display: none;
+}
+
+svg .eyesvg {
+  d: path(
+    "M12.01 20c-5.065 0-9.586-4.211-12.01-8.424 2.418-4.103 6.943-7.576 12.01-7.576 5.135 0 9.635 3.453 11.999 7.564-2.241 4.43-6.726 8.436-11.999 8.436zm-10.842-8.416c.843 1.331 5.018 7.416 10.842 7.416 6.305 0 10.112-6.103 10.851-7.405-.772-1.198-4.606-6.595-10.851-6.595-6.116 0-10.025 5.355-10.842 6.584zm10.832-4.584c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 1c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4z"
+  );
+}
+
+.eye-check[type="checkbox"]:checked + svg .eyesvg {
+  d: path(
+    "M8.137 15.147c-.71-.857-1.146-1.947-1.146-3.147 0-2.76 2.241-5 5-5 1.201 0 2.291.435 3.148 1.145l1.897-1.897c-1.441-.738-3.122-1.248-5.035-1.248-6.115 0-10.025 5.355-10.842 6.584.529.834 2.379 3.527 5.113 5.428l1.865-1.865zm6.294-6.294c-.673-.53-1.515-.853-2.44-.853-2.207 0-4 1.792-4 4 0 .923.324 1.765.854 2.439l5.586-5.586zm7.56-6.146l-19.292 19.293-.708-.707 3.548-3.548c-2.298-1.612-4.234-3.885-5.548-6.169 2.418-4.103 6.943-7.576 12.01-7.576 2.065 0 4.021.566 5.782 1.501l3.501-3.501.707.707zm-2.465 3.879l-.734.734c2.236 1.619 3.628 3.604 4.061 4.274-.739 1.303-4.546 7.406-10.852 7.406-1.425 0-2.749-.368-3.951-.938l-.748.748c1.475.742 3.057 1.19 4.699 1.19 5.274 0 9.758-4.006 11.999-8.436-1.087-1.891-2.63-3.637-4.474-4.978zm-3.535 5.414c0-.554-.113-1.082-.317-1.562l.734-.734c.361.69.583 1.464.583 2.296 0 2.759-2.24 5-5 5-.832 0-1.604-.223-2.295-.583l.734-.735c.48.204 1.007.318 1.561.318 2.208 0 4-1.792 4-4z"
+  );
+}
+
+/*                                                                                                                 
+88888888ba,                                                   88                                                
+88      `"8b                                                  88                                                
+88        `8b                                                 88                                                
+88         88  8b,dPPYba,   ,adPPYba,   8b,dPPYba,    ,adPPYb,88   ,adPPYba,   8b      db      d8  8b,dPPYba,   
+88         88  88P'   "Y8  a8"     "8a  88P'    "8a  a8"    `Y88  a8"     "8a  `8b    d88b    d8'  88P'   `"8a  
+88         8P  88          8b       d8  88       d8  8b       88  8b       d8   `8b  d8'`8b  d8'   88       88  
+88      .a8P   88          "8a,   ,a8"  88b,   ,a8"  "8a,   ,d88  "8a,   ,a8"    `8bd8'  `8bd8'    88       88  
+88888888Y"'    88           `"YbbdP"'   88`YbbdP"'    `"8bbdP"Y8   `"YbbdP"'       YP      YP      88       88  
+                                        88                                                                      
+                                        88                                                                       */
+
 .dropdown {
   position: relative;
-  display: inline-block;
+  display: inline-block !important;
 }
 
 .dropdown-content {
@@ -39,8 +135,8 @@
   position: absolute;
   min-width: 10rem;
   overflow: auto;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  border-radius: .25rem;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 0.25rem;
   z-index: 1;
 }
 
@@ -51,85 +147,143 @@
   display: block;
   border-radius: 0px;
   background-color: var(--bg-primary);
-  text-decoration: none;
 }
 
-.dropdown a:hover {background-color: #ddd;}
+.dropdown a:hover {
+  background-color: #ddd;
+}
 
-.show {display: block;}
+.showDropdown {
+  display: block;
+}
 
-table{
+/*                                                   
+888888888888         88           88              
+     88              88           88              
+     88              88           88              
+     88  ,adPPYYba,  88,dPPYba,   88   ,adPPYba,  
+     88  ""     `Y8  88P'    "8a  88  a8P_____88  
+     88  ,adPPPPP88  88       d8  88  8PP"""""""  
+     88  88,    ,88  88b,   ,a8"  88  "8b,   ,aa  
+     88  `"8bbdP"Y8  8Y"Ybbd8"'   88   `"Ybbd8"'  */
+
+.searchBar {
+  background-color: var(--bg-primary);
+  padding-bottom: 5px;
+  display: flex;
+  /* vertical-align: middle; */
+  flex-wrap: wrap;
+}
+
+.searchBar > * {
+  /* margin-top: auto; */
+  /* margin-bottom: auto; */
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  align-items: center;
+  /* justify-content: center; */
+  display: flex;
+  /* outline: solid 1px black; */
+}
+
+.searchBar .dropdown {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.searchBar > *:not(.dropdown):not(:last-child) {
+  background-color: var(--bg-button);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+}
+
+.searchBar > *:last-child {
+  margin-right: 5px;
+}
+
+table {
   background-color: var(--bg-table);
   border-collapse: collapse;
   border: 1px solid black;
 }
 
-td{
+thead {
+  background-color: rgb(78, 78, 78);
+  color: rgb(231, 230, 230);
+}
+
+td {
+  --pxm: 4px;
   border-bottom: 1px solid black;
-  padding-left: .25rem;
-  padding-right: .25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  min-width: 1.5rem;
+  padding-top: var(--pxm);
+  padding-bottom: var(--pxm);
 }
 
-tr.trProblem:hover {
-  background-color: rgb(226, 226, 226) !important
-}
-
-.theadStyle {
-  background-color: rgb(78, 78, 78) !important;
-  color: rgb(231, 230, 230)
-}
-
-tr.trProblemDone {
+.trProblemDone {
   background-color: var(--tr-done);
 }
 
-tr.trProblemMarked{
+.trProblemMarked {
   background-color: var(--tr-marked);
 }
 
-tr.trProblemUnmarked{
+.trProblemUnmarked {
   background-color: var(--tr-unmarked);
 }
 
-.error-msg{
-  color: red
+.error-msg {
+  color: red;
 }
 
-.success-msg{
-  color: green
+.success-msg {
+  color: green;
 }
 
-.solid-separator{
+.solid-separator {
   border-top: 3px solid #bbb;
 }
 
-img{
+img {
   /* max-width: 20rem; */
   width: 100%;
 }
 
-.card{
+/*                                                  
+  ,ad8888ba,                                    88  
+ d8"'    `"8b                                   88  
+d8'                                             88  
+88             ,adPPYYba,  8b,dPPYba,   ,adPPYb,88  
+88             ""     `Y8  88P'   "Y8  a8"    `Y88  
+Y8,            ,adPPPPP88  88          8b       88  
+ Y8a.    .a8P  88,    ,88  88          "8a,   ,d88  
+  `"Y8888Y"'   `"8bbdP"Y8  88           `"8bbdP"Y8                                                
+   */
+
+.card {
   background-color: var(--bg-highlight);
   display: inline-block;
   width: 20rem;
   padding: 1rem;
   margin: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 .25rem .25rem 0 var(--text-primary);
+  box-shadow: 0 0.25rem 0.25rem 0 var(--text-primary);
   transition: 0.3s;
 }
 
-.card a{
+.card a {
   padding: 5px;
   border-radius: 5px;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
   text-decoration: none;
 }
 
 /* On mouse-over, add a deeper shadow */
 .card:hover {
-  box-shadow: 0 .5rem .5rem 0 var(--text-primary);
+  box-shadow: 0 0.5rem 0.5rem 0 var(--text-primary);
 }
 
 /* Add some padding inside the card container */
@@ -137,7 +291,7 @@ img{
   padding: 2px 16px;
 }
 
-.d-none{
+.d-none {
   display: none;
 }
 
@@ -160,15 +314,26 @@ body::-webkit-scrollbar-thumb {
   background: #6649b8;
 }
 
+/*                                                                             
+  888b      88                           88                                   
+  8888b     88                           88                                   
+  88 `8b    88                           88                                   
+  88  `8b   88  ,adPPYYba,  8b       d8  88,dPPYba,   ,adPPYYba,  8b,dPPYba,  
+  88   `8b  88  ""     `Y8  `8b     d8'  88P'    "8a  ""     `Y8  88P'   "Y8  
+  88    `8b 88  ,adPPPPP88   `8b   d8'   88       d8  ,adPPPPP88  88          
+  88     `8888  88,    ,88    `8b,d8'    88b,   ,a8"  88,    ,88  88          
+  88      `888  `"8bbdP"Y8      "8"      8Y"Ybbd8"'   `"8bbdP"Y8  88           */
+
 main {
+  display: flex;
+  justify-content: center;
   margin-left: var(--navbar-margin);
   padding: 1rem;
 }
-
 .navbar {
   position: fixed;
   background-color: var(--bg-primary);
-  transition: width 600ms ease;
+  transition: width var(--transition-speed) ease;
   overflow: hidden;
   z-index: 2;
 }
@@ -213,9 +378,9 @@ main {
 }
 
 .nav-link svg {
-  width: calc(2*var(--navbar-margin)/5);
-  min-width: calc(2*var(--navbar-margin)/5);
-  margin: 0 calc(1.5*var(--navbar-margin)/5);
+  width: calc(2 * var(--navbar-margin) / 5);
+  min-width: calc(2 * var(--navbar-margin) / 5);
+  margin: 0 calc(1.5 * var(--navbar-margin) / 5);
 }
 
 .fa-primary {
@@ -247,8 +412,7 @@ main {
   transition: var(--transition-speed);
 }
 
-.logo-text
-{
+.logo-text {
   display: inline;
   position: absolute;
   left: -999px;
@@ -256,22 +420,22 @@ main {
 }
 
 /* Small screens */
-@media only screen and (max-width: 380px){
-  .small-hide{
+@media only screen and (max-width: 380px) {
+  .small-hide {
     display: none;
   }
 }
 
 /* Big screens */
-@media only screen and (min-width: 381px){
-  .small-show{
+@media only screen and (min-width: 381px) {
+  .small-show {
     display: none;
   }
 }
 
 /* Small screens */
 @media only screen and (max-width: 600px) {
-  :root{
+  :root {
     --navbar-margin: 3rem;
   }
   .navbar {
@@ -279,23 +443,24 @@ main {
     width: 100vw;
     height: var(--navbar-margin);
   }
-  
+
   .navbar-nav {
     flex-direction: row;
   }
-  
+
   .nav-link {
     justify-content: center;
   }
-  
+
   main {
     margin: 0;
+    margin-bottom: var(--navbar-margin);
   }
 }
 
 /* Large screens */
 @media only screen and (min-width: 601px) {
-  :root{
+  :root {
     --navbar-margin: 5rem;
   }
 
@@ -303,10 +468,10 @@ main {
     transform: rotate(-180deg);
   }
 
-  .logo{
+  .logo {
     margin-bottom: 1rem;
   }
-  
+
   .navbar {
     top: 0;
     width: var(--navbar-margin);
@@ -314,23 +479,105 @@ main {
   }
 
   .navbar:hover {
-    width: calc(3*var(--navbar-margin));
+    width: calc(3 * var(--navbar-margin));
+  }
+
+  .navbar:hover main {
+    margin-left: calc(3 * var(--navbar-margin));
   }
 
   .navbar:hover .link-text {
     display: inline;
   }
 
-  .navbar:hover .logo svg
-  {
-    margin-left: calc(2.5*var(--navbar-margin));
+  .navbar:hover .logo svg {
+    margin-left: calc(2.5 * var(--navbar-margin));
   }
 
-  .navbar:hover .logo-text
-  {
+  .navbar:hover .logo-text {
     left: 0px;
   }
 }
+
+
+/*                                                                                              
+  ,ad8888ba,               88                                    88                          
+ d8"'    `"8b              88                                    88                          
+d8'                        88                                    88                          
+88             ,adPPYYba,  88   ,adPPYba,  8b,dPPYba,    ,adPPYb,88  ,adPPYYba,  8b,dPPYba,  
+88             ""     `Y8  88  a8P_____88  88P'   `"8a  a8"    `Y88  ""     `Y8  88P'   "Y8  
+Y8,            ,adPPPPP88  88  8PP"""""""  88       88  8b       88  ,adPPPPP88  88          
+ Y8a.    .a8P  88,    ,88  88  "8b,   ,aa  88       88  "8a,   ,d88  88,    ,88  88          
+  `"Y8888Y"'   `"8bbdP"Y8  88   `"Ybbd8"'  88       88   `"8bbdP"Y8  `"8bbdP"Y8  88          
+                                                                                             */
+                                                                                            
+
+
+.floating{
+  position: fixed;
+  visibility: hidden;
+}
+
+.floating table{
+  min-width: 5rem;
+}
+
+.calendar td:not(.blank){
+  cursor: pointer;
+}
+
+.grey{
+  background-color: lightgrey;
+}
+.calendar td:not(.blank):hover{
+  background-color: var(--bg-highlight);
+}
+
+.booking{
+ display: block;
+}
+
+.booking > *{
+  margin-top: 1rem;
+}
+
+.hours-table{
+  width: 100%;
+}
+
+.hours-table > tbody > * > td:first-child{
+  border-right: solid black 1px;
+}
+
+.hours-table > thead{
+  border-bottom: 1px solid black;
+}
+
+.hours-table tr td:first-child{
+  width: 70%;
+}
+.calendar-arrow{
+  display: flex;
+}
+
+.calendar-arrow > *:last-child{
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.border-right{
+  border-right: solid black 1px;
+}
+
+/*                                                                        
+888888888888  88                                                       
+     88       88                                                       
+     88       88                                                       
+     88       88,dPPYba,    ,adPPYba,  88,dPYba,,adPYba,    ,adPPYba,  
+     88       88P'    "8a  a8P_____88  88P'   "88"    "8a  a8P_____88  
+     88       88       88  8PP"""""""  88      88      88  8PP"""""""  
+     88       88       88  "8b,   ,aa  88      88      88  "8b,   ,aa  
+     88       88       88   `"Ybbd8"'  88      88      88   `"Ybbd8"'   */
 
 /*.dark {
   --text-primary: #b6b6b6;
@@ -340,30 +587,41 @@ main {
   --text-main: #e9d8fc;
   --bg-main: #2a3a30;
 }*/
-.dark{
+.vero {
   --text-primary: #ededed;
   --text-highlight: #ececec;
   --bg-primary: #171717;
   --bg-highlight: #444444;
   --bg-main: #121212;
   --bg-table: #666666;
-
 }
 
 .light {
-  /* --text-primary: #8c8f85; */
+  --text-primary: #000000;
   --text-highlight: #000000;
+  --text-main: #000000;
   --bg-primary: #f4c7ab;
-  --bg-highlight: #deedf0;
+  --bg-highlight: #dbeafa;
   --bg-main: #fff5eb;
+
+  --bg-table: #fff;
+
+  --text-button: #000;
+  --bg-button: #ffe0b3;
 }
 
-.solar {
-  --text-primary: #000000;
-  --text-highlight: #faf2da;
-  --bg-primary: #e28f83;
-  --bg-highlight: #4a503d;
-  --bg-main: #faf2da;
+.dark {
+  --text-primary: #ebefe7;
+  --text-highlight: #ebefe7;
+  --text-main: #ebefe7;
+  --bg-primary: #3d3e3d;
+  --bg-highlight: #7392b7;
+  --bg-main: #50514f;
+
+  --bg-table: #5c5c5c;
+
+  --text-button: #000;
+  --bg-button: #a1ccf7;
 }
 
 .theme-icon {
@@ -381,3 +639,5 @@ main {
 .solar #solarIcon {
   display: block;
 }
+
+/* El texto de los separadores es de https://patorjk.com/software/taag/#p=display&f=Univers&t= + texto */

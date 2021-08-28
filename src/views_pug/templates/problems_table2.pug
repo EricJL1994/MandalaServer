@@ -4,10 +4,10 @@ div.container
   table.table.my-3.my-lg-0(id="problemTable") 
     thead.theadStyle
       tr
-        th(scope='col') Num 
-        th(scope='col') Fecha
-        th.td-hide(scope='col') Pared
-        th(scope='col') Presas
+        th(scope='col') Nº 
+        th.align-left(scope='col') Fecha
+        th.align-left.td-hide(scope='col') Pared
+        th.align-left(scope='col') Presas
         if(user)
           th Hecho
     tbody
@@ -15,7 +15,7 @@ div.container
         tr.trProblem(class = problem.done ? 'trProblemDone' : 'bg-light')
           td.d-none= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
           td(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
-            div(style={'background-color': problem.color, 'text-align': 'center', 'width': '60%'})= problem.number
+            div.align-center(style={'background-color': problem.color})= problem.number
           td.d-none(id='dateValue')= `${problem.dateValue}`
           td.small-hide= problem.date
           -const dateArray = problem.date.split('/')

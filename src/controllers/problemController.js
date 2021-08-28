@@ -14,11 +14,20 @@ const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
 exports.problem_show = async function(req, res) {
+  // console.log('A')
+  // const problems = exports.fetch_problems(req, res)
+  // console.log('B')
+  // res.render('index')
+  // res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
   res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
 }
 
 exports.problem_detail = async function(req, res) {
-  const problemDetailData = await fetch_problems(req, res)
+  const problemDetailData = await parse_problems(fetch_problems(req, res))
+  if(req.user && req.user.admin){
+    problemDetailData[0].list = await User.find({_id: {$in: problemDetailData[0].redpoints}})
+  }
+  // console.log(problemDetailData[0])
   res.render('problem_detail', {problemDetail: problemDetailData[0]});
 }
 
@@ -143,7 +152,7 @@ exports.problems_done = async function(req, res) {
 }
 /*******************************************************/
 
-async function fetch_problems(req, res) {
+function fetch_problems (req, res) {
   
   var mongoProblems
   switch (req.baseUrl) {
@@ -188,8 +197,10 @@ async function fetch_problems(req, res) {
   })).catch(err => console.log(err))*/
 }
 
-function parse_problems(problems, user){
-
+function parse_problems (problems, user){
+  if(user && user.admin){
+    
+  }
   return problems.then(result => result.map(problem => {
     return Object.assign({}, {...problem.toObject(),
       date: formatDate(convertTicksToDate(problem.dateValue)),
@@ -200,3 +211,6 @@ function parse_problems(problems, user){
     })
   })).catch(err => console.log(err))
 }
+
+exports.fetch_problems = fetch_problems
+exports.parse_problems = parse_problems

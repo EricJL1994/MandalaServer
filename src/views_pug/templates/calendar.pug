@@ -1,0 +1,66 @@
+form(action="/users/booking", method="post")
+  input#selectedDate(type="hidden", name="date", value=1)
+  input(type="hidden", name="month", value=part.monthNumber)
+  div.calendar-arrow
+    a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-1}`) ᐊ
+    a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-(-1)}`) ᐅ
+  div.booking
+    table#calendar.calendar
+      thead
+        tr
+          th(colspan= 7)= `${part.monthName} ${part.year}`
+        tr
+          th L
+          th M
+          th X
+          th J
+          th V
+          th S
+          th D
+      each week, index in part.month
+        tr
+          if (week.dates.length < 7 && index < part.month.length - 1)
+            - var blanks = (7 - week.dates.length)
+            while blanks > 0
+              - blanks--
+              td.blank
+          each book, day in week.dates
+              if !book.weekend
+                - var booked = user ? book.bookMorning.indexOf(user._id) > -1 || book.bookEvening.indexOf(user._id) > -1 || book.bookNight.indexOf(user._id) > -1 : false
+                //- - console.log('---- ' + (book.bookNight.length == 0))
+                //- td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookMorning.length},${book.bookEvening.length},${book.bookNight == undefined ? '' : ',' + book.bookNight.length}], ${part.max}, ${book.day})`).align-center= book.day
+                td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookingArray}], ${part.max}, ${book.day})`).align-center= book.day
+                //- if user
+                  td= book.bookMorning.indexOf(user._id)
+              else
+                td.blank.grey.align-center= book.day
+    div#floater2
+      table.hours-table
+        - var bookable = !!part.month[0].dates[0].bookMorning
+        thead
+          th(colspan= 2)= 'Día ' + (bookable ? 1 : '-')
+        tbody
+          //- if part.month[0].dates[0].bookMorning
+          - var books = bookable ? part.month[0].dates[0].bookMorning.length : '?'
+          - var ratio = books/part.max
+          tr(class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+            td.align-center= 'Mañana - ' + books + '/' + part.max
+            if user
+              td
+                button(formaction= '/users/booking?time=morning') Reservar
+          //- if part.month[0].dates[0].bookEvening
+          - var books = bookable ? part.month[0].dates[0].bookEvening.length : '?'
+          - var ratio = books/part.max
+          tr(class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+            td.align-center= 'Tarde - ' + books + '/' + part.max
+            if user
+              td
+                button(formaction= '/users/booking?time=evening') Reservar
+          //- if part.month[0].dates[0].bookNight
+          - var books = bookable ? part.month[0].dates[0].bookNight.length : '?'
+          - var ratio = books/part.max
+          tr(class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+            td.align-center= 'Noche - ' + books + '/' + part.max
+            if user
+              td
+                button(formaction= '/users/booking?time=night') Reservar

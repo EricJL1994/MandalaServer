@@ -1,7 +1,13 @@
-.card(style='width: 18rem;').mr-3
-  img.card-img-top(src=card.src alt=card.alt)
+.card(style='width: 18rem;')
+  if(card.src)
+    img(src=card.src alt=card.alt)
   .card-container
-    h3.card-title= card.tittle
-    p.card-text= card.description
+    h2.card-title= card.tittle
+    p.card-text!= card.description
     if(card.tittle && card.link)
-      a.btn.btn-primary(href=card.link) Ver todo
+      a.btn-primary(href=card.link) Ver todo
+    if(card.list)
+      ul
+        each element in card.list
+          li= element.name
+        

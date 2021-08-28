@@ -1,0 +1,24 @@
+include templates/header.pug
+
+main
+  each part in page_schema
+    if (part.name == 'card')
+      -    
+        var card = {
+          src: part.src,
+          alt: part.alt,
+          tittle: part.tittle,
+          description: part.description,
+          link: part.link
+        }
+      include templates/card.pug
+    
+    if (part.name == 'table')
+      - var arrayProblems = part.arrayProblems
+      include templates/problems_table2.pug
+  
+    if (part.name == 'calendar')
+      include templates/calendar.pug
+
+    if (part.name == 'bookings')
+      include templates/bookings.pug

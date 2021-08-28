@@ -4,13 +4,14 @@ include templates/header.pug
 main
     div
         h1 Mandala Climb
-        each info in infos
-            div
+        if(infos)
+            each info in infos
                 div
-                    -var date = new Date(info.date)
-                    h4= `${date.getDate()}/${date.getMonth() + 1}/${date.getYear() + 1900} ${info.tittle}`
-                p= info.description
-            hr
+                    div
+                        -var date = new Date(info.date)
+                        h4= `${date.getDate()}/${date.getMonth() + 1}/${date.getYear() + 1900} ${info.tittle}`
+                    p= info.description
+                hr
 
         div.container
             -    
@@ -33,38 +34,3 @@ main
                 }
             include templates/card.pug
         hr
-
-//.container.bg-light.my-2
-    each info in infos
-        div
-            .row
-                -var date = new Date(info.date)
-                h4.col-auto= `${date.getDate()}/${date.getMonth() + 1}/${date.getYear() + 1900}`
-                h4= info.tittle
-            p= info.description
-        hr.solid-separator
-    
-    
-    
-    
-    div.row.m-3.container.justify-content-center
-        -    
-            var card = {
-                src: '/images/TRAVESIAS-2.fw.png',
-                alt: 'Travesías',
-                tittle: 'Travesías',
-                description: 'Las travesías comienzan con una mano en cada disco marcado con una x. Utilizando pies libres llegamos hasta la presa marcada con 2 discos.',
-                link: '/traverses/show'
-            }
-        include templates/card.pug
-
-        -    
-            var card = {
-                src: '/images/boulders4.fw.png',
-                alt: 'Bloques',
-                tittle: 'Bloques',
-                description: 'Los bloques comienzan con una mano en cada etiqueta. Utilizando sólo las presas del mismo color llegamos hasta la presa marcada con otra etiqueta.',
-                link: '/boulders/show'
-            }
-        include templates/card.pug
-    hr.solid-separator

@@ -1,11 +1,20 @@
 - var tittleText = 'Detalles'
 include templates/header.pug
-body
-  -var img_src = '/images/TRAVESIAS-2.fw.png'
-  -var img_alt = `${problemDetail.dificultyName} ${problemDetail.number}`
-  -var card_tittle = `${problemDetail.dificultyName} ${problemDetail.number}`
-  -var card_description = `Color de presas: ${problemDetail.holdColor} \n Pared: ${problemDetail.wallName}\nFecha: ${problemDetail.date}`
-  -var card_link = undefined
+
+main
+  -    
+    var card = {
+      alt: `${problemDetail.dificultyName} ${problemDetail.number}`,
+      tittle: `${problemDetail.dificultyName} ${problemDetail.number}`,
+      description: `<strong>Color de presas:</strong> ${problemDetail.holdColor} <br> <strong>Pared:</strong> ${problemDetail.wallName} <br> <strong>Fecha:</strong> ${problemDetail.date} <br> <strong>Encadenados:</strong> ${problemDetail.redpoints.length}`,
+      link: undefined,
+      list: problemDetail.list
+    }
+  //- -var img_src = '/images/TRAVESIAS-2.fw.png'
+  //- -var img_alt = `${problemDetail.dificultyName} ${problemDetail.number}`
+  //- -var card_tittle = `${problemDetail.dificultyName} ${problemDetail.number}`
+  //- -var card_description = `Color de presas: ${problemDetail.holdColor} \n Pared: ${problemDetail.wallName}\nFecha: ${problemDetail.date}`
+  //- -var card_link = undefined
   include templates/card.pug
   //table.table(style='max-width: 600px;').table-striped
     tbody

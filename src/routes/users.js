@@ -417,6 +417,8 @@ router.get("/unbook", async (req, res) => {
         bookDate.bookNight.splice(bookDate.bookNight.indexOf(id), 1);
         break;
     }
+
+    console.log(`User ${req.user.name} try to cancel book: ${(cancelDate - date) / 1000 / 60 / 60 / 24 > 1}`)
     if ((cancelDate - date) / 1000 / 60 / 60 / 24 > 1 || req.user.admin) {
       //If the cancel is in time
       var book = await Book.findById(id)

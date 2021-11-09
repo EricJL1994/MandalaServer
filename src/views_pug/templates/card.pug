@@ -1,4 +1,4 @@
-.card(style='width: 18rem;')
+.card(style='max-width: 18rem;')
   if(card.src)
     img(src=card.src alt=card.alt)
   .card-container
@@ -10,4 +10,8 @@
       ul
         each element in card.list
           li= element.name
-        
+    if(card.userList)
+      ul
+        each element in card.userList
+          li
+            a(href="/users/profile/"+element._id)= element.name        

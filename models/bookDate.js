@@ -18,19 +18,22 @@ const BookDateSchema = new mongoose.Schema({
   bookMorning: {
     type: [mongoose.Types.ObjectID],
     validate: [arrayLimit, "{PATH} exceeds the limits"],
-    ref: 'User',
+    // ref: 'user',
+    ref: 'book',
   },
 
   bookEvening: {
     type: [mongoose.Types.ObjectID],
     validate: [arrayLimit, "{PATH} exceeds the limits"],
-    ref: 'User',
+    // ref: 'user',
+    ref: 'book',
   },
 
   bookNight: {
     type: [mongoose.Types.ObjectID],
     validate: [arrayLimit, "{PATH} exceeds the limits"],
-    ref: 'User',
+    // ref: 'user',
+    ref: 'book',
   },
 
   bookOpen: {

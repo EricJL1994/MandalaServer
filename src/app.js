@@ -23,7 +23,7 @@ var boulders = require("./routes/boulders");
 var traverses = require("./routes/traverses");
 
 const Info = require("../models/info");
-const BookDate = require("../models/bookDate");
+const Log = require("../models/log");
 const app = express();
 
 const hostname = "localhost"; //npm run start:dev
@@ -38,6 +38,7 @@ const session = require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
 const { monthName } = require("./constants");
+const User = require("../models/user");
 
 require("../config/passport")(passport);
 app.use(express.urlencoded({ extended: true }));
@@ -78,67 +79,90 @@ app.get("/", async (req, res) => {
   res.render("index", { infos: infos });
 });
 
-app.get("/test", async (req, res) => {
-    var page_schema = [];
-  //   const book = { year: 2021, month: 2, day: 22 };
-  //   BookDate.findOne({ year: book.year, month: book.month, day: book.day }).then(
-  //     (value) => {
-  //       if (value) console.log(value);
-  //     }
-  //   );
-  //   BookDate.create(book);
-  //   console.log(BookDate.find().exec());
-  //   console.log(getWeeksInMonth(2021, 6));
-  //   page_schema.push({
-  //     name: "card",
-  //     src: "/images/TRAVESIAS-2.fw.png",
-  //     alt: "Alt",
-  //     tittle: "Test",
-  //     description: "Esto es un test",
-  //     link: "/",
-  //   });
-  //   page_schema.push({
-  //     name: "card",
-  //     alt: "Alt",
-  //     tittle: "Test",
-  //     description: "Esto es un test",
-  //   });
-  //   problems = await parse_problems(fetch_problems(req, res), req.user);
-  //   page_schema.push({ name: "table", arrayProblems: problems });
-  //   page_schema.push({
-  //     name: "calendar",
-  //     month: await getWeeksInMonth(2021, 6),
-  //     max: process.env.CAPACITY,
-  //   });
+app.post("/test", async (req, res) => {
+  if (req.user && req.user.admin) {
+    var user = await User.findOne({ _id: req.body.users });
+    // console.log(user)
+    var perm = user.getPermissions();
+    var obj = {};
+    switch (req.body.paid) {
+      case "month":
+        var paid = req.body.selectedmonth.split("-");
+        obj[paid[1] - 1] = 0;
+        if (!perm[paid[0]]) perm[paid[0]] = {};
+        Object.assign(perm[paid[0]], obj);
+        break;
+      case "training":
+        var paid = req.body.selectedmonth.split("-");
+        obj[paid[1] - 1] = 1;
+        if (!perm[paid[0]]) perm[paid[0]] = {};
+        Object.assign(perm[paid[0]], obj);
+        break;
 
-  const month = 7
-  const year = 2021
-  const books = await BookDate.find({month: month, year: year })
-    .populate("bookMorning")
-    .populate("bookEvening")
-    .populate("bookNight");
-  books.forEach(book => {
-    book.bookNames = [[], [], []];
-    book.bookMorning.forEach((user) => {
-      book.bookNames[0].push(user.name);
-    });
-    book.bookEvening.forEach((user) => {
-      book.bookNames[1].push(user.name);
-    });
-    book.bookNight.forEach((user) => {
-      book.bookNames[2].push(user.name);
-    });
+      case "voucher":
+        perm.days += 5;
+        break;
+
+      case "trainingVoucher":
+        perm.trainingDays += 5;
+        break;
+    }
     
-  });
-  page_schema.push({
-    name: 'bookings',
-    books: books,
-    max: process.env.CAPACITY,
-    monthName: monthName[month],
-  })
-  res.render("builder", { tittleText: "Test", page_schema: page_schema });
-  // res.send(books);
+    user.permissions = JSON.stringify(perm);
+    // console.log(user);
+    await user.save();
+    res.redirect("/test");
+  } else {
+    console.log("No admin");
+    res.redirect("/");
+  }
 });
+
+// app.get("/test", async (req, res) => {
+  // if(req.user && req.user.admin){
+  //   // var page_schema = [];
+  //   var month = req.query.month || new Date().getMonth();
+  //   var year = req.query.year || new Date().getFullYear();
+  //   if(month > 11){
+  //     year ++;
+  //     month %= 12
+  //   }
+  //   if (month < 0) {
+  //     year --;
+  //     month -= -12;
+  //   }
+
+  //   const books = await BookDate.find({ month: month, year: year })
+  //     .populate("bookMorning")
+  //     .populate("bookEvening")
+  //     .populate("bookNight");
+  //   books.forEach((book) => {
+  //     book.bookNames = [[], [], []];
+  //     book.bookMorning.forEach((user) => {
+  //       book.bookNames[0].push(user.name);
+  //     });
+  //     book.bookEvening.forEach((user) => {
+  //       book.bookNames[1].push(user.name);
+  //     });
+  //     book.bookNight.forEach((user) => {
+  //       book.bookNames[2].push(user.name);
+  //     });
+  //   });
+  //   page_schema.push({
+  //     name: "bookings",
+  //     books: books,
+  //     max: process.env.CAPACITY,
+  //     monthName: monthName[month],
+  //     year: year,
+  //     month: month,
+  //   });
+  // res.render("builder", { tittleText: "Test", page_schema: page_schema });
+  //   // res.send(books);
+  // }else{
+  //   res.redirect('/users/booking')
+  // }
+//   res.redirect("/")
+// });
 
 process.on("SIGTERM", () => {
   server.close(() => {

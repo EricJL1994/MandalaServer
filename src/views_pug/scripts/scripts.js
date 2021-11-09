@@ -104,6 +104,39 @@ function filter(dropdownFilter) {
   search(undefined, dropdown.value);
 }
 
+function filterDropdown(id, filter, submit){
+  document.getElementById(submit).disabled = false
+  const select = document.getElementById(id)
+  const options = select.getElementsByTagName("OPTION")
+  var selected = select.options[select.selectedIndex]
+  if(!selected.innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1) selected = undefined;
+  for (let i = 1; i < options.length; i++) {
+    if(options[i].innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1){
+      if(!selected) {
+        options[i].selected = true
+        selected = options[i]
+      }
+      options[i].style.display = ""
+    }else{
+      options[i].style.display = "none"
+    }
+  }
+  if(!selected){
+    options[0].selected = true
+    document.getElementById(submit).disabled = true
+  } 
+}
+
+function changePermissions(select){
+  const filterId = select.options[select.selectedIndex].value
+  const trows = document.getElementById("permissionsTable").getElementsByTagName("TBODY")[0].getElementsByTagName("TR")
+  for (const row of trows) {
+    row.style.display = row.firstChild.innerText == filterId ? "" : "none"
+  }
+  document.getElementById("bookingName").style.display = filterId == "612cbc6301d5f95906c21dd4" ? "" : "none"
+  console.log(trows)
+}
+
 function timer(timeFilter) {
   // document.getElementById('timeValue').value = timeFilter
   search(undefined, undefined, timeFilter);
@@ -157,14 +190,11 @@ function boulderDone(button, id) {
   inputP.value = JSON.stringify(sessionStorage.problemsDone);
 }
 
-function showFloatingTimeTable(bookings, max, day) {
+function showFloatingTimeTable(bookings, max, day, td) {
   const timeNames = ["Mañana - ", "Tarde - ", "Noche - "];
   document.getElementById("selectedDate").value = day;
-  // const floater = document.getElementById('floater')
-  // floater.style.visibility = 'visible'
-  const dayDetails = document.getElementById("floater2");
+  const dayDetails = document.getElementById("floater");
   dayDetails.getElementsByTagName("th")[0].innerText = "Dia " + day;
-  // const floaterBody = floater.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
   const dayDetailsBody = dayDetails
     .getElementsByTagName("tbody")[0]
     .getElementsByTagName("tr");
@@ -187,13 +217,14 @@ function showFloatingTimeTable(bookings, max, day) {
     } else {
       dayDetailsBody[index].style.display = "none";
     }
-
-    // floaterBody[index].getElementsByTagName('td')[0].innerText = timeNames[index] + bookings[index] + '/' + max
-    // floaterBody[index].classList.remove('trProblemDone')
-    // floaterBody[index].classList.remove('trProblemMarked')
-    // floaterBody[index].classList.remove('trProblemUnmarked')
-    // floaterBody[index].classList.add(ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
   }
+  const rows = document.getElementById("calendar").getElementsByTagName("tbody")[0].getElementsByTagName("tr")
+  for (const row of rows) {
+    for (const rowtd of row.getElementsByTagName("td")) {
+      rowtd.classList.remove("trProblemDone");
+    }
+  }
+  td.classList.add("trProblemDone");
 }
 
 const themeMap = {

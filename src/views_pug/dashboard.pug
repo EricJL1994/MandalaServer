@@ -2,4 +2,32 @@
 include templates/header.pug
 
 main
-  include templates/dashboard-form.pug
+  div
+    h1(style='margin-left: 1rem') Preferencias
+    div.card
+      form.user-form(action="/users/dashboard", method="post")
+        //- h3(style='margin-top: 0') General
+        //- hr
+        -var formLabel = 'Nombre de usuario', formValue = user.name, formName = 'name'
+        include templates/dashboard/form-group.pug
+        -var formLabel = 'E-mail', formValue = user.email, formName = 'email'
+        include templates/dashboard/form-group.pug
+        if(!user.isVerified)
+          div
+            h4(style='margin-bottom: .25rem') Email no confirmado
+            button.btn-primary(type='submit', formaction='/users/verification') Enviar confirmación
+        if(user.canBook)
+          hr
+          a(href="/users/booking") Reservar horas 
+        if(user.admin || true)
+          hr
+          a(href="/users/books") Ver reservas
+        if(user.admin)
+          hr
+          a(href="/users/payment") Ver permisos
+        hr
+        a(href="/users/logout")  Cerrar sesión
+
+
+
+  //- include templates/dashboard-form.pug

@@ -10,22 +10,31 @@ div.container
         th.align-left(scope='col') Presas
         if(user)
           th Hecho
+          if(user.admin)
+            th RP
     tbody
       each problem in arrayProblems
         tr.trProblem(class = problem.done ? 'trProblemDone' : 'bg-light')
+          //- Search criteria
           td.d-none= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
+          //- Number and link
           td(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
-            div.align-center(style={'background-color': problem.color})= problem.number
+            div.align-center(style={'background-color': problem.color, 'cursor': 'pointer'})= problem.number
+          //- Date
           td.d-none(id='dateValue')= `${problem.dateValue}`
           td.small-hide= problem.date
           -const dateArray = problem.date.split('/')
           td.small-show= `${dateArray[0]}/${dateArray[1]}`
+          //- Wall
           td= problem.wallName
-          
+          //- Hold color
           td.small-hide= problem.holdColor
           td.small-show= problem.holdColorShort
+          //- User input
           if(user)
-            td
+            td.align-center
               input.d-none(type="checkbox", checked = false, disabled = true)
               input.d-none(type="checkbox", checked = problem.done, disabled = true)
               button(onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
+            if(user.admin)
+              td.align-center= problem.redpoints.length

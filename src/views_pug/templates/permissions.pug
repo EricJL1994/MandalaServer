@@ -1,0 +1,14 @@
+div.card
+  each userInfo in part.users
+    div
+      - var years = Object.keys(userInfo.parsedPermissions)
+      - years.splice(years.indexOf('days'), 1)
+      h3= userInfo.name
+      ul
+        li= 'Días: ' + userInfo.parsedPermissions.days
+        li= 'Días + entreno: ' + userInfo.parsedPermissions.trainingDays
+        each year in years
+          - var months = Object.keys(userInfo.parsedPermissions[year])
+          each month in months
+            li= (month-(-1)) + "/" + year + ": " +(userInfo.parsedPermissions[year][month] ? "Entreno" : "Mes")
+    hr

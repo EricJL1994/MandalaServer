@@ -59,13 +59,13 @@ async function getWeeksInMonth(year, month) {
     lastDate = new Date(year, month + 1, 0),
     numDays = lastDate.getDate();
 
-  // console.log(weeks)
-  // console.log(firstDate)
-  // console.log(lastDate)
-  // console.log(numDays)
   let dayOfWeekCounter = (firstDate.getDay() + 6) % 7;
 
   const capacity = process.env.CAPACITY;
+
+  var books = await BookDate.find({year: year, month: month})
+  if(books.length == 0) return false;
+  //OPTIMIZAR PARA UNA SOLA PETICIÓN
   for (let date = 1; date <= numDays; date++) {
     if (dayOfWeekCounter === 0 || weeks.length === 0) {
       weeks.push([]);
@@ -79,23 +79,29 @@ async function getWeeksInMonth(year, month) {
 
       //ENTRE SEMANA
       default:
-        var book = await BookDate.findOne({
-          year: year,
-          month: month,
-          day: date,
-        });
-
-        if (!book) {
-          book =
-            await (dayOfWeekCounter == 4
-              ? BookDate.create({
-                  year: year,
-                  month: month,
-                  day: date,
-                  bookOpen: [true, true, false],
-                })
-              : BookDate.create({ year: year, month: month, day: date }));
+        var book;
+        for (const b of books) {
+          if(b.day == date){
+            book = b;
+            break;
+          }
         }
+        // var book = await BookDate.findOne({
+        //   year: year,
+        //   month: month,
+        //   day: date,
+        // });
+        // if (!book) {
+        //   book =
+        //     await (dayOfWeekCounter == 4
+        //       ? BookDate.create({
+        //           year: year,
+        //           month: month,
+        //           day: date,
+        //           bookOpen: [true, true, false],
+        //         })
+        //       : BookDate.create({ year: year, month: month, day: date }));
+        // }
         if (dayOfWeekCounter == 4) {
           // console.log(book.noNight);
 

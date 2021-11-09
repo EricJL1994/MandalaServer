@@ -31,7 +31,16 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  permissions:{
+    type: String,
+    default: '{"days":0,"trainingDays":0}',
+  },
 });
+
+UserSchema.methods.getPermissions = function (){
+  return JSON.parse(this.permissions)
+}
 
 UserSchema.methods.generateVerificationToken = function () {
   const user = this;
@@ -42,6 +51,6 @@ UserSchema.methods.generateVerificationToken = function () {
 
   return verificationToken;
 };
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model("user", UserSchema);
 
 module.exports = User;

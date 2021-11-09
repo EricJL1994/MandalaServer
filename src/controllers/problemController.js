@@ -25,7 +25,7 @@ exports.problem_show = async function(req, res) {
 exports.problem_detail = async function(req, res) {
   const problemDetailData = await parse_problems(fetch_problems(req, res))
   if(req.user && req.user.admin){
-    problemDetailData[0].list = await User.find({_id: {$in: problemDetailData[0].redpoints}})
+    problemDetailData[0].userList = await User.find({_id: {$in: problemDetailData[0].redpoints}})
   }
   // console.log(problemDetailData[0])
   res.render('problem_detail', {problemDetail: problemDetailData[0]});

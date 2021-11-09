@@ -1,0 +1,108 @@
+form(action="/users/booking", method="post")
+  input#selectedDate(type="hidden", name="date", value=1)
+  input(type="hidden", name="month", value=part.monthNumber)
+  div.calendar-arrow
+    a.no-decor.btn-primary(href=`/users/books?month=${part.month-1}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐊ
+    a.no-decor.btn-primary(href=`/users/books?month=${part.month-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ
+  div.booking
+    -const trainingNames = {month: 'Mes',training: 'Entreno',voucher: 'Día', trainingVoucher: 'Día + entreno'}
+    if (part.books.length == 0)
+      div= `No se han generado las reservar para ${part.monthName} ${part.year}`
+    else 
+      table
+        thead
+          tr
+            th(colspan = 5)= `${part.monthName} ${part.books[0].year}`
+          tr
+            th Día
+            th Horario
+            th Nombre
+            th Tipo
+            th Eliminar
+        tbody
+          each book in part.books
+            - var length = book.bookMorning.length + book.bookEvening.length + book.bookNight.length
+            each morning, index in book.bookMorning
+              if (user.admin || morning.user._id.equals(user._id))
+                tr
+                  //- **********************AJUSTAR EN BACKEND LOS ARRAYS**********************
+                  //- if(index == 0)
+                  //-   td.border-right.align-center(rowspan = length)= book.day
+                  td.border-right.align-center= book.day
+                  //- if (index == 0)
+                  //-   td.border-right.align-center(rowspan = book.bookMorning.length) Mañana
+                  td.border-right.align-center Mañana
+
+                  td.border-right.align-center= morning.user.name == "Invitado" ? morning.name : morning.user.name
+                  td.border-right.align-center= trainingNames[morning.trainingType]
+                  td.align-center
+                    a.no-decor(href=`/users/unbook?id=${morning._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=morning`) X
+            each evening, index in book.bookEvening
+              tr
+                //- if (book.bookMorning.length == 0 && index == 0)
+                  td.border-right.align-center(rowspan = length)= book.day
+                td.border-right.align-center= book.day
+                if (index == 0)
+                  td.border-right.align-center(rowspan = book.bookEvening.length) Tarde
+                td.border-right.align-center= evening.user.name == "Invitado" ? evening.name : evening.user.name
+                td.border-right.align-center= trainingNames[evening.trainingType]
+                td.align-center
+                  a.no-decor(href=`/users/unbook?id=${evening._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=evening`) X
+            each night, index in book.bookNight
+              tr
+                //- if(book.bookNight.length == length && index == 0)
+                  td.border-right.align-center(rowspan = length)= book.day
+                td.border-right.align-center= book.day
+                if (index == 0)
+                  td.border-right.align-center(rowspan = book.bookNight.length) Noche
+                td.border-right.align-center= night.user.name == "Invitado" ? night.name : night.user.name
+                td.border-right.align-center= trainingNames[night.trainingType]
+                td.align-center
+                  a.no-decor(href=`/users/unbook?id=${night._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=night`) X
+      if (user.admin)
+        table
+          thead
+            tr
+              th(colspan = 10)= `${part.monthName} ${part.books[0].year}`
+            tr
+              th Día
+              th(colspan = 3) Mañana
+              th(colspan = 3) Tarde
+              th(colspan = 3) Noche
+          tbody
+            each book in part.books
+              - var n = 0
+              while n < part.max
+                tr
+                  if(n == 0)
+                    td.border-right(rowspan = part.max)= book.day
+                  if(book.bookMorning[n])
+                    td.border-right= book.bookMorning[n].user.name == "Invitado" ? book.bookMorning[n].name : book.bookMorning[n].user.name
+                    td.border-right.align-center= trainingNames[book.bookMorning[n].trainingType]
+                    td.border-right.align-center
+                      a.no-decor(href=`/users/unbook?id=${book.bookMorning[n]._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=morning`) X
+                  else
+                    td .
+                    td .
+                    td.border-right
+                  if(book.bookEvening[n])
+                    td.border-right= book.bookEvening[n].user.name == "Invitado" ? book.bookEvening[n].name : book.bookEvening[n].user.name
+                    td.border-right.align-center= trainingNames[book.bookEvening[n].trainingType]
+                    td.border-right.align-center
+                      a.no-decor(href=`/users/unbook?id=${book.bookEvening[n]._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=evening`) X
+                  else
+                    td .
+                    td .
+                    td.border-right
+                  if(book.bookNight[n])
+                    td.border-right= book.bookNight[n].user.name == "Invitado" ? book.bookNight[n].name : book.bookNight[n].user.name
+                    td.border-right.align-center= trainingNames[book.bookNight[n].trainingType]
+                    td.border-right.align-center
+                      a.no-decor(href=`/users/unbook?id=${book.bookNight[n]._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=night`) X
+                  else
+                    td .
+                    td .
+                    td
+                - n++
+              tr.grey
+                td(colspan = 10)

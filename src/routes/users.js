@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require("../../models/user");
 const BookDate = require("../../models/bookDate");
+const Book = require("../../models/book");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const { getWeeksInMonth } = require("../commonFunctions");
@@ -197,114 +198,397 @@ router.post("/config", (req, res) => {
 
 //BOOKING
 router.get("/booking", async (req, res) => {
-  const month = req.query.month || new Date().getMonth();
-  const year = req.query.year || new Date().getFullYear();
+  if (req.user && req.user.canBook) {
+    var month = req.query.month || new Date().getMonth();
+    var year = req.query.year || new Date().getFullYear();
+    if (month > 11) {
+      year++;
+      month %= 12;
+    }
+    if (month < 0) {
+      year--;
+      month -= -12;
+    }
 
-  const monthFormatted = await getWeeksInMonth(year, month);
-  monthFormatted.forEach((week) => {
-    // console.log('New week')
-    // console.log(week.dates)
-    week.dates.forEach((day) => {
-      // console.log(`${day.day} - Night: ${day.noNight ? day.bookNight.length + ' - ' + day.bookNight : 'No night'}`)
+    const monthFormatted = await getWeeksInMonth(year, month);
+    var page_schema = [];
+    var users = undefined;
+    if (req.user.admin) {
+      users = await User.find().exec();
+      users.map((user) => {
+        user.parsedPermissions = user.getPermissions();
+        user.monthSubscription =
+          !!user.getPermissions()[year] &&
+          !(user.getPermissions()[year][month] == undefined);
+        user.monthTraining =
+          !!user.getPermissions()[year] && !!user.getPermissions()[year][month];
+      });
+    }
+    page_schema.push({
+      name: "booking",
+      month: monthFormatted,
+      monthName: monthName[month],
+      monthNumber: month,
+      year: year,
+      max: process.env.CAPACITY,
+      monthSubscription:
+        !!req.user.getPermissions()[year] &&
+        !(req.user.getPermissions()[year][month] == undefined),
+      monthTraining:
+        !!req.user.getPermissions()[year] &&
+        !!req.user.getPermissions()[year][month],
+      permissions: req.user.getPermissions(),
+      users: users,
     });
-  });
-  // console.log(monthFormatted)
-  var page_schema = [];
-  page_schema.push({
-    name: "calendar",
-    month: monthFormatted,
-    monthName: monthName[month],
-    monthNumber: month,
-    year: 2021,
-    max: process.env.CAPACITY,
-  });
-  // res.send('ok')
-  res.render("builder", { tittleText: "Reservar", page_schema: page_schema });
-  // res.send('ok')
+    res.render("builder", { tittleText: "Reservar", page_schema: page_schema });
+    // res.send('ok')
+  } else {
+    res.redirect("/users/dashboard");
+  }
 });
 
 router.post("/booking", async (req, res) => {
   // console.log(req.body.month + " " + req.body.date + " " + req.query.time);
-  if (req.user) {
-    const booking = await BookDate.findOne({
-      month: req.body.month,
-      day: req.body.date,
-    }).exec();
-    switch (req.query.time) {
-      case "morning":
-        if (
-          booking.bookMorning.length < process.env.CAPACITY &&
-          booking.bookMorning.indexOf(req.user._id) < 0
-        ) {
-          console.log(
-            `User: ${req.user.name} booked ${booking.day}/${
-              booking.month + 1
-            } morning`
-          );
-          booking.bookMorning.push(req.user._id);
+  if (req.user && req.user.canBook) {
+    const user = req.user.admin
+      ? await User.findOne({ _id: req.body.userBooking })
+      : req.user;
+    const year = req.body.year;
+    const month = req.body.month;
+    const method = req.body.method;
+    const permissions = user.getPermissions();
+
+    //CHECK PERMISSIONS
+    var permissionGranted = user._id.equals("612cbc6301d5f95906c21dd4") || req.user.admin;
+    switch (method) {
+      case "month":
+        if (!!permissions[year] && !(permissions[year][month] == undefined)) {
+          permissionGranted = true;
         }
         break;
-      case "evening":
-        if (
-          booking.bookEvening.length < process.env.CAPACITY &&
-          booking.bookEvening.indexOf(req.user._id) < 0
-        ) {
-          console.log(
-            `User: ${req.user.name} booked ${booking.day}/${
-              booking.month + 1
-            } evening`
-          );
-          booking.bookEvening.push(req.user._id);
+      case "training":
+        if (!!permissions[year] && !!permissions[year][month]) {
+          permissionGranted = true;
         }
         break;
-      case "night":
-        if (
-          booking.bookNight.length < process.env.CAPACITY &&
-          booking.bookNight.indexOf(req.user._id) < 0
-        ) {
-          console.log(
-            `User: ${req.user.name} booked ${booking.day}/${
-              booking.month + 1
-            } night`
-          );
-          booking.bookNight.push(req.user._id);
+      case "voucher":
+        if (permissions.days > 0) {
+          permissionGranted = true;
+        }
+        break;
+      case "trainingVoucher":
+        if (permissions.trainingDays > 0) {
+          permissionGranted = true;
         }
         break;
     }
-    await BookDate.updateOne(
-      { month: booking.month, day: booking.day, year: booking.year },
-      booking
-    ).exec();
-    // console.log(booking.bookMorning);
+
+    //CREATE BOOK
+    const book = {
+      user: user._id,
+      name: user._id.equals("612cbc6301d5f95906c21dd4")
+        ? req.body.bookingName
+        : user.name,
+      trainingType: method,
+    };
+
+    //GET THE DATE
+    const booking = await BookDate.findOne({
+      month: month,
+      day: req.body.date,
+      year: year,
+    })
+      .populate({ path: "bookMorning", populate: { path: "user" } })
+      .populate({ path: "bookEvening", populate: { path: "user" } })
+      .populate({ path: "bookNight", populate: { path: "user" } });
+
+    const bookingRaw = await BookDate.findOne({
+      month: month,
+      day: req.body.date,
+      year: year,
+    });
+
+    //CHECK IF DUPLICATED OR FULL
+    var check = false;
+    if (permissionGranted) {
+      switch (req.query.time) {
+        case "morning":
+          check = await checkBooking(booking.bookMorning, user, method, book);
+          if (check) bookingRaw.bookMorning.push(check._id);
+          break;
+
+        case "evening":
+          check = await checkBooking(booking.bookEvening, user, method, book);
+          if (check) bookingRaw.bookEvening.push(check._id);
+          break;
+
+        case "night":
+          check = await checkBooking(booking.bookNight, user, method, book);
+          if (check) bookingRaw.bookNight.push(check._id);
+          break;
+      }
+    }
+
+    //SAVE DATE
+    if (!!check) {
+      switch (method) {
+        case "voucher":
+          permissions.days -= 1;
+          break;
+
+        case "trainingVoucher":
+          permissions.trainingDays -= 1;
+          break;
+      }
+      user.permissions = JSON.stringify(permissions)
+      user.save()
+    }
+    await bookingRaw.save();
+    res.redirect(`booking?month=${month}&year=${year}`);
+  } else {
+    res.redirect("/");
   }
-  res.redirect("booking");
+});
+
+router.get("/books", async (req, res) => {
+  if (req.user && req.user /*.admin*/) {
+    var page_schema = [];
+    var month = req.query.month || new Date().getMonth();
+    var year = req.query.year || new Date().getFullYear();
+    if (month > 11) {
+      year++;
+      month %= 12;
+    }
+    if (month < 0) {
+      year--;
+      month -= -12;
+    }
+
+    const books = await BookDate.find({ month: month, year: year })
+      .populate({ path: "bookMorning", populate: { path: "user" } })
+      .populate({ path: "bookEvening", populate: { path: "user" } })
+      .populate({ path: "bookNight", populate: { path: "user" } });
+
+    page_schema.push({
+      name: "books",
+      books: books,
+      max: process.env.CAPACITY,
+      monthName: monthName[month],
+      year: year,
+      month: month,
+    });
+
+    res.render("builder", { tittleText: "Reservas", page_schema: page_schema });
+  } else {
+    res.redirect("/users/booking");
+  }
 });
 
 router.get("/unbook", async (req, res) => {
-  const { userid, day, month, year, time } = req.query;
-  const book = await BookDate.findOne({
-    day: day,
-    month: month,
-    year: year,
-  }).exec();
+  const { id } = req.query;
+  if (req.user && (req.user.admin || req.user._id.equals(id))) {
+    const { day, month, year, time } = req.query;
+    const bookDate = await BookDate.findOne({
+      day: day,
+      month: month,
+      year: year,
+    }).exec();
 
-  switch (time) {
-    case "morning":
-      book.bookMorning.splice(book.bookMorning.indexOf(userid), 1)
-      break;
+    //DELETE BOOK FROM DB
+    var cancelDate = new Date(year, month, day);
+    var date = new Date();
+    var book;
+    switch (time) {
+      case "morning":
+        cancelDate.setHours(10);
+        book = bookDate.bookMorning[bookDate.bookMorning.indexOf(id)]
+        bookDate.bookMorning.splice(bookDate.bookMorning.indexOf(id), 1);
+        break;
 
-    case "evening":
-      book.bookEvening.splice(book.bookEvening.indexOf(userid), 1)
-      break;
+      case "evening":
+        cancelDate.setHours(17);
+        book = bookDate.bookEvening[bookDate.bookEvening.indexOf(id)]
+        bookDate.bookEvening.splice(bookDate.bookEvening.indexOf(id), 1);
+        break;
 
-    case "night":
-      book.bookNight.splice(book.bookNight.indexOf(userid), 1)
-      break;
+      case "night":
+        cancelDate.setHours(19);
+        book = bookDate.bookNight[bookDate.bookNight.indexOf(id)]
+        bookDate.bookNight.splice(bookDate.bookNight.indexOf(id), 1);
+        break;
+    }
+    if ((cancelDate - date) / 1000 / 60 / 60 / 24 > 1 || req.user.admin) {
+      //If the cancel is in time
+      var book = await Book.findById(id)
+      var user = await User.findById(book.user).exec()
+      var permissions = user.getPermissions()
+      switch (book.trainingType) {
+        case 'voucher':
+          permissions.days += 1;
+          break;
+      
+        case 'trainingVoucher':
+          permissions.trainingDays += 1;
+          break;
+      }
+      user.permissions = JSON.stringify(permissions)
+      user.save()
+
+      await Book.deleteOne({ _id: id });
+      await BookDate.updateOne({ day: day, month: month, year: year }, bookDate);
+    }
+    res.redirect("/users/books");
+    // res.send(userid + ' => ' + day + '/' + month + '/' + year + ' ' + time);
+  } else {
+    res.redirect("/users/booking");
   }
-
-  await BookDate.updateOne({ day: day, month: month, year: year }, book);
-  res.redirect("/test");
-  // res.send(userid + ' => ' + day + '/' + month + '/' + year + ' ' + time);
 });
+
+router.get("/profile/:id", async (req, res) => {
+  const { id } = req.params;
+  if (req.user && (req.user._id == id || req.user.admin)) {
+    const user = await User.findOne({ _id: id }).exec();
+    var page_schema = [];
+    page_schema.push({
+      name: "card",
+      tittle: user.name,
+      description: "<strong><u>Email:</u></strong> " + user.email,
+      list: [{ name: user._id }],
+    });
+    console.log(page_schema[0].list);
+    res.render("builder", { tittleText: "Perfil", page_schema: page_schema });
+  } else {
+    res.redirect("/");
+  }
+});
+
+router.get("/payment", async (req, res) => {
+  if (!(req.user && req.user.admin)) {
+    res.redirect("/");
+    return;
+  }
+  var users = await User.find().exec();
+  // res.send(users);
+  users.map((user) => (user.parsedPermissions = user.getPermissions()));
+
+  var page_schema = [];
+  page_schema.push({
+    name: "payment",
+    users: users,
+  });
+  page_schema.push({
+    name: "permissions",
+    users: users,
+  });
+  res.render("builder", { tittleText: "Pagos", page_schema: page_schema });
+});
+
+router.post("/payment", async (req, res) => {
+  if (req.user && req.user.admin) {
+    var user = await User.findOne({ _id: req.body.users });
+    var perm = user.getPermissions();
+    var obj = {};
+    switch (req.body.paid) {
+      case "month":
+        var paid = req.body.selectedmonth.split("-");
+        obj[paid[1] - 1] = 0;
+        if (!perm[paid[0]]) perm[paid[0]] = {};
+        Object.assign(perm[paid[0]], obj);
+        break;
+      case "training":
+        var paid = req.body.selectedmonth.split("-");
+        obj[paid[1] - 1] = 1;
+        if (!perm[paid[0]]) perm[paid[0]] = {};
+        Object.assign(perm[paid[0]], obj);
+        break;
+
+      case "voucher":
+        perm.days += 5;
+        break;
+
+      case "trainingVoucher":
+        perm.trainingDays += 5;
+        break;
+    }
+
+    user.permissions = JSON.stringify(perm);
+    // console.log(user);
+    await user.save();
+    res.redirect("/users/payment");
+  } else {
+    console.log("No admin");
+    res.redirect("/");
+  }
+});
+
+// router.get("/permissions", async (req, res) => {
+
+// })
+
+// router.post("/permissions", async (req, res) => {
+
+// })
+
+async function checkBooking(bookArray, user, method, newBook) {
+  //FULL SESSION
+  if (bookArray.length >= process.env.CAPACITY) return false;
+  if(method == "voucher" || method == "trainingVoucher") return await Book.create(newBook);
+
+  var book;
+  for (book of bookArray) {
+    if(!book.user._id.equals(user._id)) continue;
+
+    switch (method) {
+      case "month":
+        if(book.trainingType == "month") return false
+        if(book.trainingType == "training"){
+          book.trainingType = "month";
+          book.user = book.user._id;
+          Book.updateOne({ _id: book._id }, book);
+          return false;
+        }
+        break;
+
+      case "training":
+        if(book.trainingType == "training") return false
+        if(book.trainingType == "month"){
+          book.trainingType = "training";
+          book.user = book.user._id;
+          Book.updateOne({ _id: book._id }, book);
+          return false;
+        }
+        break;
+
+      // case "voucher":
+      //   break;
+
+      // case "trainingVoucher":
+      //   break;
+    }
+
+    // if (
+    //   book.user._id.equals(user._id) &&
+    //   (book.trainingType == method ||
+    //     (method == "training" && book.trainingType == "month") ||
+    //     (method == "month" && book.trainingType == "training"))
+    // ) {
+    //   duplicated = true;
+    //   break;
+    // }
+  }
+  return await Book.create(newBook);
+
+  // if (!duplicated) {
+  //   return await Book.create(newBook);
+  // } else {
+    // if (method == "training" && book.trainingType == "month") {
+    //   book.trainingType = "training";
+    //   book.user = book.user._id;
+    //   Book.updateOne({ _id: book._id }, book);
+    // }
+    // console.log("Duplicated or updated");
+    // return false;
+  // }
+}
 
 module.exports = router;

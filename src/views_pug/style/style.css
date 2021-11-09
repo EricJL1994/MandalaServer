@@ -27,17 +27,8 @@
   --tr-done: rgba(200, 255, 150, 0.5);
   --tr-marked: rgba(255, 255, 150, 0.5);
   --tr-unmarked: rgba(255, 150, 150, 0.5);
-  --transition-speed: 400ms;
-}
 
-.btn-primary {
-  background-color: var(--bg-button);
-  color: var(--text-button);
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
+  --transition-speed: 400ms;
 }
 
 /*                                           
@@ -49,6 +40,16 @@
 88        88    88     88  88   `"Y8ba,   
 Y8a.    .a8P    88,    88  88  aa    ]8I
  `"Y8888Y"'     "Y888  88  88  `"YbbdP"'  */
+
+ .btn-primary {
+  background-color: var(--bg-button);
+  color: var(--text-button);
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
 
 .align-left {
   text-align: left;
@@ -64,6 +65,57 @@ Y8a.    .a8P    88,    88  88  aa    ]8I
   display: inline-grid;
   /* width: 100%; */
 }
+
+.horizontal-group{
+  columns: 2;
+  gap: 1rem;
+  display: flex;
+}
+
+/*                                                                                       
+88        88                                     88                 ad88              
+88        88                                     88                d8"                
+88        88                                     88                88                 
+88        88  ,adPPYba,   ,adPPYba,  8b,dPPYba,  88  8b,dPPYba,  MM88MMM  ,adPPYba,   
+88        88  I8[    ""  a8P_____88  88P'   "Y8  88  88P'   `"8a   88    a8"     "8a  
+88        88   `"Y8ba,   8PP"""""""  88          88  88       88   88    8b       d8  
+Y8a.    .a8P  aa    ]8I  "8b,   ,aa  88          88  88       88   88    "8a,   ,a8"  
+ `"Y8888Y"'   `"YbbdP"'   `"Ybbd8"'  88          88  88       88   88     `"YbbdP"'    */
+                                                                                      
+                                                                                      
+
+.user-form label{
+  display: block;
+}
+
+.radio label{
+  display: inline;
+}
+
+.radio input[type="radio"]{
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+.form-label{
+  display: block;
+}
+
+form input{
+  /* border: none; */
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 3px;
+  height: 1.5rem;
+}
+
+.form-group{
+  margin-bottom: 1rem;
+}
+
+
+
+
 
 /*                                             
  ad88888ba   8b           d8   ,ad8888ba,   
@@ -512,6 +564,9 @@ Y8,            ,adPPPPP88  88  8PP"""""""  88       88  8b       88  ,adPPPPP88 
                                                                                              */
                                                                                             
 
+.selected{
+  background-color: rgba(222, 222, 222, 0.5);
+}
 
 .floating{
   position: fixed;
@@ -524,6 +579,11 @@ Y8,            ,adPPPPP88  88  8PP"""""""  88       88  8b       88  ,adPPPPP88 
 
 .calendar td:not(.blank){
   cursor: pointer;
+}
+
+.booking table{
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .grey{

@@ -1,0 +1,131 @@
+form(action="/users/booking", method="post")
+  input#selectedDate(type="hidden", name="date", value=1)
+  input(type="hidden", name="month", value=part.monthNumber)
+  input(type="hidden", name="year", value=part.year)
+  div.booking.card
+    div.calendar-arrow
+      a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-1}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐊ
+      a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ
+    if (!part.month)
+      div= `No se han generado las reservar para ${part.monthName} ${part.year}`
+    else
+      table#calendar.calendar
+        thead
+          tr
+            th(colspan= 7)= `${part.monthName} ${part.year}`
+          tr
+            th L
+            th M
+            th X
+            th J
+            th V
+            th S
+            th D
+        tbody
+          each week, index in part.month
+            tr
+              if (week.dates.length < 7 && index < part.month.length - 1)
+                - var blanks = (7 - week.dates.length)
+                while blanks > 0
+                  - blanks--
+                  td.blank
+              each book, day in week.dates
+                  if !book.weekend
+                    - var booked = user ? book.bookMorning.indexOf(user._id) > -1 || book.bookEvening.indexOf(user._id) > -1 || book.bookNight.indexOf(user._id) > -1 : false
+                    //- - console.log('---- ' + (book.bookNight.length == 0))
+                    //- td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookMorning.length},${book.bookEvening.length},${book.bookNight == undefined ? '' : ',' + book.bookNight.length}], ${part.max}, ${book.day})`).align-center= book.day
+                    td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookingArray}], ${part.max}, ${book.day}, this)`).align-center= book.day
+                    //- if user
+                      td= book.bookMorning.indexOf(user._id)
+                  else
+                    td.blank.grey.align-center= book.day
+      table#permissionsTable
+        thead
+          tr 
+            th(colspan = 2) Disponible 
+        tbody
+          if(!user.admin)
+            tr
+              td(hidden)= user._id
+              td.border-right Mes
+              td= part.monthSubscription ? "✔️" : "❌"
+            tr
+              td(hidden)= user._id
+              td.border-right Entrenos
+              td= part.monthTraining ? "✔️" : "❌"
+            tr
+              td(hidden)= user._id
+              td.border-right Días
+              td.align-center= part.permissions.days
+            tr
+              td(hidden)= user._id
+              td.border-right Días + entreno
+              td.align-center= part.permissions.trainingDays
+          if(user.admin)
+            each userInfo in part.users
+              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;", value = userInfo.monthSubscription)
+                td(hidden)= userInfo._id
+                td.border-right Mes
+                td= userInfo.monthSubscription ? "✔️" : "❌"
+              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
+                td(hidden)= userInfo._id
+                td.border-right Entrenos
+                td= userInfo.monthTraining ? "✔️" : "❌"
+              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
+                td(hidden)= userInfo._id
+                td.border-right Días
+                td.align-center= userInfo.parsedPermissions.days
+              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
+                td(hidden)= userInfo._id
+                td.border-right Días + entreno
+                td.align-center= userInfo.parsedPermissions.trainingDays
+
+      hr
+      h3 Reservar
+      div(style="display: inline-grid;")
+        if(user.admin)
+          select#userBooking(name="userBooking", onchange="changePermissions(this)")
+            each userInfo in part.users
+              option(value=userInfo._id)= userInfo.name
+          input#bookingName(type="text", placeholder="Nombre", name="bookingName", style="display: none")
+
+        select#method(name="method")
+          //- if(part.monthSubscription)
+          option(value="month", disabled = part.monthSubscription ? null : "") Mes
+          //- if(part.monthTraining)
+          option(value="training", disabled = part.monthTraining ? null : "") Entrenamiento 
+          //- if(part.permissions.days > 0)
+          option(value="voucher", disabled = part.permissions.days > 0 ? null : "") Bono 
+          //- if(part.permissions.trainingDays > 0)
+          option(value="trainingVoucher", disabled = part.permissions.trainingDays > 0 ? null : "") Bono + entreno 
+
+      div#floater
+        table.hours-table
+          - var bookable = !!part.month[0].dates[0].bookMorning
+          thead
+            th(colspan= 2)= 'Día ' + (bookable ? 1 : '-')
+          tbody
+            //- if part.month[0].dates[0].bookMorning
+            - var books = bookable ? part.month[0].dates[0].bookMorning.length : '?'
+            - var ratio = books/part.max
+            tr(style= part.month[0].dates[0].bookOpen[0] ? "": "display: none", class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+              td.align-center= 'Mañana - ' + books + '/' + part.max
+              if user
+                td
+                  button(formaction= '/users/booking?time=morning') Reservar
+            //- if part.month[0].dates[0].bookEvening
+            - var books = bookable ? part.month[0].dates[0].bookEvening.length : '?'
+            - var ratio = books/part.max
+            tr(style= part.month[0].dates[0].bookOpen[1] ? "": "display: none", class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+              td.align-center= 'Tarde - ' + books + '/' + part.max
+              if user
+                td
+                  button(formaction= '/users/booking?time=evening') Reservar
+            //- if part.month[0].dates[0].bookNight
+            - var books = bookable ? part.month[0].dates[0].bookNight.length : '?'
+            - var ratio = books/part.max
+            tr(style= part.month[0].dates[0].bookOpen[2] ? "": "display: none", class = ratio > .8 ? 'trProblemUnmarked' : ratio > 0.5 ? 'trProblemMarked' : 'trProblemDone')
+              td.align-center= 'Noche - ' + books + '/' + part.max
+              if user
+                td
+                  button(formaction= '/users/booking?time=night') Reservar

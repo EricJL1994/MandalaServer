@@ -386,7 +386,8 @@ router.get("/books", async (req, res) => {
 
 router.get("/unbook", async (req, res) => {
   const { id } = req.query;
-  if (req.user && (req.user.admin || req.user._id.equals(id))) {
+  const bookInfo = await Book.findById(id) 
+  if (req.user && (req.user.admin || req.user._id.equals(bookInfo.user))) {
     const { day, month, year, time } = req.query;
     const bookDate = await BookDate.findOne({
       day: day,
@@ -418,7 +419,6 @@ router.get("/unbook", async (req, res) => {
         break;
     }
 
-    console.log(`User ${req.user.name} try to cancel book: ${(cancelDate - date) / 1000 / 60 / 60 / 24 > 1}`)
     if ((cancelDate - date) / 1000 / 60 / 60 / 24 > 1 || req.user.admin) {
       //If the cancel is in time
       var book = await Book.findById(id)

@@ -75,7 +75,7 @@ form(action="/users/booking", method="post")
               while n < part.max
                 tr
                   if(n == 0)
-                    td.border-right(rowspan = part.max)= book.day
+                    td.border-right(rowspan = part.max)= `${book.dayName} ${book.day}`
                   if(book.bookMorning[n])
                     td.border-right= book.bookMorning[n].user.name == "Invitado" ? book.bookMorning[n].name : book.bookMorning[n].user.name
                     td.border-right.align-center= trainingNames[book.bookMorning[n].trainingType]

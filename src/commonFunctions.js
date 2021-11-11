@@ -1,4 +1,4 @@
-const { colours } = require("./constants");
+const { colours, dayName } = require("./constants");
 const BookDate = require("../models/bookDate");
 const { Mongoose } = require("mongoose");
 
@@ -86,31 +86,8 @@ async function getWeeksInMonth(year, month) {
             break;
           }
         }
-        // var book = await BookDate.findOne({
-        //   year: year,
-        //   month: month,
-        //   day: date,
-        // });
-        // if (!book) {
-        //   book =
-        //     await (dayOfWeekCounter == 4
-        //       ? BookDate.create({
-        //           year: year,
-        //           month: month,
-        //           day: date,
-        //           bookOpen: [true, true, false],
-        //         })
-        //       : BookDate.create({ year: year, month: month, day: date }));
-        // }
-        if (dayOfWeekCounter == 4) {
-          // console.log(book.noNight);
 
-          // await BookDate.updateOne({ year: year, month: month, day: date }, book)
-          // console.log(await BookDate.findOne({
-          //   year: year,
-          //   month: month,
-          //   day: date,
-          // }).bookNight)
+        if (dayOfWeekCounter == 4) {
           book.friday = true;
           book.full =
             book.bookMorning.length >= capacity &&
@@ -127,6 +104,7 @@ async function getWeeksInMonth(year, month) {
         book.bookingArray.push(book.bookOpen[2] ? book.bookNight.length : undefined)
         break;
     }
+    // book.dayName = dayName[dayOfWeekCounter]
     weeks[weeks.length - 1].push(book);
     dayOfWeekCounter = (dayOfWeekCounter + 1) % 7;
   }

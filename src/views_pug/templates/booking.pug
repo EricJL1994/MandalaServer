@@ -91,13 +91,13 @@ form(action="/users/booking", method="post")
 
         select#method(name="method")
           //- if(part.monthSubscription)
-          option(value="month", disabled = part.monthSubscription ? null : "") Mes
+          option(value="month", disabled = (part.monthSubscription || user.admin) ? null : "") Mes
           //- if(part.monthTraining)
-          option(value="training", disabled = part.monthTraining ? null : "") Entrenamiento 
+          option(value="training", disabled = (part.monthTraining || user.admin) ? null : "") Entrenamiento 
           //- if(part.permissions.days > 0)
-          option(value="voucher", disabled = part.permissions.days > 0 ? null : "") Bono 
+          option(value="voucher", disabled = (part.permissions.days > 0 || user.admin) ? null : "") Bono 
           //- if(part.permissions.trainingDays > 0)
-          option(value="trainingVoucher", disabled = part.permissions.trainingDays > 0 ? null : "") Bono + entreno 
+          option(value="trainingVoucher", disabled = (part.permissions.trainingDays > 0 || user.admin) ? null : "") Bono + entreno 
 
       div#floater
         table.hours-table

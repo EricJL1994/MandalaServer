@@ -7,7 +7,7 @@ const Book = require("../../models/book");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const { getWeeksInMonth } = require("../commonFunctions");
-const { monthName } = require("../constants");
+const { monthName, dayName } = require("../constants");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
 const jwt = require("jsonwebtoken");
@@ -368,6 +368,11 @@ router.get("/books", async (req, res) => {
       .populate({ path: "bookMorning", populate: { path: "user" } })
       .populate({ path: "bookEvening", populate: { path: "user" } })
       .populate({ path: "bookNight", populate: { path: "user" } });
+
+    books.forEach(book => {
+      const date = new Date(book.year, book.month, book.day)
+      book.dayName = dayName[date.getDay()]
+    });
 
     page_schema.push({
       name: "books",

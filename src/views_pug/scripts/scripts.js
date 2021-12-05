@@ -44,7 +44,8 @@ function start(input) {
   input.type = "text";
   input.removeAttribute("src");
   input.parentElement.style.display = "none";
-  search(input.value);
+  // search(input.value);
+  search("");
 }
 
 function search(searchText, dropdownFilterText, timeFilterText) {
@@ -131,10 +132,18 @@ function changePermissions(select){
   const filterId = select.options[select.selectedIndex].value
   const trows = document.getElementById("permissionsTable").getElementsByTagName("TBODY")[0].getElementsByTagName("TR")
   for (const row of trows) {
-    row.style.display = row.firstChild.innerText == filterId ? "" : "none"
+    if(row.firstChild.innerText == filterId){
+      row.style.display = ""
+      // console.log(row.lastChild.id)
+      // console.log(document.getElementById('methodmonth'))
+      document.getElementById(`method${row.lastChild.id}`).disabled = (row.lastChild.innerText == "false") && !(filterId == "612cbc6301d5f95906c21dd4")
+    }else{
+      row.style.display = "none"
+    }
+    // row.style.display = row.firstChild.innerText == filterId ? "" : "none"
   }
   document.getElementById("bookingName").style.display = filterId == "612cbc6301d5f95906c21dd4" ? "" : "none"
-  console.log(trows)
+  // console.log(trows)
 }
 
 function timer(timeFilter) {
@@ -255,4 +264,13 @@ function toggleTheme() {
 
   bodyClass.replace(current, next);
   localStorage.setItem("theme", next);
+}
+
+function closeCover(element){
+  element.style.display = "none"
+
+  for (const popup of element.parentElement.getElementsByTagName("div")) {
+    if(!popup.style.display) return
+  }
+  element.parentElement.style.display = "none"
 }

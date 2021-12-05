@@ -60,7 +60,6 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   res.locals.allowRegister = process.env.REGISTER == "true" ? true : undefined;
   res.locals.path = req.path;
-  // console.log(req.method + req.url + ' -> Redirect: ' + req.query.asd)
   next();
 });
 
@@ -74,51 +73,68 @@ app.use("/images", express.static("images"));
 // <>------------------------------------------<>------------------------------------------<>
 
 app.get("/", async (req, res) => {
+  // await bot.telegram.sendMessage(process.env.TELEGRAM_GROUP, "Group", {})
+  // await bot.telegram.sendMessage(process.env.TELEGRAM_DEV, "Personal", {})
   var infos = await Info.find().exec();
   //console.log(infos)
   res.render("index", { infos: infos });
 });
 
 app.post("/test", async (req, res) => {
+  // if (req.user && req.user.admin) {
+  //   var user = await User.findOne({ _id: req.body.users });
+  //   // console.log(user)
+  //   var perm = user.getPermissions();
+  //   var obj = {};
+  //   switch (req.body.paid) {
+  //     case "month":
+  //       var paid = req.body.selectedmonth.split("-");
+  //       obj[paid[1] - 1] = 0;
+  //       if (!perm[paid[0]]) perm[paid[0]] = {};
+  //       Object.assign(perm[paid[0]], obj);
+  //       break;
+  //     case "training":
+  //       var paid = req.body.selectedmonth.split("-");
+  //       obj[paid[1] - 1] = 1;
+  //       if (!perm[paid[0]]) perm[paid[0]] = {};
+  //       Object.assign(perm[paid[0]], obj);
+  //       break;
+  //     case "voucher":
+  //       perm.days += 5;
+  //       break;
+  //     case "trainingVoucher":
+  //       perm.trainingDays += 5;
+  //       break;
+  //   }
+  //   user.permissions = JSON.stringify(perm);
+  //   // console.log(user);
+  //   await user.save();
+  //   res.redirect("/test");
+  // } else {
+  //   console.log("No admin");
+  //   res.redirect("/");
+  // }
+});
+
+app.get("/logs", async (req, res) => {
   if (req.user && req.user.admin) {
-    var user = await User.findOne({ _id: req.body.users });
-    // console.log(user)
-    var perm = user.getPermissions();
-    var obj = {};
-    switch (req.body.paid) {
-      case "month":
-        var paid = req.body.selectedmonth.split("-");
-        obj[paid[1] - 1] = 0;
-        if (!perm[paid[0]]) perm[paid[0]] = {};
-        Object.assign(perm[paid[0]], obj);
-        break;
-      case "training":
-        var paid = req.body.selectedmonth.split("-");
-        obj[paid[1] - 1] = 1;
-        if (!perm[paid[0]]) perm[paid[0]] = {};
-        Object.assign(perm[paid[0]], obj);
-        break;
+    var infos = await Log.find().populate("user").exec();
+    infos.map((info) => {
+      info.tittle = info.user.name;
+      info.description = info.request;
+      // console.log(info)
+      return info;
+    });
+    // console.log(infos)
 
-      case "voucher":
-        perm.days += 5;
-        break;
-
-      case "trainingVoucher":
-        perm.trainingDays += 5;
-        break;
-    }
-    
-    user.permissions = JSON.stringify(perm);
-    // console.log(user);
-    await user.save();
-    res.redirect("/test");
+    //console.log(infos)
+    res.render("index", { infos: infos });
   } else {
-    console.log("No admin");
     res.redirect("/");
   }
 });
 
-// app.get("/test", async (req, res) => {
+app.get("/test", async (req, res) => {
   // if(req.user && req.user.admin){
   //   // var page_schema = [];
   //   var month = req.query.month || new Date().getMonth();
@@ -131,7 +147,6 @@ app.post("/test", async (req, res) => {
   //     year --;
   //     month -= -12;
   //   }
-
   //   const books = await BookDate.find({ month: month, year: year })
   //     .populate("bookMorning")
   //     .populate("bookEvening")
@@ -161,8 +176,8 @@ app.post("/test", async (req, res) => {
   // }else{
   //   res.redirect('/users/booking')
   // }
-//   res.redirect("/")
-// });
+    res.redirect("/")
+});
 
 process.on("SIGTERM", () => {
   server.close(() => {

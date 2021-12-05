@@ -1,32 +1,16 @@
 - var tittleText = 'Detalles'
-include templates/header.pug
-
-main
-  -    
-    var card = {
-      alt: `${problemDetail.dificultyName} ${problemDetail.number}`,
-      tittle: `${problemDetail.dificultyName} ${problemDetail.number}`,
-      description: `<strong>Color de presas:</strong> ${problemDetail.holdColor} <br> <strong>Pared:</strong> ${problemDetail.wallName} <br> <strong>Fecha:</strong> ${problemDetail.date} <br> <strong>Encadenados:</strong> ${problemDetail.redpoints.length}`,
-      link: undefined,
-      list: problemDetail.list,
-      userList: problemDetail.userList
-    }
-  //- -var img_src = '/images/TRAVESIAS-2.fw.png'
-  //- -var img_alt = `${problemDetail.dificultyName} ${problemDetail.number}`
-  //- -var card_tittle = `${problemDetail.dificultyName} ${problemDetail.number}`
-  //- -var card_description = `Color de presas: ${problemDetail.holdColor} \n Pared: ${problemDetail.wallName}\nFecha: ${problemDetail.date}`
-  //- -var card_link = undefined
-  include templates/card.pug
-  //table.table(style='max-width: 600px;').table-striped
-    tbody
-      tr
-        th(scope='col') Número
-        th(scope='col') Fecha
-        th(scope='col') Pared
-        th(scope='col') Presas
-      tr
-        td
-          div(style={'background-color': problemDetail.color, 'text-align': 'center', 'width': '60%'})= problemDetail.number
-        td= problemDetail.date
-        td= problemDetail.wallName
-        td= problemDetail.holdColor
+//- include templates/header.pug
+include templates/new_header
+body
+  include templates/nb_navbar
+  main
+    -    
+      var card = {
+        alt: `${problemDetail.dificultyName} ${problemDetail.number}`,
+        tittle: `${problemDetail.dificultyName} ${problemDetail.number}`,
+        description: `<strong>Color de presas:</strong> ${problemDetail.holdColor} <br> <strong>Pared:</strong> ${problemDetail.wallName} <br> <strong>Fecha:</strong> ${problemDetail.date} <br> <strong>Encadenados:</strong> ${problemDetail.redpoints.length}`,
+        link: undefined,
+        list: problemDetail.list,
+        userList: problemDetail.userList
+      }
+    include templates/card.pug

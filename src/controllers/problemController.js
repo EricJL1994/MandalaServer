@@ -1,7 +1,6 @@
 const lowDB = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const Mongoose = require('mongoose')
-const { rawListeners } = require('../../models/boulder')
 
 const Boulder = require('../../models/boulder')
 const Traverse = require('../../models/traverse')
@@ -19,7 +18,14 @@ exports.problem_show = async function(req, res) {
   // console.log('B')
   // res.render('index')
   // res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
-  res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
+  var page_schema = []
+
+  page_schema.push({
+        name: "table",
+        arrayProblems: await parse_problems(fetch_problems(req, res), req.user),
+      })
+  // res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
+  res.render('builder', {tittleText: 'Boulders',page_schema: page_schema, searchTime: (req.query.lastDays || 0)})
 }
 
 exports.problem_detail = async function(req, res) {

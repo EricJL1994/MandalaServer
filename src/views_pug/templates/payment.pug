@@ -1,10 +1,10 @@
 div.card
-  form.user-form(action="/users/payment", method="post")
+  form.user-form(action="/users/payment" method="post")
     h1 Añadir pago
     div.form-group
       div.form-group
         h3 Usuario
-        input#userName(type="text", placeholder="Buscar...", onkeyup="filterDropdown(\"users\", this.value, \"submitPayment\")")
+        input#userName(type="text" placeholder="Buscar..." onkeyup="filterDropdown(\"users\", this.value, \"submitPayment\")")
       select#users(name="users")
         option(disabled,hidden) Elige un usuario
         each userInfo in part.users
@@ -17,18 +17,22 @@ div.card
     div.form-group
       h3 Compra
       div.radio
-        input#paid1(type="radio", name="paid", value="month", checked) 
+        input#paid1(type="radio" name="paid" value="month", checked) 
         label(for="paid1") Mes
       div.radio
-        input#paid2(type="radio", name="paid", value="training") 
+        input#paid2(type="radio" name="paid" value="training") 
         label(for="paid2") Entreno
-      div.radio
-        input#paid3(type="radio", name="paid", value="voucher")
-        label(for="paid3") 5 sesiones
-      div.radio
-        input#paid4(type="radio", name="paid", value="trainingVoucher") 
-        label(for="paid4") 5 sesiones + clases
       - const dateValue = new Date().getFullYear() + "-" + (new Date().getMonth() - (-1)).toString().padStart(2, "0");
-      input(type="month", name="selectedmonth", value=dateValue)
+      input(type="month" name="selectedmonth", value=dateValue)
+      hr
+      div.radio
+        input#paid3(type="radio" name="paid" value="voucher")
+        label(for="paid3") Bono
+      div.radio
+        input#paid4(type="radio" name="paid" value="trainingVoucher") 
+        label(for="paid4") Bono + entreno
+      div.radio
+        label(for="paidDays") Días pagados 
+        input#paidDays(type="number" name="paidDays" style="width: 5ch", value = 5)
     div.form-group
-      button#submitPayment(type="submit") Submit
+      button#submitPayment(type="submit") Guardar

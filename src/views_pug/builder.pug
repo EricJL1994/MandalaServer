@@ -1,7 +1,12 @@
-include templates/new_header.pug
+include templates/new_header
 body
-  include templates/nb_navbar.pug
+  include templates/nb_navbar
   main
+    //- div.ctaButton
+      button A
+    //- div.screenCover
+      include templates/partials/cover-alert
+      include templates/partials/cover-alert
     each part in page_schema
       if (part.name == 'card')
         -    
@@ -17,16 +22,16 @@ body
 
       if (part.name == 'table')
         - var arrayProblems = part.arrayProblems
-        include templates/problems_table2.pug
+        include templates/problems_table2
 
       if (part.name == 'booking')
-        include templates/booking.pug
+        include templates/booking
 
       if (part.name == 'books')
-        include templates/books.pug
+        include templates/books
 
       if (part.name == 'permissions')
-        include templates/permissions.pug
+        include templates/permissions
 
       if (part.name == 'payment')
-        include templates/payment.pug
+        include templates/payment

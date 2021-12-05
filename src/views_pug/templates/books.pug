@@ -1,6 +1,6 @@
-form(action="/users/booking", method="post")
-  input#selectedDate(type="hidden", name="date", value=1)
-  input(type="hidden", name="month", value=part.monthNumber)
+form(action="/users/booking" method="post")
+  input#selectedDate(type="hidden" name="date", value=1)
+  input(type="hidden" name="month", value=part.monthNumber)
   div.calendar-arrow
     a.no-decor.btn-primary(href=`/users/books?month=${part.month-1}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐊ
     a.no-decor.btn-primary(href=`/users/books?month=${part.month-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ

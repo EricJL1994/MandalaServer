@@ -1,6 +1,52 @@
-const { colours, dayName } = require("./constants");
+const { colours, dayName, trainingNames } = require("./constants");
 const BookDate = require("../models/bookDate");
+const Log = require("../models/log");
+const User = require("../models/user");
 const { Mongoose } = require("mongoose");
+
+const {Telegraf} = require("telegraf");
+const telegramBot = new Telegraf(process.env.TELEGRAM_TOKEN);
+
+telegramBot.command('reservas', async ctx => {
+  // const user = await User.findOne({telegram: ctx.chat.id}) IMPLEMENTAR EL ID DE TELEGRAM EN EL USUARIO
+  // if(user && user.admin){
+  if(ctx.chat.id == process.env.TELEGRAM_DEV){
+    const date = new Date()
+    const book = await BookDate.findOne({day: date.getDate(), month: date.getMonth(), year: date.getFullYear()})
+    .populate({ path: "bookMorning", populate: { path: "user" } })
+    .populate({ path: "bookEvening", populate: { path: "user" } })
+    .populate({ path: "bookNight", populate: { path: "user" } });
+    // console.log(book)
+    ctx.replyWithMarkdownV2(`*Reservas para el día ${book.day}/${book.month + 1}/${book.year}*`)
+    if(book.bookMorning.length) await ctx.replyWithMarkdownV2(`__*Mañana* (${process.env.CAPACITY - book.bookMorning.length} huecos)__\n${formatBookArray(book.bookMorning)}`)
+    if(book.bookEvening.length) await ctx.replyWithMarkdownV2(`__*Tarde* (${process.env.CAPACITY - book.bookEvening.length} huecos)__\n${formatBookArray(book.bookEvening)}`)
+    if(book.bookNight.length) await ctx.replyWithMarkdownV2(`__*Noche* (${process.env.CAPACITY - book.bookNight.length} huecos)__\n${formatBookArray(book.bookNight)}`)
+  }else{
+    ctx.reply("Necesitas ser un administrador para usar este comando")
+  }
+})
+
+telegramBot.start(ctx => ctx.replyWithMarkdownV2(`Visita nuestra web: [🌐](http://www.mandalaclimb.herokuapp.com/users/login)`))
+telegramBot.launch()
+
+function formatBookArray(bookArray){
+  var result = ""
+  for (const book of bookArray) {
+    result += book.user.name
+    result += "\n"
+    result += trainingNames[book.trainingType]
+    result += "\n"
+    // result += 
+    result += "\n"
+    // result +=
+  }
+  return result
+}
+
+function webLogger(telegram, mongo, message){
+  if(telegram) telegramBot.telegram.sendMessage(process.env.TELEGRAM_GROUP, message, {parse_mode: "MarkdownV2"})
+  if (!!mongo) Log.create({user: mongo, request: message})
+}
 
 function logger(type, str) {
   var time = getTimestamp();
@@ -164,4 +210,5 @@ module.exports = {
   formatDate,
   objectKeyValueFlip,
   getWeeksInMonth,
+  webLogger,
 };

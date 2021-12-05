@@ -6,8 +6,8 @@ const BookDate = require("../../models/bookDate");
 const Book = require("../../models/book");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const { getWeeksInMonth } = require("../commonFunctions");
-const { monthName, dayName } = require("../constants");
+const { getWeeksInMonth, webLogger } = require("../commonFunctions");
+const { monthName, dayName, trainingNames } = require("../constants");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
 const jwt = require("jsonwebtoken");
@@ -22,9 +22,12 @@ let transporter = nodemailer.createTransport(
   })
 );
 
+const timesNames = {morning: 'Mañana', evening: 'Tarde', night: 'Noche'}
+
 //LOGIN
 router.get("/login", (req, res) => {
   // console.log('GET LOGIN')
+  // bot.telegram.sendMessage(process.env.TELEGRAM_DEV, "Login", {})
   if (req.user) {
     res.redirect(req.query.redirect || "/users/dashboard");
   } else {
@@ -35,10 +38,13 @@ router.get("/login", (req, res) => {
 router.post("/login", (req, res, next) => {
   // console.log(req.query.redirect)
   passport.authenticate("local", {
-    successRedirect: "back",
+    // successRedirect: "back",
     failureRedirect: "/users/login",
     failureFlash: true,
   })(req, res, next);
+}, function(req, res){
+  // webLogger(true, false, `El usuario _${req.user.name}_ \\(${req.user._id}\\) ha iniciado sesión`)
+  res.redirect("back")
 });
 
 //REGISTER
@@ -97,6 +103,7 @@ router.post("/register", (req, res) => {
             newUser
               .save()
               .then((value) => {
+                webLogger(true, newUser._id, `${newUser.name} se ha registrado [Perfil](https://mandalaclimb.herokuapp.com/users/profile/${newUser._id})`)
                 req.flash("success_msg", "Se ha registrado con éxito");
                 res.redirect("/users/login");
               })
@@ -156,6 +163,7 @@ router.get("/verification/:token", async function (req, res) {
     user.isVerified = true;
     await user.save();
     req.flash("success_msg", "Se ha verificado con éxito, inicie sesión");
+    webLogger(true, user._id, `El usuario _${user.name}_ \\(${user._id}\\) ha verificado su email`)
     return res.redirect("/users/login");
   } catch (err) {
     return res.status(500).send(err);
@@ -163,7 +171,7 @@ router.get("/verification/:token", async function (req, res) {
 });
 
 router.post("/verification", (req, res) => {
-  console.log("Post a verification");
+  // console.log("Post a verification");
   if (req.user && !req.user.isVerified) {
     const url = `http://mandalaclimb.herokuapp.com/users/verification/${req.user.generateVerificationToken()}`;
     var to = req.user.email,
@@ -344,6 +352,7 @@ router.post("/booking", async (req, res) => {
       user.save()
     }
     await bookingRaw.save();
+    webLogger(true, req.user._id, `Reserva el día ${booking.day}/${month-(-1)}/${year}\\(${timesNames[req.query.time]}\\) para el usuario _${user.name}_\n Tipo: ${trainingNames[method]}`)
     res.redirect(`booking?month=${month}&year=${year}`);
   } else {
     res.redirect("/");
@@ -440,9 +449,9 @@ router.get("/unbook", async (req, res) => {
       }
       user.permissions = JSON.stringify(permissions)
       user.save()
-
       await Book.deleteOne({ _id: id });
       await BookDate.updateOne({ day: day, month: month, year: year }, bookDate);
+      webLogger(true, req.user._id, `Cancelada la reserva del día ${day}/${month-(-1)}/${year}\\(${timesNames[time]}\\) del usuario _${user.name}_ \\(${trainingNames[book.trainingType]}\\)`)
     }
     res.redirect("/users/books");
     // res.send(userid + ' => ' + day + '/' + month + '/' + year + ' ' + time);
@@ -462,7 +471,7 @@ router.get("/profile/:id", async (req, res) => {
       description: "<strong><u>Email:</u></strong> " + user.email,
       list: [{ name: user._id }],
     });
-    console.log(page_schema[0].list);
+    // console.log(page_schema[0].list);
     res.render("builder", { tittleText: "Perfil", page_schema: page_schema });
   } else {
     res.redirect("/");
@@ -510,17 +519,20 @@ router.post("/payment", async (req, res) => {
         break;
 
       case "voucher":
-        perm.days += 5;
+        perm.days = +perm.days + +req.body.paidDays || +5;
         break;
 
       case "trainingVoucher":
-        perm.trainingDays += 5;
+        perm.trainingDays = +perm.trainingDays + +req.body.paidDays || +5;
         break;
     }
 
     user.permissions = JSON.stringify(perm);
-    // console.log(user);
     await user.save();
+
+    const monthPaid = (req.body.paid == "month" || req.body.paid == "training") ? String(req.body.selectedmonth).replace("-", "/") : ""
+    webLogger(true, false/*req.user._id*/, `Añadido *${trainingNames[req.body.paid]}* ${monthPaid} para el usuario _${user.name}_`)
+
     res.redirect("/users/payment");
   } else {
     console.log("No admin");

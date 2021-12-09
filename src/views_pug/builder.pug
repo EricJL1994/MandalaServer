@@ -1,12 +1,29 @@
-include templates/new_header
+include templates/partials/new_header
 body
-  include templates/nb_navbar
+  include templates/partials/nb_navbar
+
+  if errors != undefided || success_msg != '' || error_msg != '' || error != ''
+    div.screenCover
+      if errors != undefided
+        - var cover_tittle = 'Error'
+        - var cover_list = errors
+        include templates/partials/cover-alert
+        //- - var cover_list = undefined
+      if success_msg != ''
+        - var cover_tittle = 'Éxito'
+        - var cover_message = success_msg
+        include templates/partials/cover-alert
+      if error_msg != ''
+        - var cover_tittle = 'Error'
+        - var cover_message = error_msg
+        include templates/partials/cover-alert
+      if error != ''
+        - var cover_tittle = 'Fallo'
+        - var cover_message = error
+        include templates/partials/cover-alert
   main
     //- div.ctaButton
       button A
-    //- div.screenCover
-      include templates/partials/cover-alert
-      include templates/partials/cover-alert
     each part in page_schema
       if (part.name == 'card')
         -    
@@ -18,20 +35,29 @@ body
             link: part.link,
             list: part.list
           }
-        include templates/card.pug
+        include templates/partials/card.pug
 
       if (part.name == 'table')
         - var arrayProblems = part.arrayProblems
-        include templates/problems_table2
+        include templates/partials/problems_table2
 
       if (part.name == 'booking')
-        include templates/booking
+        include templates/user/booking
 
       if (part.name == 'books')
-        include templates/books
+        include templates/user/books
 
       if (part.name == 'permissions')
-        include templates/permissions
+        include templates/user/permissions
 
       if (part.name == 'payment')
-        include templates/payment
+        include templates/user/payment
+
+      if (part.name == 'login')
+        include templates/user/login
+
+      if (part.name == 'register')
+        include templates/user/register
+
+      if (part.name == 'dashboard')
+        include templates/user/dashboard

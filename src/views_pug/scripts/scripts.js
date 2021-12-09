@@ -142,6 +142,8 @@ function changePermissions(select){
     }
     // row.style.display = row.firstChild.innerText == filterId ? "" : "none"
   }
+  
+  document.getElementById("method0").selected = true
   document.getElementById("bookingName").style.display = filterId == "612cbc6301d5f95906c21dd4" ? "" : "none"
   // console.log(trows)
 }

@@ -1,8 +1,8 @@
 - var tittleText = 'Detalles'
 //- include templates/header.pug
-include templates/new_header
+include templates/partials/new_header
 body
-  include templates/nb_navbar
+  include templates/partials/nb_navbar
   main
     -    
       var card = {
@@ -13,4 +13,4 @@ body
         list: problemDetail.list,
         userList: problemDetail.userList
       }
-    include templates/card.pug
+    include templates/partials/card.pug

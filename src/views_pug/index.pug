@@ -1,8 +1,8 @@
 - var tittleText = 'Inicio'
 //- include templates/header.pug
-include templates/new_header
+include templates/partials/new_header
 body
-  include templates/nb_navbar
+  include templates/partials/nb_navbar
 
   main
     div
@@ -27,7 +27,7 @@ body
             description: 'Los bloques comienzan con una mano en cada etiqueta. Utilizando sólo las presas del mismo color llegamos hasta la presa marcada con otra etiqueta.',
             link: '/boulders/show'
           }
-        include templates/card.pug
+        include templates/partials/card.pug
 
         -    
           var card = {
@@ -37,5 +37,5 @@ body
             description: 'Las travesías comienzan con una mano en cada disco marcado con una x. Utilizando pies libres llegamos hasta la presa marcada con 2 discos.',
             link: '/traverses/show'
           }
-        include templates/card.pug
+        include templates/partials/card.pug
       hr

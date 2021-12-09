@@ -46,8 +46,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: "secret",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
   })
 );
 app.use(passport.initialize());
@@ -66,6 +66,8 @@ app.use((req, res, next) => {
 /****************************** */
 
 app.set("view engine", process.env.FRONTEND);
+app.locals.basedir = __dirname + `/views_${process.env.FRONTEND}`
+console.log(__dirname + `/views_${process.env.FRONTEND}`)
 app.set("views", __dirname + `/views_${process.env.FRONTEND}`);
 app.use(express.static(__dirname + "/public"));
 

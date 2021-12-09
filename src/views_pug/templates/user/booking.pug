@@ -98,6 +98,7 @@ form(action="/users/booking" method="post")
           input#bookingName(type="text" placeholder="Nombre" name="bookingName" style="display: none")
 
         select#method(name="method")
+          option#method0(value="", hidden, selected) ----
           //- if(part.monthSubscription)
           option#methodmonth(value="month", disabled = (part.monthSubscription || user.admin) ? null : "") Mes
           //- if(part.monthTraining)

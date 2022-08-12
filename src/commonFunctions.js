@@ -27,7 +27,10 @@ telegramBot.command('reservas', async ctx => {
 })
 
 telegramBot.start(ctx => ctx.replyWithMarkdownV2(`Visita nuestra web: [🌐](http://www.mandalaclimb.herokuapp.com/users/login)`))
-telegramBot.launch()
+if(!Number.parseInt(process.env.CODING)){
+  console.log("Launching bot")
+  telegramBot.launch()
+}
 
 function formatBookArray(bookArray){
   var result = ""

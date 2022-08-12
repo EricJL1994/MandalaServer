@@ -12,7 +12,11 @@ const LogSchema = new mongoose.Schema({
 
   request: {
     type: String,
-  }
+  },
+
+  environment: {
+    type: String,
+  },
 })
 
 const Log = mongoose.model('log', LogSchema)

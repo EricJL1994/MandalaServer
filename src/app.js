@@ -2,15 +2,19 @@ const express = require("express");
 require("dotenv").config();
 
 const mongoose = require("mongoose");
+const mongoConnect = require("connect-mongo");
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@mandalaclimb.g7s5c.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`;
-mongoose
+const clientP = mongoose
   .connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
     autoIndex: true,
   })
-  .then(() => console.log("Conectado a mongodb"))
+  .then((m) => {
+    console.log("Conectado a mongodb")
+    return m.connection.getClient()
+  })
   .catch((e) => console.log("Error de conexión", e));
 
 const {
@@ -39,17 +43,21 @@ const passport = require("passport");
 const flash = require("connect-flash");
 const { monthName } = require("./constants");
 const User = require("../models/user");
+const Boulder = require("../models/boulder");
 
 require("../config/passport")(passport);
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 //express session
-app.use(
-  session({
+app.use(session({
     secret: "secret",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    // store: mongoConnect.create({mongoUrl: uri, ttl: 6/*0 * 60 * 24 * 7*/ /*7 days*/}),
+    store: mongoConnect.create({clientPromise: clientP, ttl: 60 * 60 * 24 * 7}),
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -60,63 +68,105 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   res.locals.allowRegister = process.env.REGISTER == "true" ? true : undefined;
   res.locals.path = req.path;
-  // console.log(req.method + req.url + ' -> Redirect: ' + req.query.asd)
   next();
 });
 
 /****************************** */
 
-app.set("view engine", process.env.FRONTEND);
-app.set("views", __dirname + `/views_${process.env.FRONTEND}`);
+app.set("view engine", "pug");
+app.locals.basedir = __dirname + "/views_pug"
+app.set("views", __dirname + "/views_pug");
 app.use(express.static(__dirname + "/public"));
 
 app.use("/images", express.static("images"));
 // <>------------------------------------------<>------------------------------------------<>
 
 app.get("/", async (req, res) => {
+  // await bot.telegram.sendMessage(process.env.TELEGRAM_GROUP, "Group", {})
+  // await bot.telegram.sendMessage(process.env.TELEGRAM_DEV, "Personal", {})
   var infos = await Info.find().exec();
   //console.log(infos)
   res.render("index", { infos: infos });
 });
 
-app.post("/test", async (req, res) => {
-  if (req.user && req.user.admin) {
-    var user = await User.findOne({ _id: req.body.users });
-    // console.log(user)
-    var perm = user.getPermissions();
-    var obj = {};
-    switch (req.body.paid) {
-      case "month":
-        var paid = req.body.selectedmonth.split("-");
-        obj[paid[1] - 1] = 0;
-        if (!perm[paid[0]]) perm[paid[0]] = {};
-        Object.assign(perm[paid[0]], obj);
-        break;
-      case "training":
-        var paid = req.body.selectedmonth.split("-");
-        obj[paid[1] - 1] = 1;
-        if (!perm[paid[0]]) perm[paid[0]] = {};
-        Object.assign(perm[paid[0]], obj);
-        break;
+// app.get("/asd", searchUser)
 
-      case "voucher":
-        perm.days += 5;
-        break;
+async function searchUser(req, res){
+  let id = "62efcaabdf522e00165bd751"
+  let b = await Boulder.find({redpoints: mongoose.Types.ObjectId(id)}).exec()
+  b = b.map(a => {
+    return a.difficultyName + " " + a.number
+  })
+  // console.log(req.user)
+  // console.log(req.body)
+  console.log(b.length)
+  res.send(b)
 
-      case "trainingVoucher":
-        perm.trainingDays += 5;
-        break;
-    }
-    
-    user.permissions = JSON.stringify(perm);
-    // console.log(user);
-    await user.save();
-    res.redirect("/test");
-  } else {
-    console.log("No admin");
-    res.redirect("/");
-  }
-});
+}
+
+/*app.get("/test/:id", async (req, res) => {
+  const { id } = req.params
+  Boulder.findById(id).then(boulder => {
+    console.log(boulder)
+    return res.render("builder", {page_schema: [{name: "edit_boulder", boulder}]})
+  }).catch(e => {
+    console.log(e)
+    return res.render("builder", {page_schema: [{name: "edit_boulder"}]})
+  })
+})*/
+// app.post("/test", async (req, res) => {
+  // if (req.user && req.user.admin) {
+  //   var user = await User.findOne({ _id: req.body.users });
+  //   // console.log(user)
+  //   var perm = user.getPermissions();
+  //   var obj = {};
+  //   switch (req.body.paid) {
+  //     case "month":
+  //       var paid = req.body.selectedmonth.split("-");
+  //       obj[paid[1] - 1] = 0;
+  //       if (!perm[paid[0]]) perm[paid[0]] = {};
+  //       Object.assign(perm[paid[0]], obj);
+  //       break;
+  //     case "training":
+  //       var paid = req.body.selectedmonth.split("-");
+  //       obj[paid[1] - 1] = 1;
+  //       if (!perm[paid[0]]) perm[paid[0]] = {};
+  //       Object.assign(perm[paid[0]], obj);
+  //       break;
+  //     case "voucher":
+  //       perm.days += 5;
+  //       break;
+  //     case "trainingVoucher":
+  //       perm.trainingDays += 5;
+  //       break;
+  //   }
+  //   user.permissions = JSON.stringify(perm);
+  //   // console.log(user);
+  //   await user.save();
+  //   res.redirect("/test");
+  // } else {
+  //   console.log("No admin");
+  //   res.redirect("/");
+  // }
+// });
+
+// app.get("/logs", async (req, res) => {
+//   if (req.user && req.user.admin) {
+//     var infos = await Log.find().populate("user").exec();
+//     infos.map((info) => {
+//       info.tittle = info.user.name;
+//       info.description = info.request;
+//       // console.log(info)
+//       return info;
+//     });
+//     // console.log(infos)
+
+//     //console.log(infos)
+//     res.render("index", { infos: infos });
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 // app.get("/test", async (req, res) => {
   // if(req.user && req.user.admin){
@@ -131,7 +181,6 @@ app.post("/test", async (req, res) => {
   //     year --;
   //     month -= -12;
   //   }
-
   //   const books = await BookDate.find({ month: month, year: year })
   //     .populate("bookMorning")
   //     .populate("bookEvening")
@@ -161,7 +210,7 @@ app.post("/test", async (req, res) => {
   // }else{
   //   res.redirect('/users/booking')
   // }
-//   res.redirect("/")
+    // res.redirect("/")
 // });
 
 process.on("SIGTERM", () => {
@@ -171,75 +220,8 @@ process.on("SIGTERM", () => {
 });
 
 app.use("/users", require("./routes/users"));
-
+app.use("/admin", require("./routes/admin"));
 app.use("/boulders", boulders);
 app.use("/traverses", traverses);
 
 app.use("/addproblems", problem_add_multiple);
-
-// <>------------------------------------------<>------------------------------------------<>
-
-/*app.use((req, res, next) => {
-  //res.redirect('/')
-})*/
-
-// async function getWeeksInMonth(year, month) {
-//   const weeks = [],
-//     firstDate = new Date(year, month, 1),
-//     lastDate = new Date(year, month + 1, 0),
-//     numDays = lastDate.getDate();
-
-//   // console.log(weeks)
-//   // console.log(firstDate)
-//   // console.log(lastDate)
-//   // console.log(numDays)
-//   let dayOfWeekCounter = (firstDate.getDay() + 6) % 7;
-
-//   const capacity = process.env.CAPACITY;
-//   for (let date = 1; date <= numDays; date++) {
-//     if (dayOfWeekCounter === 0 || weeks.length === 0) {
-//       weeks.push([]);
-//     }
-//     switch (dayOfWeekCounter) {
-//       //FIN DE SEMANA
-//       case 5:
-//       case 6:
-//         var book = { day: date, weekend: true };
-//         break;
-
-//       //ENTRE SEMANA
-//       default:
-//         var book = await BookDate.findOne({
-//           year: year,
-//           month: month,
-//           day: date,
-//         });
-
-//         if (!book) {
-//           book = await BookDate.create({ year: year, month: month, day: date });
-//         }
-//         if (dayOfWeekCounter == 4) {
-//           book.friday = true;
-//           book.full =
-//             book.bookMorning.length >= capacity &&
-//             book.bookEvening.length >= capacity;
-//         } else {
-//           book.full =
-//             book.bookMorning.length >= capacity &&
-//             book.bookEvening.length >= capacity &&
-//             book.bookNight.length >= capacity;
-//         }
-//         break;
-//     }
-//     weeks[weeks.length - 1].push(book);
-//     dayOfWeekCounter = (dayOfWeekCounter + 1) % 7;
-//   }
-
-//   return weeks
-//     .filter((w) => !!w.length)
-//     .map((w) => ({
-//       start: w[0],
-//       end: w[w.length - 1],
-//       dates: w,
-//     }));
-// }

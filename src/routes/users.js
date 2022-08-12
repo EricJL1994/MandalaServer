@@ -6,8 +6,8 @@ const BookDate = require("../../models/bookDate");
 const Book = require("../../models/book");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const { getWeeksInMonth } = require("../commonFunctions");
-const { monthName, dayName } = require("../constants");
+const { getWeeksInMonth, webLogger } = require("../commonFunctions");
+const { monthName, dayName, trainingNames } = require("../constants");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
 const jwt = require("jsonwebtoken");
@@ -22,38 +22,53 @@ let transporter = nodemailer.createTransport(
   })
 );
 
+const timesNames = { morning: "Mañana", evening: "Tarde", night: "Noche" };
+
 //LOGIN
 router.get("/login", (req, res) => {
   // console.log('GET LOGIN')
+  // bot.telegram.sendMessage(process.env.TELEGRAM_DEV, "Login", {})
   if (req.user) {
     res.redirect(req.query.redirect || "/users/dashboard");
   } else {
-    res.render("login");
+    // res.render("login");
+    res.render("builder", {
+      tittleText: "Inicio de sesión",
+      page_schema: [{ name: "login" }],
+    });
   }
 });
 
 router.post("/login", (req, res, next) => {
-  // console.log(req.query.redirect)
-  passport.authenticate("local", {
-    successRedirect: "back",
-    failureRedirect: "/users/login",
-    failureFlash: true,
-  })(req, res, next);
-});
+    passport.authenticate("local", {
+      // successRedirect: "back",
+      failureRedirect: "/users/login",
+      failureFlash: true,
+      badRequestMessage: "Rellene los campos",
+    })(req, res, next);
+  },
+  function (req, res) {
+    // webLogger(true, false, `El usuario _${req.user.name}_ \\(${req.user._id}\\) ha iniciado sesión`)
+    res.redirect("back");
+  }
+);
 
 //REGISTER
 router.get("/register", (req, res) => {
   if (req.user) {
     res.redirect("/users/dashboard");
   } else {
-    res.render("register");
+    res.render("builder", {
+      tittleText: "Registro",
+      page_schema: [{ name: "register" }],
+    });
   }
 });
 
 router.post("/register", (req, res) => {
   const { name, email, password, password2 } = req.body;
   let errors = [];
-  console.log(" Name " + name + " email :" + email + " pass:" + password);
+  // console.log(" Name " + name + " email :" + email + " pass:" + password);
   if (!name || !email || !password || !password2) {
     errors.push({ msg: "Por favor, rellene todos los campos" });
   }
@@ -67,19 +82,27 @@ router.post("/register", (req, res) => {
     errors.push({ msg: "La contraseña debe tener al menos 6 caracteres" });
   }
   if (errors.length > 0) {
-    res.render("register", {
+    res.render("builder", {
       errors: errors,
       name: name,
       email: email,
       password: password,
       password2: password2,
+      page_schema: [{ name: "register" }],
     });
   } else {
     //validation passed
     User.findOne({ email: email }).exec((err, user) => {
       if (user) {
         errors.push({ msg: "El email está en uso" });
-        res.render("register", { errors, name, email, password, password2 });
+        res.render("builder", {
+          errors: errors,
+          name: name,
+          email: email,
+          password: password,
+          password2: password2,
+          page_schema: [{ name: "register" }],
+        });
       } else {
         const newUser = new User({
           name: name,
@@ -97,6 +120,11 @@ router.post("/register", (req, res) => {
             newUser
               .save()
               .then((value) => {
+                webLogger(
+                  true,
+                  newUser._id,
+                  `${newUser.name} se ha registrado [Perfil](https://mandalaclimb.herokuapp.com/users/profile/${newUser._id})`
+                );
                 req.flash("success_msg", "Se ha registrado con éxito");
                 res.redirect("/users/login");
               })
@@ -108,6 +136,106 @@ router.post("/register", (req, res) => {
   }
 });
 
+//REGISTER DUMMY
+router.get("/registerPremade/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  var failed = false
+  var user = await User.findOne({ _id: id }).exec().catch((err) => {
+    failed = err
+  });
+
+  if(failed || !user) {
+    return res.redirect("/users/register");
+  }
+  
+  return res.render("builder", {
+    tittleText: "Registro",
+    page_schema: [{ name: "register_dummy", username: user.name }],
+  });
+});
+
+router.post("/registerPremade/:id", async (req, res) => {
+  const { id } = req.params
+  var failed = false
+  var user = await User.findOne({ _id: id }).exec().catch((err) => {
+    failed = err
+  });
+  //No user found or id is bad
+  if(failed || !user) {
+    return res.redirect("/users/register");
+  }
+
+  const { name, email, password, password2 } = req.body;
+  let errors = [];
+  // console.log(" Name " + name + " email :" + email + " pass:" + password);
+  if (!name || !email || !password || !password2) {
+    errors.push({ msg: "Por favor, rellene todos los campos" });
+  }
+  //check if match
+  if (password !== password2) {
+    errors.push({ msg: "Las contraseñas no coinciden" });
+  }
+
+  //check if password is more than 6 characters
+  if (password.length < 6) {
+    errors.push({ msg: "La contraseña debe tener al menos 6 caracteres" });
+  }
+  if (errors.length > 0) {
+    res.render("builder", {
+      errors: errors,
+      name: name,
+      email: email,
+      password: password,
+      password2: password2,
+      page_schema: [{ name: "register_dummy" }],
+    });
+  } else {
+    //validation passed
+    User.findOne({ email: email }).exec((err, userFound) => {
+      if (userFound) {
+        errors.push({ msg: "El email está en uso" });
+        res.render("builder", {
+          errors: errors,
+          name: name,
+          email: email,
+          password: password,
+          password2: password2,
+          page_schema: [{ name: "register_dummy" }],
+        });
+      } else {
+        user.name = name
+        user.email = email
+        user.password = password
+
+        //hash password
+        bcrypt.genSalt(10, (err, salt) =>
+          bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) throw err;
+            //save pass to hash
+            user.password = hash;
+            //save user
+            user
+              .save()
+              .then((value) => {
+                webLogger(
+                  true,
+                  user._id,
+                  `${user.name} se ha actualizado [Perfil](https://mandalaclimb.herokuapp.com/users/profile/${user._id})`
+                );
+                req.flash("success_msg", "Se ha registrado con éxito");
+                console.log(user)
+                req.logout()
+                res.redirect("/users/login");
+              })
+              .catch((value) => console.log(value));
+          })
+        );
+      }
+    });
+  }
+})
+
 //LOGOUT
 router.get("/logout", (req, res) => {
   req.logout();
@@ -118,7 +246,11 @@ router.get("/logout", (req, res) => {
 //DASHBOARD
 router.get("/dashboard", (req, res) => {
   if (!req.user) return res.redirect("/users/login");
-  return res.render("dashboard");
+  // return res.render("dashboard");
+  return res.render("builder", {
+    tittleText: "Perfil",
+    page_schema: [{ name: "dashboard" }],
+  });
 });
 
 router.post("/dashboard", (req, res) => {
@@ -156,6 +288,11 @@ router.get("/verification/:token", async function (req, res) {
     user.isVerified = true;
     await user.save();
     req.flash("success_msg", "Se ha verificado con éxito, inicie sesión");
+    webLogger(
+      true,
+      user._id,
+      `El usuario _${user.name}_ \\(${user._id}\\) ha verificado su email`
+    );
     return res.redirect("/users/login");
   } catch (err) {
     return res.status(500).send(err);
@@ -163,7 +300,7 @@ router.get("/verification/:token", async function (req, res) {
 });
 
 router.post("/verification", (req, res) => {
-  console.log("Post a verification");
+  // console.log("Post a verification");
   if (req.user && !req.user.isVerified) {
     const url = `http://mandalaclimb.herokuapp.com/users/verification/${req.user.generateVerificationToken()}`;
     var to = req.user.email,
@@ -256,10 +393,12 @@ router.post("/booking", async (req, res) => {
     const year = req.body.year;
     const month = req.body.month;
     const method = req.body.method;
+    if (!method) return res.redirect(`booking?month=${month}&year=${year}`);
     const permissions = user.getPermissions();
 
     //CHECK PERMISSIONS
-    var permissionGranted = user._id.equals("612cbc6301d5f95906c21dd4") || req.user.admin;
+    var permissionGranted =
+      user._id.equals("612cbc6301d5f95906c21dd4") || req.user.admin;
     switch (method) {
       case "month":
         if (!!permissions[year] && !(permissions[year][month] == undefined)) {
@@ -340,10 +479,17 @@ router.post("/booking", async (req, res) => {
           permissions.trainingDays -= 1;
           break;
       }
-      user.permissions = JSON.stringify(permissions)
-      user.save()
+      user.permissions = JSON.stringify(permissions);
+      user.save();
     }
     await bookingRaw.save();
+    webLogger(
+      true,
+      req.user._id,
+      `Reserva el día ${booking.day}/${month - -1}/${year}\\(${
+        timesNames[req.query.time]
+      }\\) para el usuario _${user.name}_\n Tipo: ${trainingNames[method]}`
+    );
     res.redirect(`booking?month=${month}&year=${year}`);
   } else {
     res.redirect("/");
@@ -351,7 +497,7 @@ router.post("/booking", async (req, res) => {
 });
 
 router.get("/books", async (req, res) => {
-  if (req.user && req.user /*.admin*/) {
+  if (req.user) {
     var page_schema = [];
     var month = req.query.month || new Date().getMonth();
     var year = req.query.year || new Date().getFullYear();
@@ -368,10 +514,35 @@ router.get("/books", async (req, res) => {
       .populate({ path: "bookMorning", populate: { path: "user" } })
       .populate({ path: "bookEvening", populate: { path: "user" } })
       .populate({ path: "bookNight", populate: { path: "user" } });
+    var totalBooks = 0;
+    books.forEach((book) => {
+      const date = new Date(book.year, book.month, book.day);
+      book.dayName = dayName[date.getDay()];
 
-    books.forEach(book => {
-      const date = new Date(book.year, book.month, book.day)
-      book.dayName = dayName[date.getDay()]
+      for (let i = 0; i < book.bookMorning.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookMorning[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookMorning.splice(i, 1);
+          i--;
+        }
+      }
+      for (let i = 0; i < book.bookEvening.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookEvening[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookEvening.splice(i, 1);
+          i--;
+        }
+      }
+      for (let i = 0; i < book.bookNight.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookNight[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookNight.splice(i, 1);
+          i--;
+        }
+      }
     });
 
     page_schema.push({
@@ -381,6 +552,7 @@ router.get("/books", async (req, res) => {
       monthName: monthName[month],
       year: year,
       month: month,
+      totalBooks,
     });
 
     res.render("builder", { tittleText: "Reservas", page_schema: page_schema });
@@ -391,7 +563,7 @@ router.get("/books", async (req, res) => {
 
 router.get("/unbook", async (req, res) => {
   const { id } = req.query;
-  const bookInfo = await Book.findById(id) 
+  const bookInfo = await Book.findById(id);
   if (req.user && (req.user.admin || req.user._id.equals(bookInfo.user))) {
     const { day, month, year, time } = req.query;
     const bookDate = await BookDate.findOne({
@@ -407,42 +579,53 @@ router.get("/unbook", async (req, res) => {
     switch (time) {
       case "morning":
         cancelDate.setHours(10);
-        book = bookDate.bookMorning[bookDate.bookMorning.indexOf(id)]
+        book = bookDate.bookMorning[bookDate.bookMorning.indexOf(id)];
         bookDate.bookMorning.splice(bookDate.bookMorning.indexOf(id), 1);
         break;
 
       case "evening":
         cancelDate.setHours(17);
-        book = bookDate.bookEvening[bookDate.bookEvening.indexOf(id)]
+        book = bookDate.bookEvening[bookDate.bookEvening.indexOf(id)];
         bookDate.bookEvening.splice(bookDate.bookEvening.indexOf(id), 1);
         break;
 
       case "night":
         cancelDate.setHours(19);
-        book = bookDate.bookNight[bookDate.bookNight.indexOf(id)]
+        book = bookDate.bookNight[bookDate.bookNight.indexOf(id)];
         bookDate.bookNight.splice(bookDate.bookNight.indexOf(id), 1);
         break;
     }
 
     if ((cancelDate - date) / 1000 / 60 / 60 / 24 > 1 || req.user.admin) {
       //If the cancel is in time
-      var book = await Book.findById(id)
-      var user = await User.findById(book.user).exec()
-      var permissions = user.getPermissions()
+      var book = await Book.findById(id);
+      var user = await User.findById(book.user).exec();
+      var permissions = user.getPermissions();
       switch (book.trainingType) {
-        case 'voucher':
+        case "voucher":
           permissions.days += 1;
           break;
-      
-        case 'trainingVoucher':
+
+        case "trainingVoucher":
           permissions.trainingDays += 1;
           break;
       }
-      user.permissions = JSON.stringify(permissions)
-      user.save()
-
+      user.permissions = JSON.stringify(permissions);
+      user.save();
       await Book.deleteOne({ _id: id });
-      await BookDate.updateOne({ day: day, month: month, year: year }, bookDate);
+      await BookDate.updateOne(
+        { day: day, month: month, year: year },
+        bookDate
+      );
+      webLogger(
+        true,
+        req.user._id,
+        `Cancelada la reserva del día ${day}/${month - -1}/${year}\\(${
+          timesNames[time]
+        }\\) del usuario _${user.name}_ \\(${
+          trainingNames[book.trainingType]
+        }\\)`
+      );
     }
     res.redirect("/users/books");
     // res.send(userid + ' => ' + day + '/' + month + '/' + year + ' ' + time);
@@ -455,43 +638,85 @@ router.get("/profile/:id", async (req, res) => {
   const { id } = req.params;
   if (req.user && (req.user._id == id || req.user.admin)) {
     const user = await User.findOne({ _id: id }).exec();
+    var list = [];
+    list.push({ name: `<strong><u>Correo</u></strong>: ${user.email}` });
+    list.push({
+      name: `<strong><u>Verificado</u></strong>: ${user.isVerified}`,
+    });
+    list.push({ name: `<strong><u>Admin</u></strong>: ${user.admin}` });
+    list.push({ name: `<strong><u>Reservas</u></strong>: ${user.canBook}` });
+    list.push({
+      name: `<strong><u>Fecha</u></strong>: ${user.date.toLocaleDateString()}`,
+    });
     var page_schema = [];
+    var parsedKeys = Object.keys(user.getPermissions());
+    parsedKeys.splice(parsedKeys.indexOf("days"), 1);
+    parsedKeys.splice(parsedKeys.indexOf("trainingDays"), 1);
+    var permissions = {
+      days: user.getPermissions().days,
+      trainingDays: user.getPermissions().trainingDays,
+      parsed: user.getPermissions(),
+      parsedKeys,
+    };
     page_schema.push({
       name: "card",
       tittle: user.name,
-      description: "<strong><u>Email:</u></strong> " + user.email,
-      list: [{ name: user._id }],
+      description: user._id,
+      list,
+      permissions,
     });
-    console.log(page_schema[0].list);
+    // console.log(page_schema[0].list);
     res.render("builder", { tittleText: "Perfil", page_schema: page_schema });
   } else {
     res.redirect("/");
   }
 });
 
+//PAYMENT
 router.get("/payment", async (req, res) => {
-  if (!(req.user && req.user.admin)) {
+  if (!req.user?.admin) {
     res.redirect("/");
     return;
   }
   var users = await User.find().exec();
-  // res.send(users);
-  users.map((user) => (user.parsedPermissions = user.getPermissions()));
+  var month_users = [];
+
+  const month = new Date().getMonth();
+  const year = new Date().getFullYear();
+  users.map((user) => {
+    user.parsedPermissions = user.getPermissions();
+    if (user.parsedPermissions[year]?.[month] != undefined) {
+      month_users.push(user);
+    }
+  });
+
+  month_users.sort((a, b) => {
+    return a.parsedPermissions[year][month] - b.parsedPermissions[year][month];
+  });
 
   var page_schema = [];
+
   page_schema.push({
     name: "payment",
-    users: users,
+    users,
   });
+
   page_schema.push({
-    name: "permissions",
-    users: users,
+    name: "month_subscriptions",
+    users: month_users,
+    month: +month,
+    year: +year,
   });
-  res.render("builder", { tittleText: "Pagos", page_schema: page_schema });
+
+  /*page_schema.push({
+    name: "permissions",
+    users,
+  });*/
+  res.render("builder", { tittleText: "Pagos", page_schema });
 });
 
 router.post("/payment", async (req, res) => {
-  if (req.user && req.user.admin) {
+  if (req.user?.admin) {
     var user = await User.findOne({ _id: req.body.users });
     var perm = user.getPermissions();
     var obj = {};
@@ -510,17 +735,29 @@ router.post("/payment", async (req, res) => {
         break;
 
       case "voucher":
-        perm.days += 5;
+        perm.days = +perm.days + +req.body.paidDays || +5;
         break;
 
       case "trainingVoucher":
-        perm.trainingDays += 5;
+        perm.trainingDays = +perm.trainingDays + +req.body.paidDays || +5;
         break;
     }
 
     user.permissions = JSON.stringify(perm);
-    // console.log(user);
     await user.save();
+
+    const monthPaid =
+      req.body.paid == "month" || req.body.paid == "training"
+        ? String(req.body.selectedmonth).replace("-", "/")
+        : "";
+    webLogger(
+      true,
+      false /*req.user._id*/,
+      `Añadido *${
+        trainingNames[req.body.paid]
+      }* ${monthPaid} para el usuario _${user.name}_`
+    );
+
     res.redirect("/users/payment");
   } else {
     console.log("No admin");
@@ -539,16 +776,17 @@ router.post("/payment", async (req, res) => {
 async function checkBooking(bookArray, user, method, newBook) {
   //FULL SESSION
   if (bookArray.length >= process.env.CAPACITY) return false;
-  if(method == "voucher" || method == "trainingVoucher") return await Book.create(newBook);
+  if (method == "voucher" || method == "trainingVoucher")
+    return await Book.create(newBook);
 
   var book;
   for (book of bookArray) {
-    if(!book.user._id.equals(user._id)) continue;
+    if (!book.user._id.equals(user._id)) continue;
 
     switch (method) {
       case "month":
-        if(book.trainingType == "month") return false
-        if(book.trainingType == "training"){
+        if (book.trainingType == "month") return false;
+        if (book.trainingType == "training") {
           book.trainingType = "month";
           book.user = book.user._id;
           Book.updateOne({ _id: book._id }, book);
@@ -557,8 +795,8 @@ async function checkBooking(bookArray, user, method, newBook) {
         break;
 
       case "training":
-        if(book.trainingType == "training") return false
-        if(book.trainingType == "month"){
+        if (book.trainingType == "training") return false;
+        if (book.trainingType == "month") {
           book.trainingType = "training";
           book.user = book.user._id;
           Book.updateOne({ _id: book._id }, book);
@@ -588,13 +826,13 @@ async function checkBooking(bookArray, user, method, newBook) {
   // if (!duplicated) {
   //   return await Book.create(newBook);
   // } else {
-    // if (method == "training" && book.trainingType == "month") {
-    //   book.trainingType = "training";
-    //   book.user = book.user._id;
-    //   Book.updateOne({ _id: book._id }, book);
-    // }
-    // console.log("Duplicated or updated");
-    // return false;
+  // if (method == "training" && book.trainingType == "month") {
+  //   book.trainingType = "training";
+  //   book.user = book.user._id;
+  //   Book.updateOne({ _id: book._id }, book);
+  // }
+  // console.log("Duplicated or updated");
+  // return false;
   // }
 }
 

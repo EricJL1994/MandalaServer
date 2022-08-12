@@ -38,7 +38,6 @@ const problemTypesToJSONDatabase = {
 
 const difficultyColor = {
   Pink: '#FF96FF',
-  Green_ORIGINAL: '#87FF4E',
   Green: '#86d562',
   Orange: '#FFA84E',
   Yellow: '#FFE14E',
@@ -99,4 +98,12 @@ const dayName = {
   6: 'Sábado',
 }
 
-module.exports = { colours, problemTypesToJSONDatabase, difficultyColor, walls, holdColorsFormatter, monthName, dayName }
+
+const trainingNames = {
+  month: 'Mes',
+  training: 'Mes y entreno',
+  voucher: 'Bono',
+  trainingVoucher: 'Bono y entreno'
+}
+
+module.exports = { colours, problemTypesToJSONDatabase, difficultyColor, walls, holdColorsFormatter, monthName, dayName, trainingNames }

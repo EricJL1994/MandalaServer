@@ -1,0 +1,9 @@
+div.card
+  if(part.logs)
+    each log in part.logs
+      div
+        div 
+          -var date = new Date(log.date)
+          h3= `${date.getDate()}/${date.getMonth() + 1}/${date.getYear() + 1900} ${log.tittle}`
+        p= log.description 
+      hr

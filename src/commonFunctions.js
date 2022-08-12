@@ -1,6 +1,52 @@
-const { colours, dayName } = require("./constants");
+const { colours, dayName, trainingNames } = require("./constants");
 const BookDate = require("../models/bookDate");
+const Log = require("../models/log");
+const User = require("../models/user");
 const { Mongoose } = require("mongoose");
+
+const {Telegraf} = require("telegraf");
+const telegramBot = new Telegraf(process.env.TELEGRAM_TOKEN);
+
+telegramBot.command('reservas', async ctx => {
+  // const user = await User.findOne({telegram: ctx.chat.id}) IMPLEMENTAR EL ID DE TELEGRAM EN EL USUARIO
+  // if(user && user.admin){
+  if(ctx.chat.id == process.env.TELEGRAM_DEV){
+    const date = new Date()
+    const book = await BookDate.findOne({day: date.getDate(), month: date.getMonth(), year: date.getFullYear()})
+    .populate({ path: "bookMorning", populate: { path: "user" } })
+    .populate({ path: "bookEvening", populate: { path: "user" } })
+    .populate({ path: "bookNight", populate: { path: "user" } });
+    // console.log(book)
+    ctx.replyWithMarkdownV2(`*Reservas para el día ${book.day}/${book.month + 1}/${book.year}*`)
+    if(book.bookMorning.length) await ctx.replyWithMarkdownV2(`__*Mañana* (${process.env.CAPACITY - book.bookMorning.length} huecos)__\n${formatBookArray(book.bookMorning)}`)
+    if(book.bookEvening.length) await ctx.replyWithMarkdownV2(`__*Tarde* (${process.env.CAPACITY - book.bookEvening.length} huecos)__\n${formatBookArray(book.bookEvening)}`)
+    if(book.bookNight.length) await ctx.replyWithMarkdownV2(`__*Noche* (${process.env.CAPACITY - book.bookNight.length} huecos)__\n${formatBookArray(book.bookNight)}`)
+  }else{
+    ctx.reply("Necesitas ser un administrador para usar este comando")
+  }
+})
+
+telegramBot.start(ctx => ctx.replyWithMarkdownV2(`Visita nuestra web: [🌐](http://www.mandalaclimb.herokuapp.com/users/login)`))
+telegramBot.launch()
+
+function formatBookArray(bookArray){
+  var result = ""
+  for (const book of bookArray) {
+    result += book.user.name
+    result += "\n"
+    result += trainingNames[book.trainingType]
+    result += "\n"
+    // result += 
+    result += "\n"
+    // result +=
+  }
+  return result
+}
+
+function webLogger(telegram, mongo, message){
+  if(telegram) telegramBot.telegram.sendMessage(process.env.TELEGRAM_GROUP, message, {parse_mode: "MarkdownV2"})
+  if (!!mongo) Log.create({user: mongo, request: message, environment: process.env.DEPLOY})
+}
 
 function logger(type, str) {
   var time = getTimestamp();
@@ -137,7 +183,18 @@ function convertTicksToDate(ticks) {
   var ticksToMicrotime = ticks / 10000;
 
   //ticks are recorded from 1/1/1; get microtime difference from 1/1/1/ to 1/1/1970
+
+  //SOLUCION 1 => CALCULAR EL EPOC CON TIMEZONE
+  // var epochDate = new Date(0, 0, 1)
+  // epochDate.setFullYear(1)
+  // epochDate.setUTCHours(12, 0, 0)
+  // return (new Date(ticksToMicrotime - epochDate))
+
+  // SOLUCION 2 => CALCULAR LA FECHA Y AJUSTAR LA HORA
   var epochMicrotimeDiff = Math.abs(new Date(0, 0, 1).setFullYear(1));
+  var date = new Date(ticksToMicrotime - epochMicrotimeDiff)
+  date.setUTCHours(0, 0, 0)
+  return date
 
   //new date is ticks, converted to microtime, minus difference from epoch microtime
   return new Date(ticksToMicrotime - epochMicrotimeDiff);
@@ -155,6 +212,20 @@ function formatDate(date) {
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 }
 
+const sortingColors = {
+  Pink: 0,
+  Green: 1,
+  Orange: 2,
+  Yellow: 3,
+  Red: 4
+}
+
+function sortBoulders(a, b) {
+  if(sortingColors[a.difficultyName] > sortingColors[b.difficultyName]) return 1
+  if(sortingColors[a.difficultyName] < sortingColors[b.difficultyName]) return -1
+  return a.number - b.number
+}
+
 module.exports = {
   isEmpty,
   isBlank,
@@ -164,4 +235,6 @@ module.exports = {
   formatDate,
   objectKeyValueFlip,
   getWeeksInMonth,
+  webLogger,
+  sortBoulders,
 };

@@ -1,32 +1,89 @@
-include templates/new_header.pug
+include templates/partials/new_header
 body
-  include templates/nb_navbar.pug
+  include templates/partials/nb_navbar
+
+  if errors != undefided || success_msg != '' || error_msg != '' || error != ''
+    div.screenCover
+      if errors != undefided
+        - var cover_tittle = 'Error'
+        - var cover_list = errors
+        include templates/partials/cover-alert
+        //- - var cover_list = undefined
+      if success_msg != ''
+        - var cover_tittle = 'Éxito'
+        - var cover_message = success_msg
+        include templates/partials/cover-alert
+      if error_msg != ''
+        - var cover_tittle = 'Error'
+        - var cover_message = error_msg
+        include templates/partials/cover-alert
+      if error != ''
+        - var cover_tittle = 'Fallo'
+        - var cover_message = error
+        include templates/partials/cover-alert
   main
-    each part in page_schema
-      if (part.name == 'card')
-        -    
-          var card = {
-            src: part.src,
-            alt: part.alt,
-            tittle: part.tittle,
-            description: part.description,
-            link: part.link,
-            list: part.list
-          }
-        include templates/card.pug
+    //- div.ctaButton
+      button A
+    div.container-block
+      each part in page_schema
+        if (part.name == 'card')
+          -    
+            var card = {
+              src: part.src,
+              alt: part.alt,
+              tittle: part.tittle,
+              description: part.description,
+              link: part.link,
+              list: part.list,
+              permissions: part.permissions
+            }
+          include templates/partials/card
 
-      if (part.name == 'table')
-        - var arrayProblems = part.arrayProblems
-        include templates/problems_table2.pug
+        if (part.name == 'table')
+          - var arrayProblems = part.arrayProblems
+          include templates/partials/problems_table
 
-      if (part.name == 'booking')
-        include templates/booking.pug
+        if (part.name == 'booking')
+          include templates/user/booking/booking
 
-      if (part.name == 'books')
-        include templates/books.pug
+        if (part.name == 'books')
+          include templates/user/booking/books
 
-      if (part.name == 'permissions')
-        include templates/permissions.pug
+        if (part.name == 'permissions')
+          include templates/user/booking/permissions
 
-      if (part.name == 'payment')
-        include templates/payment.pug
+        if (part.name == 'payment')
+          include templates/user/booking/payment
+
+        if (part.name == 'login')
+          include templates/user/login
+
+        if (part.name == 'register')
+          include templates/user/register
+
+        if (part.name == 'register_dummy')
+          include templates/user/register_dummy
+
+        if (part.name == 'dashboard')
+          include templates/user/dashboard
+
+        if (part.name == 'month_subscriptions')
+          include templates/user/booking/month_subscriptions
+
+        if (part.name == 'logs')
+          include templates/admin/logs
+
+        if (part.name == 'admin_boulders')
+          include templates/admin/boulders
+
+        if (part.name == 'admin_register')
+          include templates/admin/register
+
+        if (part.name == "admin_users")
+          include templates/admin/users
+
+        if (part.name == "edit_boulder")
+          include templates/partials/edit_boulder
+        
+
+        

@@ -1,0 +1,30 @@
+div.card
+  //- input#userName(type="text" placeholder="Buscar..." onkeyup="filterDropdown(\"users\", this.value, \"submitPayment\")")
+  input#userName(type="text" placeholder="Buscar..." onkeyup="filterDropdown(\"users\", this.value)")
+  select#users(name="users" onchange="showUserInfo(this)")
+    option(disabled,hidden,selected) Elige un usuario
+    each userInfo in part.users
+      option(value=userInfo._id)= userInfo.name
+  hr
+  each userInfo in part.users
+    div(id=userInfo._id, hidden)
+      h3= userInfo.name
+      if userInfo.admin
+        h4 Administrador
+      if userInfo.email
+        p= userInfo.email + (userInfo.verified ? " ✔️" : " ❌")
+      else
+        p: u Usuario dummy
+
+      -const permissions = userInfo.getPermissions()
+      table#permissionsTable
+        thead
+          tr 
+            th(colspan = 2) Disponible 
+        tbody
+          tr
+            td.border-right Días
+            td.align-center= permissions.days
+          tr
+            td.border-right Días + entreno
+            td.align-center= permissions.trainingDays

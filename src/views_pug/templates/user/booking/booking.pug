@@ -1,8 +1,10 @@
-form(action="/users/booking", method="post")
-  input#selectedDate(type="hidden", name="date", value=1)
-  input(type="hidden", name="month", value=part.monthNumber)
-  input(type="hidden", name="year", value=part.year)
+form(action="/users/booking" method="post")
+  input#selectedDate(type="hidden" name="date", value=1)
+  input(type="hidden" name="month", value=part.monthNumber)
+  input(type="hidden" name="year", value=part.year)
   div.booking.card
+    include ../../partials/calendar-links
+    hr
     div.calendar-arrow
       a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-1}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐊ
       a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ
@@ -30,15 +32,15 @@ form(action="/users/booking", method="post")
                   - blanks--
                   td.blank
               each book, day in week.dates
-                  if !book.weekend
-                    - var booked = user ? book.bookMorning.indexOf(user._id) > -1 || book.bookEvening.indexOf(user._id) > -1 || book.bookNight.indexOf(user._id) > -1 : false
-                    //- - console.log('---- ' + (book.bookNight.length == 0))
-                    //- td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookMorning.length},${book.bookEvening.length},${book.bookNight == undefined ? '' : ',' + book.bookNight.length}], ${part.max}, ${book.day})`).align-center= book.day
-                    td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookingArray}], ${part.max}, ${book.day}, this)`).align-center= book.day
-                    //- if user
-                      td= book.bookMorning.indexOf(user._id)
-                  else
-                    td.blank.grey.align-center= book.day
+                if !book.weekend
+                  - var booked = user ? book.bookMorning.indexOf(user._id) > -1 || book.bookEvening.indexOf(user._id) > -1 || book.bookNight.indexOf(user._id) > -1 : false
+                  //- - console.log('---- ' + (book.bookNight.length == 0))
+                  //- td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookMorning.length},${book.bookEvening.length},${book.bookNight == undefined ? '' : ',' + book.bookNight.length}], ${part.max}, ${book.day})`).align-center= book.day
+                  td(class = book.full ? 'trProblemUnmarked' : booked ? 'trProblemDone' : '' onclick=`showFloatingTimeTable([${book.bookingArray}], ${part.max}, ${book.day}, this)`).align-center= book.day
+                  //- if user
+                    td= book.bookMorning.indexOf(user._id)
+                else
+                  td.blank.grey.align-center= book.day
       table#permissionsTable
         thead
           tr 
@@ -61,43 +63,52 @@ form(action="/users/booking", method="post")
               td(hidden)= user._id
               td.border-right Días + entreno
               td.align-center= part.permissions.trainingDays
+
           if(user.admin)
             each userInfo in part.users
-              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;", value = userInfo.monthSubscription)
-                td(hidden)= userInfo._id
+              tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
+                td(hidden, value = userInfo.monthSubscription)= userInfo._id
                 td.border-right Mes
                 td= userInfo.monthSubscription ? "✔️" : "❌"
+                td#month(hidden)= (userInfo.monthSubscription) || userInfo.admin
+
               tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
                 td(hidden)= userInfo._id
                 td.border-right Entrenos
                 td= userInfo.monthTraining ? "✔️" : "❌"
+                td#training(hidden)= (userInfo.monthTraining) || userInfo.admin
+
               tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
                 td(hidden)= userInfo._id
                 td.border-right Días
                 td.align-center= userInfo.parsedPermissions.days
+                td#voucher(hidden)= (userInfo.parsedPermissions.days > 0) || userInfo.admin
+
               tr(style= userInfo._id.equals(user._id) ? "" : "display: none;")
                 td(hidden)= userInfo._id
                 td.border-right Días + entreno
                 td.align-center= userInfo.parsedPermissions.trainingDays
+                td#trainingvoucher(hidden)= (userInfo.parsedPermissions.trainingDays > 0) || userInfo.admin
 
       hr
       h3 Reservar
       div(style="display: inline-grid;")
         if(user.admin)
-          select#userBooking(name="userBooking", onchange="changePermissions(this)")
+          select#userBooking(name="userBooking" onchange="changePermissions(this)")
             each userInfo in part.users
               option(value=userInfo._id)= userInfo.name
-          input#bookingName(type="text", placeholder="Nombre", name="bookingName", style="display: none")
+          input#bookingName(type="text" placeholder="Nombre" name="bookingName" style="display: none")
 
         select#method(name="method")
+          option#method0(value="", hidden, selected) ----
           //- if(part.monthSubscription)
-          option(value="month", disabled = (part.monthSubscription || user.admin) ? null : "") Mes
+          option#methodmonth(value="month", disabled = (part.monthSubscription || user.admin) ? null : "") Mes
           //- if(part.monthTraining)
-          option(value="training", disabled = (part.monthTraining || user.admin) ? null : "") Entrenamiento 
+          option#methodtraining(value="training", disabled = (part.monthTraining || user.admin) ? null : "") Entrenamiento 
           //- if(part.permissions.days > 0)
-          option(value="voucher", disabled = (part.permissions.days > 0 || user.admin) ? null : "") Bono 
+          option#methodvoucher(value="voucher", disabled = (part.permissions.days > 0 || user.admin) ? null : "") Bono 
           //- if(part.permissions.trainingDays > 0)
-          option(value="trainingVoucher", disabled = (part.permissions.trainingDays > 0 || user.admin) ? null : "") Bono + entreno 
+          option#methodtrainingvoucher(value="trainingVoucher", disabled = (part.permissions.trainingDays > 0 || user.admin) ? null : "") Bono + entreno 
 
       div#floater
         table.hours-table

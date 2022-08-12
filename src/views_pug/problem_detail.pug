@@ -14,4 +14,5 @@ body
         userList: problemDetail.userList
       }
     include templates/partials/card.pug
-    a(href=`/admin/editBoulder/${problemDetail._id}`) Editar
+    if(user && user.admin)
+      a(href=`/admin/editBoulder/${problemDetail._id}`) Editar

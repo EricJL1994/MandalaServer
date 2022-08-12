@@ -63,6 +63,9 @@ router.get("/users", async (req,res) => {
 })
 
 router.get("/editBoulder/:id", async (req, res) => {
+  if(!req.user?.admin){
+    return res.redirect("/")
+  }
   const { id } = req.params
   Boulder.findById(id).then(boulder => {
     // console.log(boulder)

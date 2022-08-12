@@ -14,6 +14,6 @@ const InfoSchema  = new mongoose.Schema({
   }
 });
 
-const Info= mongoose.model('Info', InfoSchema);
+const Info= mongoose.model('info', InfoSchema);
 
 module.exports = Info;

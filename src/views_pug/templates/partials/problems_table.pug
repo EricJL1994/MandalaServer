@@ -5,7 +5,8 @@ div.container
     thead.theadStyle
       tr
         th(scope='col') Nº 
-        th.align-left(scope='col') Fecha
+        if(arrayProblems[0].date)
+          th.align-left(scope='col') Fecha
         th.align-left.td-hide(scope='col') Pared
         th.align-left(scope='col') Presas
         if(user)
@@ -14,17 +15,20 @@ div.container
             th RP
     tbody
       each problem in arrayProblems
-        tr.trProblem(class = problem.done ? 'trProblemDone' : 'bg-light')
+        //- tr.trProblem(class = problem.done ? 'trProblemDone' : '')
+        tr.trProblem(class = problem.pending ? 'trProblemPending' : (problem.done ? 'trProblemDone' : ''))
           //- Search criteria
-          td.d-none= `${problem.dificultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
+          td.d-none= `${problem.difficultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
           //- Number and link
-          td(onclick=`window.location='/boulders/details?difficultyName=${problem.dificultyName}&number=${problem.number}'`)
+          td(onclick=`window.location='/boulders/details?difficultyName=${problem.difficultyName}&number=${problem.number}'`)
             div.align-center(style={'background-color': problem.color, 'cursor': 'pointer'})= problem.number
           //- Date
-          td.d-none(id='dateValue')= `${problem.dateValue}`
-          td.small-hide= problem.date
-          -const dateArray = problem.date.split('/')
-          td.small-show= `${dateArray[0]}/${dateArray[1]}`
+          if(problem.date)
+            td.d-none(id='dateValue')= `${problem.dateValue}`
+            td.small-hide= problem.date
+            -const dateArray = problem.date.split('/')
+            td.small-show= `${dateArray[0]}/${dateArray[1]}`
+          //- td.small-show= `8/8`
           //- Wall
           td= problem.wallName
           //- Hold color
@@ -35,6 +39,7 @@ div.container
             td.align-center
               input.d-none(type="checkbox", checked = false, disabled = true)
               input.d-none(type="checkbox", checked = problem.done, disabled = true)
-              button(onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
+              //- button(onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
+              button(disabled = problem.pending, onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
             if(user.admin)
               td.align-center= problem.redpoints.length

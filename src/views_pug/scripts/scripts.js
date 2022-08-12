@@ -7,7 +7,7 @@ function convertDateToTicks(date) {
 }
 
 function resetDate() {
-  document.getElementById("timeValue").value = "2021-02-22";
+  document.getElementById("timeValue").value = "";
   search();
 }
 
@@ -106,25 +106,33 @@ function filter(dropdownFilter) {
 }
 
 function filterDropdown(id, filter, submit){
-  document.getElementById(submit).disabled = false
+  console.log("---------------------------")
+  if(submit) document.getElementById(submit).disabled = false
   const select = document.getElementById(id)
   const options = select.getElementsByTagName("OPTION")
   var selected = select.options[select.selectedIndex]
-  if(!selected.innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1) selected = undefined;
+  // console.log(selected)
+  const lastId = selected.value
+  // console.log(lastId)
+  // console.log(!(selected.innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1))
+  if(!(selected.innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1)) selected = undefined;
   for (let i = 1; i < options.length; i++) {
     if(options[i].innerText.toUpperCase().indexOf(filter.toUpperCase()) > -1){
       if(!selected) {
+        console.log("Nuevo elegido")
         options[i].selected = true
         selected = options[i]
+        // select.value = lastId
+        showUserInfo(select, lastId)
       }
       options[i].style.display = ""
     }else{
       options[i].style.display = "none"
     }
   }
-  if(!selected){
+  if(!selected || filter.length == 0){
     options[0].selected = true
-    document.getElementById(submit).disabled = true
+    if(submit) document.getElementById(submit).disabled = true
   } 
 }
 
@@ -148,13 +156,48 @@ function changePermissions(select){
   // console.log(trows)
 }
 
+function showUserInfo(select, lastId){
+  const filterId = select.options[select.selectedIndex].value
+  select.setAttribute("onchange",`showUserInfo(this,"${(!select.selectedIndex ? lastId : filterId)}")`)
+  if (!!lastId && document.getElementById(lastId)) {
+    document.getElementById(lastId).hidden = true
+  }
+  document.getElementById(filterId).hidden = false
+}
+
 function timer(timeFilter) {
   // document.getElementById('timeValue').value = timeFilter
   search(undefined, undefined, timeFilter);
 }
 
+function boulderDoneResponse(button, id, done){
+const tr = button.parentElement.parentElement;
+  const trClassList = tr.classList;
+  // const checkboxMarked = tr.getElementsByTagName("input")[0];
+  const checkboxDone = tr.getElementsByTagName("input")[1];
+  // checkboxMarked.checked = !checkboxMarked.checked;
+  if(done){
+    trClassList.add("trProblemDone")
+  }else{
+    trClassList.remove("trProblemDone")
+  }
+  checkboxDone.checked = done
+
+  button.innerText = done ? "Quitar" : "Marcar"
+}
+
 function boulderDone(button, id) {
-  const tr = button.parentElement.parentElement;
+  let xhr = new XMLHttpRequest()
+  xhr.onreadystatechange = () => {
+    if(xhr.readyState === 4){
+      boulderDoneResponse(button, id, JSON.parse(xhr.response).done)
+    }
+  }
+  xhr.open("POST", "/boulders/boulderDone", true)
+  xhr.setRequestHeader("Content-Type", "application/json")
+  xhr.send(JSON.stringify({id}))
+
+  /*const tr = button.parentElement.parentElement;
   const trClassList = tr.classList;
   const checkboxMarked = tr.getElementsByTagName("input")[0];
   const checkboxDone = tr.getElementsByTagName("input")[1];
@@ -171,11 +214,11 @@ function boulderDone(button, id) {
     }
   } else {
     if (checkboxMarked.checked) {
-      trClassList.remove("bg-light");
+      // trClassList.remove("bg-light");
       trClassList.add("trProblemMarked");
       button.innerText = "Desmarcar";
     } else {
-      trClassList.add("bg-light");
+      // trClassList.add("bg-light");
       trClassList.remove("trProblemMarked");
       button.innerText = "Marcar";
     }
@@ -198,7 +241,7 @@ function boulderDone(button, id) {
   if (!found) problems.push(id);
   sessionStorage.problemsDone = JSON.stringify(problems);
   const inputP = document.getElementById("problemsToSubmit");
-  inputP.value = JSON.stringify(sessionStorage.problemsDone);
+  inputP.value = JSON.stringify(sessionStorage.problemsDone);*/
 }
 
 function showFloatingTimeTable(bookings, max, day, td) {

@@ -3,6 +3,8 @@ form(action="/users/booking" method="post")
   input(type="hidden" name="month", value=part.monthNumber)
   input(type="hidden" name="year", value=part.year)
   div.booking.card
+    include ../../partials/calendar-links
+    hr
     div.calendar-arrow
       a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-1}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐊ
       a.no-decor.btn-primary(href=`/users/booking?month=${part.monthNumber-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ

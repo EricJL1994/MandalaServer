@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const boulderSchema = new Schema({
-    dificultyName: String,
+    difficultyName: String,
     number: Number,
     dateValue: Number,
     holdColor: String,
@@ -13,6 +13,6 @@ const boulderSchema = new Schema({
     }
 })
 
-const Boulder = mongoose.model("Boulder", boulderSchema);
+const Boulder = mongoose.model("boulder", boulderSchema);
 
 module.exports = Boulder;

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const traverseSchema = new Schema({
-    dificultyName: String,
+    difficultyName: String,
     number: Number,
     dateValue: Number,
     holdColor: String,
@@ -11,6 +11,6 @@ const traverseSchema = new Schema({
     wall: Number
 })
 
-const Traverse = mongoose.model("Traverse", traverseSchema);
+const Traverse = mongoose.model("traverse", traverseSchema);
 
 module.exports = Traverse;

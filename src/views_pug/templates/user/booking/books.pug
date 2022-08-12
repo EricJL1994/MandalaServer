@@ -6,8 +6,8 @@ form(action="/users/booking" method="post")
     a.no-decor.btn-primary(href=`/users/books?month=${part.month-(-1)}${part.year != new Date().getFullYear() ? '&year=' + part.year : ''}`) ᐅ
   div.booking
     -const trainingNames = {month: 'Mes',training: 'Entreno',voucher: 'Día', trainingVoucher: 'Día + entreno'}
-    if (part.books.length == 0)
-      div= `No se han generado las reservar para ${part.monthName} ${part.year}`
+    if (part.books.length == 0 || part.totalBooks == 0)
+      div= `No hay reservas que mostrar para ${part.monthName} ${part.year}`
     else 
       table
         thead
@@ -26,12 +26,12 @@ form(action="/users/booking" method="post")
               if (user.admin || morning.user._id.equals(user._id))
                 tr
                   //- **********************AJUSTAR EN BACKEND LOS ARRAYS**********************
-                  //- if(index == 0)
-                  //-   td.border-right.align-center(rowspan = length)= book.day
-                  td.border-right.align-center= book.day
-                  //- if (index == 0)
-                  //-   td.border-right.align-center(rowspan = book.bookMorning.length) Mañana
-                  td.border-right.align-center Mañana
+                  if(index == 0)
+                    td.border-right.align-center(rowspan = length)= book.day
+                  //- td.border-right.align-center= book.day
+                  if (index == 0)
+                    td.border-right.align-center(rowspan = book.bookMorning.length) Mañana
+                  //- td.border-right.align-center Mañana
 
                   td.border-right.align-center= morning.user.name == "Invitado" ? morning.name : morning.user.name
                   td.border-right.align-center= trainingNames[morning.trainingType]
@@ -39,9 +39,9 @@ form(action="/users/booking" method="post")
                     a.no-decor(href=`/users/unbook?id=${morning._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=morning`) X
             each evening, index in book.bookEvening
               tr
-                //- if (book.bookMorning.length == 0 && index == 0)
+                if (book.bookMorning.length == 0 && index == 0)
                   td.border-right.align-center(rowspan = length)= book.day
-                td.border-right.align-center= book.day
+                //- td.border-right.align-center= book.day
                 if (index == 0)
                   td.border-right.align-center(rowspan = book.bookEvening.length) Tarde
                 td.border-right.align-center= evening.user.name == "Invitado" ? evening.name : evening.user.name
@@ -50,9 +50,9 @@ form(action="/users/booking" method="post")
                   a.no-decor(href=`/users/unbook?id=${evening._id}&day=${book.day}&month=${book.month}&year=${book.year}&time=evening`) X
             each night, index in book.bookNight
               tr
-                //- if(book.bookNight.length == length && index == 0)
+                if(book.bookNight.length == length && index == 0)
                   td.border-right.align-center(rowspan = length)= book.day
-                td.border-right.align-center= book.day
+                //- td.border-right.align-center= book.day
                 if (index == 0)
                   td.border-right.align-center(rowspan = book.bookNight.length) Noche
                 td.border-right.align-center= night.user.name == "Invitado" ? night.name : night.user.name

@@ -8,18 +8,25 @@ div
       include ../partials/form-group.pug
       -var formLabel = 'E-mail', formValue = user.email, formName = 'email'
       include ../partials/form-group.pug
-      if(!user.isVerified)
-        div
-          h4(style='margin-bottom: .25rem') Email no confirmado
-          button.btn-primary(type='submit' formaction='/users/verification') Enviar confirmación
-      if(user.canBook)
-        hr
-        a(href="/users/booking") Reservar horas 
-      if(user.admin || true)
-        hr
-        a(href="/users/books") Ver reservas
-      if(user.admin)
-        hr
-        a(href="/users/payment") Ver permisos
+      //- if(!user.isVerified)
+      //-   div
+      //-     h4(style='margin-bottom: .25rem') Email no confirmado
+      //-     button.btn-primary(type='submit' formaction='/users/verification') Enviar confirmación
+      //- if(user.canBook)
+      //-   hr
+      //-   a(href="/users/booking") Reservar horas 
+      //- if(user.admin || true)
+      //-   hr
+      //-   a(href="/users/books") Ver reservas
       hr
       a(href="/users/logout")  Cerrar sesión
+      if(user.admin)
+        hr
+        h4 Administrador
+        //- a(href="/users/payment") Ver permisos
+        //- br
+        a(href="/admin/users") Ver usuarios
+        br
+        a(href="/admin/register") Registrar usuario
+        br
+        a(href="/admin/logs") Ver registros

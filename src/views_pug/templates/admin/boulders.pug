@@ -1,0 +1,22 @@
+table
+  thead
+    tr 
+      th Id
+      th Dificultad 
+      th Número 
+      th Fecha
+      th Presas
+      th Pendiente
+      th Pared
+      th Redpoints 
+  tbody
+    each boulder in part.boulders
+      tr
+        td= boulder._id
+        td= boulder.difficultyName
+        td= boulder.number
+        td= boulder.date
+        td= boulder.holdColor
+        td= boulder.pending
+        td= boulder.wall
+        td= boulder.redpoints.length

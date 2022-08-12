@@ -6,11 +6,12 @@ body
   main
     -    
       var card = {
-        alt: `${problemDetail.dificultyName} ${problemDetail.number}`,
-        tittle: `${problemDetail.dificultyName} ${problemDetail.number}`,
+        alt: `${problemDetail.difficultyName} ${problemDetail.number}`,
+        tittle: `${problemDetail.difficultyName} ${problemDetail.number}`,
         description: `<strong>Color de presas:</strong> ${problemDetail.holdColor} <br> <strong>Pared:</strong> ${problemDetail.wallName} <br> <strong>Fecha:</strong> ${problemDetail.date} <br> <strong>Encadenados:</strong> ${problemDetail.redpoints.length}`,
         link: undefined,
         list: problemDetail.list,
         userList: problemDetail.userList
       }
     include templates/partials/card.pug
+    a(href=`/admin/editBoulder/${problemDetail._id}`) Editar

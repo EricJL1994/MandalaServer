@@ -13,13 +13,10 @@ const adapter = new FileSync('./src/storageData/database.json')
 const database = lowDB(adapter)
 
 exports.problem_show = async function(req, res) {
-  // console.log('A')
-  // const problems = exports.fetch_problems(req, res)
-  // console.log('B')
-  // res.render('index')
-  // res.render('show_problems', {tables: [await parse_problems(fetch_problems(req, res), req.user)], searchTime: (req.query.lastDays || 0)})
   var page_schema = []
 
+  // var problems = await parse_problems(fetch_problems(req, res), req.user)
+  // console.log(problems.length)
   page_schema.push({
         name: "table",
         arrayProblems: await parse_problems(fetch_problems(req, res), req.user),
@@ -29,12 +26,13 @@ exports.problem_show = async function(req, res) {
 }
 
 exports.problem_detail = async function(req, res) {
+  req.query.pending = true
   const problemDetailData = await parse_problems(fetch_problems(req, res))
-  if(req.user && req.user.admin){
+  if(req.user?.admin){
     problemDetailData[0].userList = await User.find({_id: {$in: problemDetailData[0].redpoints}})
   }
   // console.log(problemDetailData[0])
-  res.render('problem_detail', {problemDetail: problemDetailData[0]});
+  return res.render('problem_detail', {problemDetail: problemDetailData[0]});
 }
 
 exports.problem_get = function(req, res) { //SIN USAR
@@ -49,7 +47,7 @@ exports.problem_get = function(req, res) { //SIN USAR
     
     if (!!req.query.color) {
       const color = req.query.color.trim()
-      res.send(database.get(problemType).filter({dificultyName: color}).value().map(element => JSON.stringify(element)))
+      res.send(database.get(problemType).filter({difficultyName: color}).value().map(element => JSON.stringify(element)))
     } else {
       res.send(database.get(problemType).value().map(element => JSON.stringify(element)))
     }
@@ -62,7 +60,8 @@ exports.problem_add = function(req, res) { //SIN USAR
   const newProblemData = JSON.parse(req.query.problem)
   const problemType = req.query.type
 
-  const problemExists = database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).value()
+  // TODO
+  const problemExists = database.get(problemType).find({ difficultyName: newProblemData.difficultyName || newProblemData.dificultyName, number: newProblemData.number }).value()
   //console.log(problemExists)
 
   if (!problemExists) {
@@ -91,14 +90,16 @@ exports.problem_add_multiple = async function(req, res) {
   //Devuelve un array de promesas en .map, con Promise.all podemos hacer el await, ahora responde correctamente con el status debido
   await Promise.all(newProblemsData.map(async problemString=> {
     const problem = JSON.parse(problemString)
-    const mongoExists = await Boulder.findOne({dificultyName: problem.dificultyName, number: problem.number}).exec()
+    // TODO
+    const mongoExists = await Boulder.findOne({difficultyName: problem.difficultyName || problem.dificultyName, number: problem.number}).exec()
 
     if (!mongoExists) {
       Boulder.create(problem)
       logger('SUCCESS', 'Problema creado')
     } else {
       edited = true
-      Boulder.findOneAndReplace({dificultyName: problem.dificultyName, number: problem.number}, problem).exec()
+      // TODO
+      Boulder.findOneAndReplace({difficultyName: problem.difficultyName || problem.dificultyName, number: problem.number}, problem).exec()
       logger('SUCCESS', 'Problema editado')
     }
   }))
@@ -114,13 +115,13 @@ exports.problem_update = function(req, res) { //SIN USAR
   const updateProblemData = JSON.parse(req.query.problem)
   const problemType = req.query.type
 
-  const problemExists = database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).value()
+  const problemExists = database.get(problemType).find({ difficultyName: newProblemData.difficultyName, number: newProblemData.number }).value()
   console.log(problemExists)
 
   if (problemExists) {
     console.log(updateProblemData)
 
-    database.get(problemType).find({ dificultyName: newProblemData.dificultyName, number: newProblemData.number }).assign(updateProblemData)
+    database.get(problemType).find({ difficultyName: newProblemData.difficultyName, number: newProblemData.number }).assign(updateProblemData)
 
     logger('SUCCESS', 'Problema actualizado')
     res.status(200).send('Se ha actualizado el problema')
@@ -156,6 +157,21 @@ exports.problems_done = async function(req, res) {
   }
   res.redirect(req.originalUrl)
 }
+
+exports.boulder_done = async function(req, res) {
+  if(req.user) {
+    const { id } = req.body
+    let boulder = await Boulder.findById(id)
+    if(boulder.redpoints.includes(req.user._id)){
+      boulder.redpoints.splice(boulder.redpoints.indexOf(req.user._id), 1)
+      res.send({done: false})
+    }else{
+      boulder.redpoints.push(req.user._id)
+      res.send({done: true})
+    }
+    boulder.save()
+  }
+}
 /*******************************************************/
 
 function fetch_problems (req, res) {
@@ -172,10 +188,9 @@ function fetch_problems (req, res) {
       mongoProblems = Boulder.find()
   }
   var options = {}
-
   if(!req.query.pending) options.pending= false
-  // if(req.query.difficultyName) mongoProblems.find({dificultyName: req.query.difficultyName})
-  if(req.query.difficultyName) options.dificultyName= req.query.difficultyName
+  
+  if(req.query.difficultyName) options.difficultyName= req.query.difficultyName
   
   // if(req.query.number) mongoProblems.find({number: req.query.number})
   if(req.query.number) options.number = req.query.number
@@ -190,17 +205,7 @@ function fetch_problems (req, res) {
   }
   mongoProblems.find(options)
   
-  return mongoProblems.sort({dificultyName: 'asc', number: 'asc'})
-  // mongoProblems.sort({dificultyName: 'asc', number: 'asc'}).exec()
-
-  /*return mongoProblems.then(result => result.map(problem => {
-    return Object.assign({}, {...problem.toObject(),
-      date: formatDate(convertTicksToDate(problem.dateValue)),
-      color: difficultyColor[problem.dificultyName],
-      wallName: walls[problem.wall],
-      done: req.user ? problem.redpoints.includes(req.user._id) : false
-    })
-  })).catch(err => console.log(err))*/
+  return mongoProblems.sort({difficultyName: 'asc', number: 'asc'})
 }
 
 function parse_problems (problems, user){
@@ -210,7 +215,7 @@ function parse_problems (problems, user){
   return problems.then(result => result.map(problem => {
     return Object.assign({}, {...problem.toObject(),
       date: formatDate(convertTicksToDate(problem.dateValue)),
-      color: difficultyColor[problem.dificultyName],
+      color: difficultyColor[problem.difficultyName],
       wallName: walls[problem.wall],
       done: user ? problem.redpoints.includes(user._id) : false,
       holdColorShort: holdColorsFormatter[problem.holdColor]

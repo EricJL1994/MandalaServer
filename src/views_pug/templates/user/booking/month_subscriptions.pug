@@ -1,0 +1,14 @@
+div.card
+  h3= `${+part.month + 1}/${part.year}`
+  - var month = true
+  h4 Mes
+  ul
+  each userInfo in part.users
+    if !(userInfo.parsedPermissions[part.year][part.month])
+      li= userInfo.name
+    else
+      if month
+        - month = false 
+        hr
+        h4 Mes + entreno 
+      li= userInfo.name

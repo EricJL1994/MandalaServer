@@ -4,19 +4,26 @@ const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   email: {
     type: String,
-    required: true,
-    unique: true,
+    required: false,
+    index: {
+      unique: true,
+      partialFilterExpression: {email: { $type: 'string'}},
+    },
+    default: null,
+    // required: allowEmptyString,
+    // unique: true,
   },
   password: {
     type: String,
-    required: true,
+    required: allowEmptyPassword,
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   isVerified: {
     type: Boolean,
@@ -37,6 +44,10 @@ const UserSchema = new mongoose.Schema({
     default: '{"days":0,"trainingDays":0}',
   },
 });
+
+function allowEmptyPassword(){
+  return !(typeof this.password === 'string')
+}
 
 UserSchema.methods.getPermissions = function (){
   return JSON.parse(this.permissions)

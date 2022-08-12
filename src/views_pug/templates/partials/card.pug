@@ -9,9 +9,34 @@
     if(card.list)
       ul
         each element in card.list
-          li= element.name
+          li!= element.name
+    if(card.permissions)
+      hr
+      table#permissionsTable
+        thead
+          tr 
+            th(colspan = 2) Disponible 
+        tbody
+          tr
+            td.border-right Días
+            td.align-center= card.permissions.days
+          tr
+            td.border-right Días + entreno
+            td.align-center= card.permissions.trainingDays
+      each year in card.permissions.parsedKeys
+        h5(style='margin-block-end: 0')= year
+        ul(style='margin-block-start: 0')
+          - var months = Object.keys(card.permissions.parsed[year])
+          each month in months
+            li= (month-(-1)) + "/" + year + ": " +(card.permissions.parsed[year][month] ? "Entreno" : "Mes")
+          //- tr
+            td.border-right Mes
+            td= card.permissions.monthSubscription ? "✔️" : "❌"
+          //- tr
+            td.border-right Entrenos
+            td= card.permissions.monthTraining ? "✔️" : "❌"
     if(card.userList)
       ul
         each element in card.userList
           li
-            a(href="/users/profile/"+element._id)= element.name        
+            a(href=element.link ? element.link : "/users/profile/"+element._id)= element.name        

@@ -45,7 +45,7 @@ function formatBookArray(bookArray){
 
 function webLogger(telegram, mongo, message){
   if(telegram) telegramBot.telegram.sendMessage(process.env.TELEGRAM_GROUP, message, {parse_mode: "MarkdownV2"})
-  if (!!mongo) Log.create({user: mongo, request: message})
+  if (!!mongo) Log.create({user: mongo, request: message, environment: process.env.DEPLOY})
 }
 
 function logger(type, str) {
@@ -183,7 +183,18 @@ function convertTicksToDate(ticks) {
   var ticksToMicrotime = ticks / 10000;
 
   //ticks are recorded from 1/1/1; get microtime difference from 1/1/1/ to 1/1/1970
+
+  //SOLUCION 1 => CALCULAR EL EPOC CON TIMEZONE
+  // var epochDate = new Date(0, 0, 1)
+  // epochDate.setFullYear(1)
+  // epochDate.setUTCHours(12, 0, 0)
+  // return (new Date(ticksToMicrotime - epochDate))
+
+  // SOLUCION 2 => CALCULAR LA FECHA Y AJUSTAR LA HORA
   var epochMicrotimeDiff = Math.abs(new Date(0, 0, 1).setFullYear(1));
+  var date = new Date(ticksToMicrotime - epochMicrotimeDiff)
+  date.setUTCHours(0, 0, 0)
+  return date
 
   //new date is ticks, converted to microtime, minus difference from epoch microtime
   return new Date(ticksToMicrotime - epochMicrotimeDiff);
@@ -201,6 +212,20 @@ function formatDate(date) {
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 }
 
+const sortingColors = {
+  Pink: 0,
+  Green: 1,
+  Orange: 2,
+  Yellow: 3,
+  Red: 4
+}
+
+function sortBoulders(a, b) {
+  if(sortingColors[a.difficultyName] > sortingColors[b.difficultyName]) return 1
+  if(sortingColors[a.difficultyName] < sortingColors[b.difficultyName]) return -1
+  return a.number - b.number
+}
+
 module.exports = {
   isEmpty,
   isBlank,
@@ -211,4 +236,5 @@ module.exports = {
   objectKeyValueFlip,
   getWeeksInMonth,
   webLogger,
+  sortBoulders,
 };

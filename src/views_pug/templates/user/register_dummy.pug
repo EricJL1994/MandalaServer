@@ -1,0 +1,23 @@
+div.card
+  h1 Crear cuenta
+  //- form.user-form(action='/users/registerPremade' method='POST')
+  form.user-form(method='POST')
+    div.form-group
+      label(for='name') Nombre
+      input(type='name' name='name' placeholder='Nombre' value= typeof part.username != 'undefined' ? part.username : name || '' )
+    div.form-group
+      label(for='email') Email
+      input(type='email' name='email' placeholder='Email' value= typeof email != 'undefined' ? email : '')
+    div.form-group
+      label(for='password') Contraseña
+      input(type='password' name='password' placeholder='Contraseña' value= typeof password != 'undefined' ? password : '')
+    div.form-group
+      label(for='password2') Confirmar contraseña
+      input(type='password' name='password2' placeholder='Contraseña' value= typeof password2 != 'undefined' ? password2 : '')
+    div.form-group
+      button.btn.btn-primary.btn-block(type='submit')
+        | Registrarse
+  hr
+  //- p
+    | ¿Tienes una cuenta? 
+    a(href='/users/login' + (path ? `?redirect=${path}` : '')) Entrar

@@ -34,9 +34,10 @@ div.searchBar
       - var d = new Date()
       - d.setDate(d.getDate()-searchTime)
       - date = d.getFullYear().toString() + '-' + (d.getMonth() + 1).toString().padStart(2, 0) + '-' + d.getDate().toString().padStart(2, 0);
-    input#timeValue(type='date', min='2021-02-22', value=(date || '2021-02-22') onchange='timer(this.valueAsDate)')
+    //- input#timeValue(type='date', min='2021-02-22', value=(date || '2021-02-22') onchange='timer(this.valueAsDate)')
+    input#timeValue(type='date', value=(date || ''), onchange='timer(this.valueAsDate)')
     button(onclick='resetDate()') X
-  div
+  //- div
     form(method='POST')
       input.d-none(id='problemsToSubmit' name='problemsToSubmit', value='')
       button.btn-primary(type='submit') Guardar

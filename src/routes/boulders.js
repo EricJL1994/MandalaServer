@@ -18,4 +18,6 @@ router.post('/xxx', problemController.problem_delete);
 
 router.post('/show', problemController.problems_done);
 
+router.post("/boulderDone", problemController.boulder_done)
+
 module.exports = router;

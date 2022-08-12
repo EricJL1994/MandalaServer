@@ -39,14 +39,12 @@ router.get("/login", (req, res) => {
   }
 });
 
-router.post(
-  "/login",
-  (req, res, next) => {
-    // console.log(req.query.redirect)
+router.post("/login", (req, res, next) => {
     passport.authenticate("local", {
       // successRedirect: "back",
       failureRedirect: "/users/login",
       failureFlash: true,
+      badRequestMessage: "Rellene los campos",
     })(req, res, next);
   },
   function (req, res) {
@@ -60,7 +58,6 @@ router.get("/register", (req, res) => {
   if (req.user) {
     res.redirect("/users/dashboard");
   } else {
-    // res.render("register");
     res.render("builder", {
       tittleText: "Registro",
       page_schema: [{ name: "register" }],
@@ -71,7 +68,7 @@ router.get("/register", (req, res) => {
 router.post("/register", (req, res) => {
   const { name, email, password, password2 } = req.body;
   let errors = [];
-  console.log(" Name " + name + " email :" + email + " pass:" + password);
+  // console.log(" Name " + name + " email :" + email + " pass:" + password);
   if (!name || !email || !password || !password2) {
     errors.push({ msg: "Por favor, rellene todos los campos" });
   }
@@ -138,6 +135,106 @@ router.post("/register", (req, res) => {
     });
   }
 });
+
+//REGISTER DUMMY
+router.get("/registerPremade/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  var failed = false
+  var user = await User.findOne({ _id: id }).exec().catch((err) => {
+    failed = err
+  });
+
+  if(failed || !user) {
+    return res.redirect("/users/register");
+  }
+  
+  return res.render("builder", {
+    tittleText: "Registro",
+    page_schema: [{ name: "register_dummy", username: user.name }],
+  });
+});
+
+router.post("/registerPremade/:id", async (req, res) => {
+  const { id } = req.params
+  var failed = false
+  var user = await User.findOne({ _id: id }).exec().catch((err) => {
+    failed = err
+  });
+  //No user found or id is bad
+  if(failed || !user) {
+    return res.redirect("/users/register");
+  }
+
+  const { name, email, password, password2 } = req.body;
+  let errors = [];
+  // console.log(" Name " + name + " email :" + email + " pass:" + password);
+  if (!name || !email || !password || !password2) {
+    errors.push({ msg: "Por favor, rellene todos los campos" });
+  }
+  //check if match
+  if (password !== password2) {
+    errors.push({ msg: "Las contraseñas no coinciden" });
+  }
+
+  //check if password is more than 6 characters
+  if (password.length < 6) {
+    errors.push({ msg: "La contraseña debe tener al menos 6 caracteres" });
+  }
+  if (errors.length > 0) {
+    res.render("builder", {
+      errors: errors,
+      name: name,
+      email: email,
+      password: password,
+      password2: password2,
+      page_schema: [{ name: "register_dummy" }],
+    });
+  } else {
+    //validation passed
+    User.findOne({ email: email }).exec((err, userFound) => {
+      if (userFound) {
+        errors.push({ msg: "El email está en uso" });
+        res.render("builder", {
+          errors: errors,
+          name: name,
+          email: email,
+          password: password,
+          password2: password2,
+          page_schema: [{ name: "register_dummy" }],
+        });
+      } else {
+        user.name = name
+        user.email = email
+        user.password = password
+
+        //hash password
+        bcrypt.genSalt(10, (err, salt) =>
+          bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) throw err;
+            //save pass to hash
+            user.password = hash;
+            //save user
+            user
+              .save()
+              .then((value) => {
+                webLogger(
+                  true,
+                  user._id,
+                  `${user.name} se ha actualizado [Perfil](https://mandalaclimb.herokuapp.com/users/profile/${user._id})`
+                );
+                req.flash("success_msg", "Se ha registrado con éxito");
+                console.log(user)
+                req.logout()
+                res.redirect("/users/login");
+              })
+              .catch((value) => console.log(value));
+          })
+        );
+      }
+    });
+  }
+})
 
 //LOGOUT
 router.get("/logout", (req, res) => {
@@ -400,7 +497,7 @@ router.post("/booking", async (req, res) => {
 });
 
 router.get("/books", async (req, res) => {
-  if (req.user && req.user /*.admin*/) {
+  if (req.user) {
     var page_schema = [];
     var month = req.query.month || new Date().getMonth();
     var year = req.query.year || new Date().getFullYear();
@@ -417,10 +514,35 @@ router.get("/books", async (req, res) => {
       .populate({ path: "bookMorning", populate: { path: "user" } })
       .populate({ path: "bookEvening", populate: { path: "user" } })
       .populate({ path: "bookNight", populate: { path: "user" } });
-
+    var totalBooks = 0;
     books.forEach((book) => {
       const date = new Date(book.year, book.month, book.day);
       book.dayName = dayName[date.getDay()];
+
+      for (let i = 0; i < book.bookMorning.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookMorning[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookMorning.splice(i, 1);
+          i--;
+        }
+      }
+      for (let i = 0; i < book.bookEvening.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookEvening[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookEvening.splice(i, 1);
+          i--;
+        }
+      }
+      for (let i = 0; i < book.bookNight.length; i++) {
+        totalBooks++;
+        if (!(req.user.admin || book.bookNight[i].user._id == req.user._id)) {
+          totalBooks--;
+          book.bookNight.splice(i, 1);
+          i--;
+        }
+      }
     });
 
     page_schema.push({
@@ -430,6 +552,7 @@ router.get("/books", async (req, res) => {
       monthName: monthName[month],
       year: year,
       month: month,
+      totalBooks,
     });
 
     res.render("builder", { tittleText: "Reservas", page_schema: page_schema });
@@ -515,12 +638,32 @@ router.get("/profile/:id", async (req, res) => {
   const { id } = req.params;
   if (req.user && (req.user._id == id || req.user.admin)) {
     const user = await User.findOne({ _id: id }).exec();
+    var list = [];
+    list.push({ name: `<strong><u>Correo</u></strong>: ${user.email}` });
+    list.push({
+      name: `<strong><u>Verificado</u></strong>: ${user.isVerified}`,
+    });
+    list.push({ name: `<strong><u>Admin</u></strong>: ${user.admin}` });
+    list.push({ name: `<strong><u>Reservas</u></strong>: ${user.canBook}` });
+    list.push({
+      name: `<strong><u>Fecha</u></strong>: ${user.date.toLocaleDateString()}`,
+    });
     var page_schema = [];
+    var parsedKeys = Object.keys(user.getPermissions());
+    parsedKeys.splice(parsedKeys.indexOf("days"), 1);
+    parsedKeys.splice(parsedKeys.indexOf("trainingDays"), 1);
+    var permissions = {
+      days: user.getPermissions().days,
+      trainingDays: user.getPermissions().trainingDays,
+      parsed: user.getPermissions(),
+      parsedKeys,
+    };
     page_schema.push({
       name: "card",
       tittle: user.name,
-      description: "<strong><u>Email:</u></strong> " + user.email,
-      list: [{ name: user._id }],
+      description: user._id,
+      list,
+      permissions,
     });
     // console.log(page_schema[0].list);
     res.render("builder", { tittleText: "Perfil", page_schema: page_schema });
@@ -529,29 +672,51 @@ router.get("/profile/:id", async (req, res) => {
   }
 });
 
+//PAYMENT
 router.get("/payment", async (req, res) => {
-  if (!(req.user && req.user.admin)) {
+  if (!req.user?.admin) {
     res.redirect("/");
     return;
   }
   var users = await User.find().exec();
-  // res.send(users);
-  users.map((user) => (user.parsedPermissions = user.getPermissions()));
+  var month_users = [];
+
+  const month = new Date().getMonth();
+  const year = new Date().getFullYear();
+  users.map((user) => {
+    user.parsedPermissions = user.getPermissions();
+    if (user.parsedPermissions[year]?.[month] != undefined) {
+      month_users.push(user);
+    }
+  });
+
+  month_users.sort((a, b) => {
+    return a.parsedPermissions[year][month] - b.parsedPermissions[year][month];
+  });
 
   var page_schema = [];
+
   page_schema.push({
     name: "payment",
-    users: users,
+    users,
   });
+
   page_schema.push({
-    name: "permissions",
-    users: users,
+    name: "month_subscriptions",
+    users: month_users,
+    month: +month,
+    year: +year,
   });
-  res.render("builder", { tittleText: "Pagos", page_schema: page_schema });
+
+  /*page_schema.push({
+    name: "permissions",
+    users,
+  });*/
+  res.render("builder", { tittleText: "Pagos", page_schema });
 });
 
 router.post("/payment", async (req, res) => {
-  if (req.user && req.user.admin) {
+  if (req.user?.admin) {
     var user = await User.findOne({ _id: req.body.users });
     var perm = user.getPermissions();
     var obj = {};

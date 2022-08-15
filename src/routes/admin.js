@@ -83,18 +83,22 @@ router.get("/editBoulder", async(req, res) => {
 
 router.post("/editBoulder/:id", async (req, res) => {
   const { id } = req.params
-  const { difficulty, number, date, holdColor, pending, wall } = req.body
+  const { difficulty, number, date, holdColor, pending, wall, redpoints } = req.body
 
   Boulder.findById(id).then(async (boulder) =>  {
     //PENDING TIMEZONE ADJUSTMENT
+    if(!!redpoints) {
+      boulder.redpoints.splice(0, boulder.redpoints.length)
+    }
+    console.log(boulder.redpoints)
     boulder.dateValue = convertDateToTicks(new Date(date)) + 36960000000 //THIS
     boulder.holdColor = holdColor
     boulder.wall = wall
     boulder.pending = !!pending
-    console.log(boulder)
+    // console.log(boulder)
     await boulder.save()
   }).catch(e => {
-    console.log(e)
+    console.warn(e)
   })
   return res.redirect("/boulders/show")
   // console.log(req.body)

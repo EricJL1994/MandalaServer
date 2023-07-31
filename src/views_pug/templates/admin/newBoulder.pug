@@ -1,0 +1,46 @@
+div.card
+  h1 Crear bloque
+  form.user-form(method='POST')
+    //- Dificultad
+    .form-group
+      label(for='difficulty') Dificultad
+      select(name="difficulty" onchange="changeWithText('number-input', this.options[this.selectedIndex])")
+        each difficultyName in Object.keys(part.boulderCount)
+          option(value= difficultyName label=difficultyName)= part.boulderCount[difficultyName]+1
+      //- input(type='text' name='difficulty' value= part.boulder.difficultyName disabled="disabled") 
+    //- Número
+    .form-group
+      label(for='number') Número
+      input#number-input(disabled type='number' name='number' value= part.boulderCount[Object.keys(part.boulderCount)[0]]+1) 
+    //- Fecha OJOCUIDAO
+    .form-group
+      label(for='date') Fecha
+      input(type='date' name='date' value= new Date()) 
+    //- Color de presas
+    .form-group
+      label(for='holdColor') Color de presas
+      //- input(type='text' name='holdColor' value= part.boulder.holdColor) 
+      select(name="holdColor")
+        each holdColor in Object.keys(part.holdColors)
+          option(value= holdColor)= holdColor
+    //- Pared
+    .form-group
+      label(for='wall') Pared
+      select(name="wall")
+        each wallName, index in Object.values(part.walls)
+          option(value= index)= wallName
+    //- OLDER VERSION - WITHOUT WALLS' NAMES
+    //- .form-group
+    //-   label(for='wall') Pared
+    //-   input(type='number' name='wall' value= 0) 
+    //- Pendiente
+    .form-group
+      label(for='pending') Pendiente
+      input(type='checkbox' name='pending' checked=true)
+    //- Redpoints
+    .form-group
+      label(for='wall') Nuevo bloque
+      input(type='checkbox' name='redpoints' checked= true) 
+
+    .form-group 
+      button.btn.btn-primary.btn-block(type='submit') Guardar

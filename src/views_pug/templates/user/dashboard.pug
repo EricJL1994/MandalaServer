@@ -5,13 +5,13 @@ div
       //- h3(style='margin-top: 0') General
       //- hr
       -var formLabel = 'Nombre de usuario', formValue = user.name, formName = 'name'
-      include ../partials/form-group.pug
+      include ../partials/form_group.pug
       -var formLabel = 'E-mail', formValue = user.email, formName = 'email'
-      include ../partials/form-group.pug
-      //- if(!user.isVerified)
-      //-   div
-      //-     h4(style='margin-bottom: .25rem') Email no confirmado
-      //-     button.btn-primary(type='submit' formaction='/users/verification') Enviar confirmación
+      include ../partials/form_group.pug
+      if(!user.isVerified)
+        div
+          h4(style='margin-bottom: .25rem') Email no confirmado
+          button.btn-primary(type='submit' formaction='/users/verification') Enviar confirmación
       //- if(user.canBook)
       //-   hr
       //-   a(href="/users/booking") Reservar horas 
@@ -30,3 +30,7 @@ div
         a(href="/admin/register") Registrar usuario
         br
         a(href="/admin/logs") Ver registros
+        br
+        a(href="/admin/leagues") Ligas
+        br
+        a(href="/admin/setPending") Marcar pendientes

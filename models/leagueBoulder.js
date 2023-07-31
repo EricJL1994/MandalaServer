@@ -9,8 +9,19 @@ const LeagueBoulderSchema = new Schema({
   redpoints: {
     type: [mongoose.Types.ObjectId],
     ref: 'user'
-  }
+  },
+  image: String,
 })
+
+LeagueBoulderSchema.statics.formLeagueBoulder = async (boulder, callback) => {
+  return LeagueBoulder.create({
+    difficultyName: boulder.difficultyName,
+    number: boulder.number,
+    holdColor: boulder.holdColor,
+    wall: boulder.wall,
+  }).then(leagueBoulder => callback(leagueBoulder))
+
+}
 
 const LeagueBoulder = mongoose.model("leagueBoulder", LeagueBoulderSchema)
 

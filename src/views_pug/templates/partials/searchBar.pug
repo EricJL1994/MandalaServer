@@ -17,17 +17,19 @@ div.searchBar
   //-   div.eye-label Encadenados
   label.eye-icon(style = `display: ${user ? '': 'none'}` )
     input#showDone.eye-check(type = 'checkbox', onclick='search()')
-    svg(width='24' height='24' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd')
+    //- svg(width='24' height='24' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd')
+    svg(width='22.5' height='22.5' viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd')
       path.eyesvg
     div.eye-label Encadenados
-    
-      //- span.label 
-    //- <label><input type="checkbox"><span class="label">Check me</span></label>
-  //- div(style = `display: ${user ? '': 'none'}` )
-  //-   input(type = 'checkbox', id= 'showDone' onclick='search()')
-  //-   label(for= 'showDone') Encadenados
+  if user && user.admin
+    label.eye-icon(style = `display: ${user ? '': 'none'}` )
+      input#showPending.eye-check(type = 'checkbox', onclick='search()')
+      //- svg(width='24' height='24' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd')
+      svg(width='22.5' height='22.5' viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd')
+        path.eyesvg
+      div.eye-label Pendientes
   div
-    input(type='image', src='', id='problemSearch' name='title', placeholder='Buscar...', onkeyup='search(this.value)', onerror='start(this)')
+    input(type='image', src='', id='problemSearch' name='title', placeholder='Buscar...', onkeyup='search()', onerror='start(this)')
   //div.col.dropdown
   div
     if(searchTime)
@@ -35,7 +37,7 @@ div.searchBar
       - d.setDate(d.getDate()-searchTime)
       - date = d.getFullYear().toString() + '-' + (d.getMonth() + 1).toString().padStart(2, 0) + '-' + d.getDate().toString().padStart(2, 0);
     //- input#timeValue(type='date', min='2021-02-22', value=(date || '2021-02-22') onchange='timer(this.valueAsDate)')
-    input#timeValue(type='date', value=(date || ''), onchange='timer(this.valueAsDate)')
+    input#timeValue(type='date', value=(date || ''), onchange='search()')
     button(onclick='resetDate()') X
   //- div
     form(method='POST')

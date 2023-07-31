@@ -9,14 +9,16 @@ table
       th Pendiente
       th Pared
       th Redpoints 
+      th Liga 
   tbody
     each boulder in part.boulders
       tr
         td= boulder._id
         td= boulder.difficultyName
         td= boulder.number
-        td= boulder.date
+        td= boulder.date.toLocaleDateString("es-ES")
         td= boulder.holdColor
         td= boulder.pending
         td= boulder.wall
         td= boulder.redpoints.length
+        td= boulder.league || "-"

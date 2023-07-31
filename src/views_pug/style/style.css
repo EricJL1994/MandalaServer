@@ -78,7 +78,7 @@ Y8a.    .a8P    88,    88  88  aa    ]8I
   text-align: left;
 }
 .align-center {
-  text-align: center;
+  text-align: center !important;
 }
 .no-decor {
   text-decoration: none;
@@ -252,6 +252,7 @@ svg .eyesvg {
 .searchBar {
   background-color: var(--bg-primary);
   padding-bottom: 5px;
+  padding-top: 5px;
   display: flex;
   /* vertical-align: middle; */
   flex-wrap: wrap;
@@ -285,41 +286,123 @@ svg .eyesvg {
   margin-right: 5px;
 }
 
-table {
-  background-color: var(--bg-table);
+/* .sticky{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  left: 0;
+  right: 0;
+} */
+
+.table {
+  /* background-color: var(--bg-table); */
   border-collapse: collapse;
-  border: 1px solid black;
+  border: 1px solid var(--bg);
+  /* ---------<>--------- */
+  /* margin: 0; */
+  /* padding: 0; */
+  width: 100%;
+  table-layout: fixed;
+  max-width: 750px;
 }
 
-thead {
+/* .table caption{
+  font-size: 1.5em;
+  margin: .5em 0 .75em;
+} */
+
+.table thead {
   background-color: rgb(78, 78, 78);
   color: rgb(231, 230, 230);
 }
 
-td {
-  --pxm: 4px;
-  border-bottom: 1px solid black;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-  min-width: 1.5rem;
-  padding-top: var(--pxm);
-  padding-bottom: var(--pxm);
+.table tbody tr{
+  background-color: var(--bg-table);
 }
 
+.table th,
+.table td{
+  /* --pxm: 4px; */
+  /* border-bottom: 1px solid black; */
+  /* padding-left: 0.25rem; */
+  /* padding-right: 0.25rem; */
+  /* min-width: 1.5rem; */
+  /* padding-top: var(--pxm); */
+  /* padding-bottom: var(--pxm); */
+  /* ---------<>--------- */
+  padding: .625em;
+  text-align: left;
+}
+
+.table th{
+  font-size: .85em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 600px) {
+  .table {
+    border: 0;
+  }
+
+  .table caption {
+    font-size: 1.3em;
+  }
+  
+  .table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  .table tr {
+    /* border-bottom: 3px solid #ddd; */
+    border: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+  
+  .table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .9em;
+    text-align: right;
+  }
+  
+  .table td::before {
+    content: attr(data-label);
+    float: left;
+    /* font-size: .9em; */
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
+
+
 .trProblemDone {
-  background-color: var(--tr-done);
+  background-color: var(--tr-done) !important;
 }
 
 .trProblemMarked {
-  background-color: var(--tr-marked);
+  background-color: var(--tr-marked) !important;
 }
 
 .trProblemUnmarked {
-  background-color: var(--tr-unmarked);
+  background-color: var(--tr-unmarked) !important;
 }
 
 .trProblemPending {
-  background-color: #a8a8a8;
+  background-color: #a8a8a8 !important;
 }
 
 .error-msg {
@@ -353,12 +436,17 @@ Y8,            ,adPPPPP88  88          8b       88
 .card {
   background-color: var(--bg-highlight);
   display: inline-block;
-  width: 20rem;
+  /* width: 20rem; */
+  min-width: 20rem;
   padding: 1rem;
   margin: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 0.25rem 0.25rem 0 var(--text-primary);
   transition: 0.3s;
+}
+
+.card:not(.large) {
+  width: 20rem;
 }
 
 .card a {
@@ -378,7 +466,7 @@ Y8,            ,adPPPPP88  88          8b       88
 }
 
 .d-none {
-  display: none;
+  display: none !important;
 }
 
 body {

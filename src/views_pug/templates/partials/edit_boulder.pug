@@ -12,7 +12,7 @@ div.card
     //- Fecha OJOCUIDAO
     .form-group
       label(for='date') Fecha
-      input(type='date' name='date' value= part.boulder.date) 
+      input(type='date' name='date' value= part.boulder.formattedDate)
     //- Color de presas
     .form-group
       label(for='holdColor') Color de presas
@@ -20,18 +20,23 @@ div.card
       select(name="holdColor")
         each holdColor in Object.keys(part.holdColors)
           option(value= holdColor selected= part.boulder.holdColor == holdColor)= holdColor
+    //- Pared
+    //- .form-group
+      label(for='wall') Pared
+      input(type='number' name='wall' value= part.boulder.wall) 
+    .form-group
+      label(for='wall') Pared
+      select(name="wall")
+        each wallName, index in Object.values(part.walls)
+          option(value= index selected= part.boulder.wall == index)= wallName
     //- Pendiente
     .form-group
       label(for='pending') Pendiente
       input(type='checkbox' name='pending' checked= part.boulder.pending) 
-    //- Pared
-    .form-group
-      label(for='wall') Pared
-      input(type='number' name='wall' value= part.boulder.wall) 
     //- Redpoints
     .form-group
       label(for='wall') Nuevo bloque
-      input(type='checkbox' name='redpoints' checked= false) 
+      input(type='checkbox' name='clear' checked= true) 
 
     .form-group 
       button.btn.btn-primary.btn-block(type='submit') Guardar

@@ -10,7 +10,13 @@ const boulderSchema = new Schema({
     wall: Number,
     redpoints :{
         type : [mongoose.Types.ObjectID]
-    }
+    },
+    date: Date,
+    image: String,
+    league: {
+      type: mongoose.Types.ObjectId,
+      ref: 'league',
+    },
 })
 
 const Boulder = mongoose.model("boulder", boulderSchema);

@@ -1,0 +1,60 @@
+doctype html
+html(lang='es-ES')
+  head
+    meta(charset='UTF-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    if (user)
+      link(rel="icon" href="/images/IconoRojo.png")
+    else
+      link(rel="icon" href="/images/Icono.png")
+    title= "Mandala Climb" + (tittleText ? " • " + tittleText : "")
+    style
+      include /style/style.css
+    //- style
+      include /style/teststyle.css
+    script
+      include /scripts/scripts.js
+
+  body
+    include templates/partials/navbar
+    main
+      div.container
+        include templates/partials/searchBar
+        table#problemTable.table
+          thead
+            tr
+              th(scope='col') Nº 
+              if(problems[0].date)
+                th.align-left(scope='col') Fecha
+              th.align-left(scope='col') Pared
+              th.align-left(scope='col') Presas
+              if(user)
+                if(user.admin)
+                  th.align-left(scope='col') RP
+                th.align-center Hecho
+          tbody
+            each problem in problems
+              tr(class = problem.pending ? 'trProblemPending' : (problem.done ? 'trProblemDone' : ''))
+                //- Search criteria
+                td#searchCriteria.d-none(data-label="Nº")= `${problem.difficultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}` 
+                //- Number and link
+                td(onclick=`window.location='/boulders/details?difficultyName=${problem.difficultyName}&number=${problem.number}'`)
+                  div.align-center(style={'background-color': problem.color, 'cursor': 'pointer'})= problem.number
+                //- Date 
+                if(problem.date)
+                  td#dateCriteria.d-none= `${problem.dateValue}`
+                  td(data-label="Fecha")= problem.date
+                //- Wall
+                td(data-label="Pared")= problem.wallName
+                //- Hold color
+                td(data-label="Presas")= problem.holdColor 
+                //- User input
+                if(user)
+                  //- Redpoints
+                  if(user.admin)
+                    td(data-label="RP")= problem.redpoints.length
+                  td#userCriteria.align-center
+                    input.d-none(type="checkbox", checked = false, disabled = true)
+                    input#doneCriteria.d-none(type="checkbox", checked = problem.done, disabled = true)
+                    button(disabled = problem.pending, onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'

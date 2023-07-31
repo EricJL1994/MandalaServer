@@ -1,0 +1,38 @@
+.card 
+  table
+    thead
+       tr 
+        //- th ID
+        th Fecha
+        th Listo
+        //- th Participantes
+        th Bloques
+        if user
+          th Entrar
+          if (user.admin)
+            th Editar
+    tbody
+      each league in part.leagues
+        tr 
+          //- td= league._id 
+          //- - console.log(league.date)
+          //- - console.log(league.date.toLocaleDateString("es-ES"))
+          //- - console.log(league.date.toLocaleDateString())
+          td= league.date.toLocaleDateString("es-ES") 
+          td= league.ready ? "Si" : "No"
+          //- td= league.participants ? league.participants.length : "-"
+          td= league.ready ? league.boulders.length : "-"
+          if user
+            td 
+              a(href=`/users/league/${league._id}`) 
+                //- button(disabled=(!league.ready || league.date <= new Date())&&false) Participar
+                //- button(disabled=(!league.ready || league.date <= new Date())) Participar
+                button(disabled=!league.ready ) Participar
+            if (user.admin)
+              td 
+                a(href=`/admin/editLeague/${league._id}`) 
+                  //- button(disabled=league.ready) Editar
+                  button Editar 
+
+  if (user && user.admin)
+    a(href="/admin/newLeague") Nueva liga

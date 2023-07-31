@@ -3,7 +3,9 @@
 div.screenCoverFlash.card
   h3= cover_tittle
   if cover_message
-    p= cover_message
+    each message in cover_message[0].split("\n")
+      p= message
+      //- p= cover_message
   if cover_list 
     ul
     each list_element in cover_list 

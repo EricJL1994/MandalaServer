@@ -1,0 +1,14 @@
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  border: 0;
+  border-spacing: 0;
+}
+
+.p0{
+  padding: 0;
+}
+
+table, td, div, h1, p{
+  font-family: Arial, sans-serif;
+}

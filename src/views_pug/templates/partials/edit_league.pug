@@ -1,0 +1,49 @@
+div.card
+  h1 Editar liga
+  form.user-form(method='POST')
+    //- Fecha OJOCUIDAO
+    .form-group
+      label(for='date') Fecha
+      input(type='date' name='date' value= part.league.date.toISOString().substring(0,10))
+
+    .form-group
+      input(type='submit' name='save' value="Guardar")
+
+    //- .form-group 
+    //-   label(for='difficulty') Dificultad 
+    //-   select#difficulty(name="difficulty", onchange="selectNumberDropdown(this.value)")
+    //-     for difficulties in part.boulders  
+    //-       option= difficulties._id
+      
+    //- for difficulties, index in part.boulders
+    //-   .form-group(id=`difficultyNumbers${difficulties._id}`, style = (index > 0 ? "display:none" : "display:"))
+    //-     label(for=`number-${difficulties._id}`) Número
+    //-     select(name=`number-${difficulties._id}`)
+    //-       for number in difficulties.numbers
+    //-         option= number
+
+    .form-group
+      table(style="border: 1px solid black; border-collapse:collapse")   
+        thead 
+          th Bloques
+        tbody
+          for difficulties in part.boulders
+            tr(style="border: 1px solid black")
+              td= difficulties._id 
+            for boulder in difficulties.boulders 
+              tr(class = boulder.added ? 'trProblemDone' : '' style="border: 1px solid black") 
+                td= boulder.number 
+                td
+                  button(disabled = boulder.done type="button", onclick = `addToLeague(this, "${part.league._id}", "${difficulties._id}", "${boulder.number}")`)= boulder.added ? 'Quitar' : 'Añadir'
+    
+    .form-group
+      input(type='submit' formaction=`/admin/saveLeague/${part.league._id}` name='confirm' onclick="clicked(event)" value="Confirmar")
+
+    //- .form-group 
+    //-   button.btn.btn-primary.btn-block(type='submit') Guardar
+  script.
+    function clicked(e){
+      if(!confirm('¿Seguro que quieres confirmar la liga?')) {
+        e.preventDefault();
+      }
+    }

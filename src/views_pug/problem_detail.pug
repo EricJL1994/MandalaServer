@@ -1,11 +1,11 @@
 - var tittleText = 'Detalles'
-//- include templates/header.pug
-include templates/partials/new_header
+include templates/partials/header
 body
-  include templates/partials/nb_navbar
+  include templates/partials/navbar
   main
     -    
       var card = {
+        src: problemDetail.image,
         alt: `${problemDetail.difficultyName} ${problemDetail.number}`,
         tittle: `${problemDetail.difficultyName} ${problemDetail.number}`,
         description: `<strong>Color de presas:</strong> ${problemDetail.holdColor} <br> <strong>Pared:</strong> ${problemDetail.wallName} <br> <strong>Fecha:</strong> ${problemDetail.date} <br> <strong>Encadenados:</strong> ${problemDetail.redpoints.length}`,

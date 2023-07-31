@@ -1,0 +1,13 @@
+div.card
+  h1 Desequipar presas
+  form.user-form(method='POST')
+    //- Color de presas
+    .form-group
+      label(for='holdColor') Color de presas
+      //- input(type='text' name='holdColor' value= part.boulder.holdColor) 
+      select(name="holdColor")
+        each holdColor in Object.keys(part.holdColors)
+          option(value= holdColor)= holdColor
+
+    .form-group 
+      button.btn.btn-primary.btn-block(type='submit') Guardar

@@ -8,7 +8,7 @@ html(lang='es-ES')
       link(rel="icon" href="/images/IconoRojo.png")
     else
       link(rel="icon" href="/images/Icono.png")
-    title= "Mandala Climb" + (tittleText ? " • " + tittleText : "")
+    title= (tittleText ? tittleText + " • " : "") + "Mandala Climb"
     style
       include /style/style.css
     script

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+// const bcrypt = require("bcrypt");
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -53,7 +54,7 @@ UserSchema.methods.getPermissions = function (){
   return JSON.parse(this.permissions)
 }
 
-UserSchema.methods.generateVerificationToken = function () {
+UserSchema.methods.generateVerificationToken = function (){
   const user = this;
 
   const verificationToken = jwt.sign({ ID: user._id }, process.env.TOKEN, {
@@ -62,6 +63,28 @@ UserSchema.methods.generateVerificationToken = function () {
 
   return verificationToken;
 };
+
+UserSchema.methods.generatePasswordHash = function (password, callback){
+  const bcrypt = require("bcrypt");
+  bcrypt.genSalt(10, (err, salt) =>
+      bcrypt.hash(password, salt, (err, hash) => {
+        if (err) throw err;
+        callback(hash)
+      })
+    )
+}
+
+UserSchema.methods.changePassword = function (password, callback){
+  const bcrypt = require("bcrypt");
+  bcrypt.genSalt(10, (err, salt) =>
+      bcrypt.hash(password, salt, (err, hash) => {
+        if (err) throw err;
+        this.password = hash
+        this.save().then(value => callback(value))
+      })
+    )
+}
+
 const User = mongoose.model("user", UserSchema);
 
 module.exports = User;

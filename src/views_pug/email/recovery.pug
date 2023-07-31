@@ -1,0 +1,10 @@
+table.table(role='presentation')
+  tr
+    td.p0(style='padding:0 0 36px 0;color:#153643;')
+      h1(style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;') Mandala Climb · Recuperación de contraseña
+      p(style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;')
+        = `Hola ${user.name}, has pedido recuperar la contraseña de acceso para la web de Mandala Climb. La hemos cambiado por una nueva, por favor inicia sesión y cámbiala cuanto antes. Tu contraseña es: `
+      p(style='margin:0 0 12px 0;font-size:32px;line-height:24px;font-family:Arial,sans-serif;')
+        strong= password
+      p(style='margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;')
+        a(href='http://mandalaclimb.herokuapp.com/users/login' style='color:#ee4c50;text-decoration:underline;') Ir a la web

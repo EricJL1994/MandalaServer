@@ -1,34 +1,51 @@
 
 div.container
-  include nb_searchBar.pug
-  table.table.my-3.my-lg-0(id="problemTable") 
-    thead.theadStyle
+  include searchBar
+  table.table(id="problemTable") 
+    thead
       tr
         th(scope='col') Nº 
         if(arrayProblems[0].date)
           th.align-left(scope='col') Fecha
-        th.align-left.td-hide(scope='col') Pared
+        th.align-left(scope='col') Pared
         th.align-left(scope='col') Presas
         if(user)
           th Hecho
           if(user.admin)
             th RP
     tbody
+      tr#trtemplate(hidden)
+        td.d-none
+        td(onclick=`window.location='/boulders/details?difficultyName=${0}&number=${0}'`)
+          div.align-center(style={'background-color': 'black', 'cursor': 'pointer'})= 0
+        td.d-none(id='dateValue')= `${0}`
+        td.small-hide= 0
+        td.small-show= `0/0`
+        td= 0
+        td.small-hide= 0
+        td.small-show= 0
+        if(user)
+          td.align-center
+            input.d-none(type="checkbox", checked = false, disabled = true)
+            input.d-none(type="checkbox", checked = false, disabled = true)
+            button(disabled = false, onclick = `boulderDone(this, "${0}")`)= false ? 'Quitar' : 'Marcar'
+          if(user.admin)
+            td.align-center= 0
+
       each problem in arrayProblems
-        //- tr.trProblem(class = problem.done ? 'trProblemDone' : '')
-        tr.trProblem(class = problem.pending ? 'trProblemPending' : (problem.done ? 'trProblemDone' : ''))
+        tr(class = problem.pending ? 'trProblemPending' : (problem.done ? 'trProblemDone' : ''))
           //- Search criteria
-          td.d-none= `${problem.difficultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
+          td#searchCriteria.d-none= `${problem.difficultyName} ${problem.number} ${problem.wallName} ${problem.holdColor}`
           //- Number and link
           td(onclick=`window.location='/boulders/details?difficultyName=${problem.difficultyName}&number=${problem.number}'`)
             div.align-center(style={'background-color': problem.color, 'cursor': 'pointer'})= problem.number
           //- Date
           if(problem.date)
-            td.d-none(id='dateValue')= `${problem.dateValue}`
+            //- td.d-none(id='dateValue')= `${problem.dateValue}`
+            td#dateCriteria.d-none= `${problem.dateValue}`
             td.small-hide= problem.date
             -const dateArray = problem.date.split('/')
             td.small-show= `${dateArray[0]}/${dateArray[1]}`
-          //- td.small-show= `8/8`
           //- Wall
           td= problem.wallName
           //- Hold color
@@ -36,10 +53,14 @@ div.container
           td.small-show= problem.holdColorShort
           //- User input
           if(user)
-            td.align-center
+            td#userCriteria.align-center
               input.d-none(type="checkbox", checked = false, disabled = true)
-              input.d-none(type="checkbox", checked = problem.done, disabled = true)
-              //- button(onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
-              button(disabled = problem.pending, onclick = `boulderDone(this, "${problem._id}")`)= problem.done ? 'Quitar' : 'Marcar'
+              input#doneCriteria.d-none(type="checkbox", checked = problem.done, disabled = true)
+              button(disabled = problem.pending, onclick = `boulderDone(this, "${problem._id}", "${part.doneURL}")`)= problem.done ? 'Quitar' : 'Marcar'
             if(user.admin)
               td.align-center= problem.redpoints.length
+  if(user && user.admin)
+    a(href="/admin/newBoulder")
+      button.btn-primary Crear bloque 
+  //- script. 
+    populateTable()

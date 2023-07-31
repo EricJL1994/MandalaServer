@@ -1,0 +1,25 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width,initial-scale=1')
+  meta(name='x-apple-disable-message-reformatting')
+  title Mandala Climb
+  style
+    include ../style/email_style.css
+body
+  table.table(role='presentation' style='background:#ffffff;')
+    tr
+      td.p0(align='center')
+        table(role='presentation' style='width:602px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;')
+          tr
+            td(align='center' style='padding:40px 0 30px 0;')
+              img(src='https://i.imgur.com/LsTx7Np.png' alt='' width='300' style='height:auto;display:block;')
+          tr
+            td(style='padding:36px 30px 42px 30px;')
+              case body
+                when 'welcome'
+                  include welcome
+                when 'recovery'
+                  include recovery
+                when 'verification'
+                  include verification

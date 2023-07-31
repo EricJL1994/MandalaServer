@@ -1,26 +1,26 @@
-include templates/partials/new_header
+include templates/partials/header
 body
-  include templates/partials/nb_navbar
+  include templates/partials/navbar
 
   if errors != undefided || success_msg != '' || error_msg != '' || error != ''
     div.screenCover
       if errors != undefided
         - var cover_tittle = 'Error'
         - var cover_list = errors
-        include templates/partials/cover-alert
+        include templates/partials/cover_alert
         //- - var cover_list = undefined
       if success_msg != ''
         - var cover_tittle = 'Éxito'
         - var cover_message = success_msg
-        include templates/partials/cover-alert
+        include templates/partials/cover_alert
       if error_msg != ''
         - var cover_tittle = 'Error'
         - var cover_message = error_msg
-        include templates/partials/cover-alert
+        include templates/partials/cover_alert
       if error != ''
         - var cover_tittle = 'Fallo'
         - var cover_message = error
-        include templates/partials/cover-alert
+        include templates/partials/cover_alert
   main
     //- div.ctaButton
       button A
@@ -41,7 +41,12 @@ body
 
         if (part.name == 'table')
           - var arrayProblems = part.arrayProblems
-          include templates/partials/problems_table
+          //- include templates/partials/problems_table
+          include templates/partials/responsive_table
+
+        if (part.name == 'problem_detail')
+          - var problemDetail = part.problemDetail
+          include templates/partials/problem_detail
 
         if (part.name == 'booking')
           include templates/user/booking/booking
@@ -57,6 +62,9 @@ body
 
         if (part.name == 'login')
           include templates/user/login
+
+        if (part.name == 'change_password')
+          include templates/user/change_password
 
         if (part.name == 'register')
           include templates/user/register
@@ -84,6 +92,17 @@ body
 
         if (part.name == "edit_boulder")
           include templates/partials/edit_boulder
+
+        if (part.name == "leagues")
+          include templates/partials/leagues
+
+        if (part.name == "edit_league")
+          include templates/partials/edit_league
+
+        if (part.name == "set_pending")
+          include templates/partials/set_pending
         
+        if(part.name == "new_boulder")
+          include templates/admin/newBoulder
 
         

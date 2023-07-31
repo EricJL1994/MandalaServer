@@ -9,6 +9,11 @@ const LeagueSchema = new mongoose.Schema({
     type: [mongoose.Types.ObjectID],
     ref: 'leagueBoulder',
   },
+  
+  ready: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const League = mongoose.model("league", LeagueSchema)
